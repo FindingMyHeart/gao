@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StaffExperienceMapper">
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into xt_staff_experience(
+			staff_id,
+			work_company,
+			work_post,
+			work_time,
+			leave_reason,
+			reference,
+			reference_tel,
+			num,
+			experience_id
+		) values (
+			#{staff_id},
+			#{work_company},
+			#{work_post},
+			#{work_time},
+			#{leave_reason},
+			#{reference},
+			#{reference_tel},
+			#{num},
+			#{experience_id}
+		)
+	</insert>
+
+
+	<!-- 查询所有 -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+			a.staff_id,
+			a.work_company,
+			a.work_post,
+			a.work_time,
+			a.leave_reason,
+			a.reference,
+			a.reference_tel,
+			a.num,
+			a.experience_id
+	  	from
+	  		xt_staff_experience a
+	  	where
+	  		a.staff_id = #{staff_id}
+	  	order by
+	  		a.num asc
+	</select>
+
+	<!-- 删除所有 -->
+	<delete id="deleteByStaffId" parameterType="pd">
+		delete from
+			xt_staff_experience
+		where
+			staff_id = #{staff_id}
+	</delete>
+</mapper>

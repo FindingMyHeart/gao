@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AdmContractLendMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into ADM_CONTRACT_LEND(  
+			CONTRACT_ID,	
+			LEND_NAME,	
+			CHECK_TIME,	
+			CHECK_USERID,	
+			CREATE_TIME,	
+			CREATE_USERID,	
+			IF_DELETED,
+			STATUS,
+			REJECT_REASON,
+			LEND_ID
+		) values (
+			#{CONTRACT_ID},	
+			#{LEND_NAME},	
+			#{CHECK_TIME},	
+			#{CHECK_USERID},	
+			#{CREATE_TIME},	
+			#{CREATE_USERID},	
+			#{IF_DELETED},	
+			#{STATUS},
+			#{REJECT_REASON},
+			#{LEND_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+			ADM_CONTRACT_LEND
+		SET
+			IF_DELETED = '1'
+		where 
+			LEND_ID = #{LEND_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  ADM_CONTRACT_LEND
+			set 
+				CONTRACT_ID = #{CONTRACT_ID},
+				LEND_NAME = #{LEND_NAME},
+			LEND_ID = LEND_ID
+			where 
+				LEND_ID = #{LEND_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			CONTRACT_ID,	
+			LEND_NAME,	
+			CHECK_TIME,	
+			CHECK_USERID,	
+			CREATE_TIME,	
+			CREATE_USERID,	
+			IF_DELETED,
+			STATUS,
+			REJECT_REASON,
+			LEND_ID
+		from 
+			ADM_CONTRACT_LEND
+		where 
+			LEND_ID = #{LEND_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.CONTRACT_ID,	
+				a.LEND_NAME,	
+				a.CHECK_TIME,	
+				a.CHECK_USERID,	
+				a.CREATE_TIME,	
+				a.CREATE_USERID,	
+				a.IF_DELETED,
+				a.STATUS,
+				a.REJECT_REASON,
+				a.LEND_ID,
+				b.CONTRACT_NAME,
+				b.CONTRACT_CODE,
+				b.CONTRACT_TYPE,
+				b.USE_CASE,
+				c.DIC_LABEL AS CONTRACT_TYPE_NAME
+		from 
+				ADM_CONTRACT_LEND a
+		LEFT JOIN
+				ADM_CONTRACT_INFO b
+		ON
+				a.CONTRACT_ID = b.CONTRACT_ID
+		LEFT JOIN
+				XT_DIC c
+		ON
+				b.CONTRACT_TYPE = c.DIC_VALUE AND c.DIC_TYPE = 'htlx'
+		WHERE
+	  			a.IF_DELETED = '0'
+		<if test="pd.CONTRACT_CODE_SEARCH != null and pd.CONTRACT_CODE_SEARCH != ''">
+		AND
+			b.CONTRACT_CODE LIKE CONCAT('%',CONCAT(#{pd.CONTRACT_CODE_SEARCH},'%'))
+		</if>
+		<if test="pd.CONTRACT_NAME_SEARCH != null and pd.CONTRACT_NAME_SEARCH != ''">
+		AND
+			b.CONTRACT_NAME LIKE CONCAT('%',CONCAT(#{pd.CONTRACT_NAME_SEARCH},'%'))
+		</if>
+		<if test="pd.CONTRACT_TYPE_SEARCH != null and pd.CONTRACT_TYPE_SEARCH != ''">
+		AND
+			b.CONTRACT_TYPE = #{pd.CONTRACT_TYPE_SEARCH}
+		</if>
+		<if test="pd.USE_CASE_SEARCH != null and pd.USE_CASE_SEARCH != ''">
+		AND
+			b.USE_CASE = #{pd.USE_CASE_SEARCH}
+		</if>
+		<if test="pd.STATUS_SEARCH != null and pd.STATUS_SEARCH != ''">
+		AND
+			a.STATUS = #{pd.STATUS_SEARCH}
+		</if>
+		AND
+				b.IF_DELETED = '0'
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.CONTRACT_ID,	
+				a.LEND_NAME,	
+				a.CHECK_TIME,	
+				a.CHECK_USERID,	
+				a.CREATE_TIME,	
+				a.CREATE_USERID,	
+				a.IF_DELETED,
+				a.STATUS,
+				a.REJECT_REASON,
+				a.LEND_ID
+		from 
+				ADM_CONTRACT_LEND a
+		WHERE
+	  			a.IF_DELETED = '0'
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			ADM_CONTRACT_LEND
+		SET
+			IF_DELETED = '1'
+		where 
+			LEND_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+
+
+	<!-- 修改状态 -->
+	<update id="updateStatus" parameterType="pd">
+		UPDATE
+			ADM_CONTRACT_LEND
+		SET
+			STATUS = #{STATUS},
+		<if test="REJECT_REASON != null and REJECT_REASON != ''">
+			REJECT_REASON = #{REJECT_REASON},
+		</if>
+			LEND_ID = LEND_ID
+		WHERE
+			LEND_ID = #{LEND_ID}
+	</update>
+
+	<!-- 修改在借状态 -->
+	<update id="updateZjStatus" parameterType="pd">
+		UPDATE
+			ADM_CONTRACT_LEND
+		SET
+			STATUS = '4'
+		WHERE
+			CONTRACT_ID = #{CONTRACT_ID} AND STATUS = '2'
+	</update>
+
+
+</mapper>

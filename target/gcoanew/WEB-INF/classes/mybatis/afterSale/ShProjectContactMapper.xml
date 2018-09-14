@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ShProjectContactMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into SH_PROJECT_CONTACT(
+			PROJECT_ID,	
+			ORDER_NO,
+			CONTACT_NAME,
+			CONTACT_TEL,	
+			CONTACT_TYPE,	
+			MEMO,
+			CONTACT_ID
+		) values (
+			#{PROJECT_ID},	
+			#{ORDER_NO},
+			#{CONTACT_NAME},
+			#{CONTACT_TEL},	
+			#{CONTACT_TYPE},	
+			#{MEMO},
+			#{CONTACT_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from SH_PROJECT_CONTACT
+		where 
+			CONTACT_ID = #{CONTACT_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  SH_PROJECT_CONTACT
+			set 
+				PROJECT_ID = #{PROJECT_ID},
+				ORDER_NO = #{ORDER_NO},
+				CONTACT_NAME = #{CONTACT_NAME},
+				CONTACT_TEL = #{CONTACT_TEL},
+				CONTACT_TYPE = #{CONTACT_TYPE},
+				MEMO = #{MEMO},
+			CONTACT_ID = CONTACT_ID
+			where 
+				CONTACT_ID = #{CONTACT_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			PROJECT_ID,	
+			CONTACT_NAME,	
+			CONTACT_TEL,	
+			CONTACT_TYPE,	
+			MEMO,
+			CONTACT_ID
+		from 
+			SH_PROJECT_CONTACT
+		where 
+			CONTACT_ID = #{CONTACT_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.PROJECT_ID,	
+				a.CONTACT_NAME,	
+				a.CONTACT_TEL,	
+				a.CONTACT_TYPE,	
+				a.MEMO,
+				a.ORDER_NO,
+				a.CONTACT_ID
+		from 
+				SH_PROJECT_CONTACT a
+		ORDER BY
+				a.ORDER_NO ASC
+
+	</select>
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.PROJECT_ID,	
+				a.CONTACT_NAME,	
+				a.CONTACT_TEL,
+				a.MEMO,
+				a.ORDER_NO,
+				a.CONTACT_TYPE,
+				a.CONTACT_ID
+		from 
+				SH_PROJECT_CONTACT a
+		WHERE
+				1  = 1
+		<if test="PROJECT_ID != null and PROJECT_ID != ''">
+		AND
+				PROJECT_ID = #{PROJECT_ID}
+		</if>
+		ORDER BY
+				a.ORDER_NO ASC
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from SH_PROJECT_CONTACT
+		where 
+			CONTACT_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+
+	<!-- 根据项目ID删除-->
+	<delete id="deleteByProjectId" parameterType="pd">
+		DELETE FROM
+			SH_PROJECT_CONTACT
+		WHERE
+			PROJECT_ID = #{PROJECT_ID}
+	</delete>
+
+	
+</mapper>

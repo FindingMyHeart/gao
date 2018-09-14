@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CwReceiptInfoMapper">
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into CW_RECEIPT_INFO(   
+			PROJECT_ID,
+		    AMOUNT_MONEY,
+		    PAYMENT_COMPANY,
+		    PAYMENT_CONTENT,
+		    IF_DELETED,
+		    CREATE_TIME,
+		    CREATE_USERID,
+		    STATUS,
+		    RECEIPT_ID
+		) values (
+			#{PROJECT_ID},	
+			#{AMOUNT_MONEY},	
+			#{PAYMENT_COMPANY},	
+			#{PAYMENT_CONTENT},	
+			#{IF_DELETED},	
+			#{CREATE_TIME},	
+			#{CREATE_USERID},	
+			#{STATUS},	
+			#{RECEIPT_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+			CW_RECEIPT_INFO
+		SET
+			IF_DELETED = '1'
+		where 
+			RECEIPT_ID = #{RECEIPT_ID}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  CW_RECEIPT_INFO
+			set 
+				<if test="PROJECT_ID != null and PROJECT_ID != ''">
+					PROJECT_ID = #{PROJECT_ID},
+				</if>
+				<if test="AMOUNT_MONEY != null and AMOUNT_MONEY != ''">
+					AMOUNT_MONEY = #{AMOUNT_MONEY},
+				</if>
+				<if test="PAYMENT_COMPANY != null and PAYMENT_COMPANY != ''">
+					PAYMENT_COMPANY = #{PAYMENT_COMPANY},
+				</if>
+				<if test="PAYMENT_CONTENT != null and PAYMENT_CONTENT != ''">
+					PAYMENT_CONTENT = #{PAYMENT_CONTENT},
+				</if>
+				<if test="STATUS != null and STATUS != ''">
+					STATUS = #{STATUS},
+				</if>
+				<if test="CHECK_TIME != null and CHECK_TIME != ''">
+					CHECK_TIME = #{CHECK_TIME},
+				</if>
+				<if test="CHECK_USERID != null and CHECK_USERID != ''">
+					CHECK_USERID = #{CHECK_USERID},
+				</if>
+				RECEIPT_ID = RECEIPT_ID
+			where 
+				RECEIPT_ID = #{RECEIPT_ID}
+	</update>
+	<!-- 审核 -->
+	<update id="check" parameterType="pd">
+		update  CW_RECEIPT_INFO
+			set 
+				STATUS = #{STATUS},
+				CHECK_TIME = #{CHECK_TIME},
+				CHECK_USERID = #{CHECK_USERID}
+			where 
+				RECEIPT_ID = #{RECEIPT_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			PROJECT_ID,
+		    AMOUNT_MONEY,
+		    PAYMENT_COMPANY,
+		    PAYMENT_CONTENT,
+		    IF_DELETED,
+		    CREATE_TIME,
+		    CREATE_USERID,
+		    CHECK_TIME,
+		    CHECK_USERID,
+		    STATUS,
+		    RECEIPT_ID
+		from 
+			CW_RECEIPT_INFO
+		where 
+			RECEIPT_ID = #{RECEIPT_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+			a.PROJECT_ID,
+			pi.PROJECT_NAME,
+			a.AMOUNT_MONEY,
+			a.PAYMENT_COMPANY,
+			a.PAYMENT_CONTENT,
+			a.IF_DELETED,
+			DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') CREATE_TIME,
+			a.CREATE_USERID,
+			(select staff_name from xt_staff_info where staff_id=a.CREATE_USERID) CREATE_USERNAME,
+			(select dept_name from xt_dept_info di left join xt_staff_info si on si.dept_id=di.dept_id where staff_id=a.CREATE_USERID) CREATE_DEPTNAME,
+			DATE_FORMAT(a.CHECK_TIME,'%Y-%m-%d') CHECK_TIME,
+			a.CHECK_USERID,
+			a.STATUS,
+			a.RECEIPT_ID
+		from 
+				CW_RECEIPT_INFO a
+		LEFT JOIN
+				BUS_PROJECT_INFO pi
+		on
+				pi.PROJECT_ID=a.PROJECT_ID
+	  	LEFT JOIN
+				XT_STAFF_INFO b
+	  	ON
+				a.CREATE_USERID = b.STAFF_ID
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="pd.RECEIPT_ID != null and pd.RECEIPT_ID != ''">
+			AND a.RECEIPT_ID = #{pd.RECEIPT_ID}
+		</if>
+		<if test="pd.CREATE_USERID != null and pd.CREATE_USERID != ''">
+			AND a.CREATE_USERID = #{pd.CREATE_USERID}
+		</if>
+		<if test="pd.CREATE_DEPTID != null and pd.CREATE_DEPTID != ''">
+			AND a.CREATE_USERID in (select staff_id from xt_staff_info where dept_id=#{pd.CREATE_DEPTID})
+		</if>
+		<if test="pd.S_CREATE_NAME != null and pd.S_CREATE_NAME != ''">
+			AND b.STAFF_NAME LIKE CONCAT('%',CONCAT(#{pd.S_CREATE_NAME},'%'))
+		</if>
+		<if test="pd.CREATE_DATE_SEARCH != null and pd.CREATE_DATE_SEARCH != ''">
+			AND a.CREATE_TIME LIKE CONCAT(#{pd.CREATE_DATE_SEARCH},'%')
+		</if>
+		<if test="pd.PROJECT_ID != null and pd.PROJECT_ID != ''">
+			AND a.PROJECT_ID = #{pd.PROJECT_ID}
+		</if>
+		<if test="pd.STATUS != null and pd.STATUS != ''">
+			AND a.STATUS=#{pd.STATUS}
+		</if>
+		ORDER BY
+			a.CREATE_TIME
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+			a.PROJECT_ID,
+			a.AMOUNT_MONEY,
+			a.PAYMENT_COMPANY,
+			a.PAYMENT_CONTENT,
+			a.IF_DELETED,
+			a.CREATE_TIME,
+			a.CREATE_USERID,
+			a.CHECK_TIME,
+			a.CHECK_USERID,
+			a.STATUS,
+			a.RECEIPT_ID
+		from 
+				CW_RECEIPT_INFO a
+		WHERE
+				a.IF_DELETED = '0'
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			CW_RECEIPT_INFO
+	  	SET
+			IF_DELETED = '0'
+		where 
+			RECEIPT_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

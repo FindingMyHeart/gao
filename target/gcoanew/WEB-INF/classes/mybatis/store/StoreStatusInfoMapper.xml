@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StoreStatusInfoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into STORE_STATUS_INFO(  
+			MATERIAL_ID,	
+			MATERIAL_NUM,	
+			LOCATION_ID,	
+			STATUS_ID
+		) values (
+			#{MATERIAL_ID},	
+			#{MATERIAL_NUM},	
+			#{LOCATION_ID},	
+			#{STATUS_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from STORE_STATUS_INFO
+		where 
+			STATUS_ID = #{STATUS_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  STORE_STATUS_INFO
+			set 
+				MATERIAL_ID = #{MATERIAL_ID},
+				MATERIAL_NUM = #{MATERIAL_NUM},
+				LOCATION_ID = #{LOCATION_ID},
+			STATUS_ID = STATUS_ID
+			where 
+				STATUS_ID = #{STATUS_ID}
+	</update>
+
+	<!-- 增加坤村 -->
+	<update id="addNum" parameterType="pd">
+		UPDATE
+			STORE_STATUS_INFO
+		SET
+			MATERIAL_NUM = MATERIAL_NUM + #{CHANGE_NUM}
+		WHERE
+			STATUS_ID = #{STATUS_ID}
+	</update>
+
+	<!-- 减少库存 -->
+	<update id="reduceNum" parameterType="pd">
+		UPDATE
+			STORE_STATUS_INFO
+		SET
+			MATERIAL_NUM = MATERIAL_NUM - #{CHANGE_NUM}
+		WHERE
+			STATUS_ID = #{STATUS_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			MATERIAL_ID,	
+			MATERIAL_NUM,	
+			LOCATION_ID,	
+			STATUS_ID
+		from 
+			STORE_STATUS_INFO
+		where 
+			STATUS_ID = #{STATUS_ID}
+	</select>
+
+	<!-- 根据产品 和 库位 查找信息 -->
+	<select id="findByMaterialAndLocation" parameterType="pd" resultType="pd">
+		SELECT
+			a.MATERIAL_ID,
+			a.MATERIAL_NUM,
+			a.LOCATION_ID,
+			a.STATUS_ID
+		FROM
+			STORE_STATUS_INFO a
+		WHERE
+			a.MATERIAL_ID = #{MATERIAL_ID}
+		AND
+			a.LOCATION_ID = #{LOCATION_ID}
+		LIMIT 1
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.MATERIAL_ID,	
+				a.MATERIAL_NUM,	
+				a.LOCATION_ID,	
+				a.STATUS_ID,
+				b.MATERIAL_NAME,
+				b.MATERIAL_BRAND,
+				b.MATERIAL_SPEC,
+				b.MATERIAL_UNIT,
+				c.LOCATION_NAME
+		from 
+				STORE_STATUS_INFO a
+		LEFT JOIN
+				BASE_MATERIAL_INFO b
+		ON
+				a.MATERIAL_ID = b.MATERIAL_ID
+		LEFT JOIN
+				STORE_LOCATION_INFO c
+		ON
+				a.LOCATION_ID = c.LOCATION_ID
+		WHERE
+				a.MATERIAL_NUM > 0
+		<if test="pd.LOCATION_ID_SEARCH != null and pd.LOCATION_ID_SEARCH != ''">
+		AND
+				a.LOCATION_ID = #{pd.LOCATION_ID_SEARCH}
+		</if>
+		<if test="pd.MATERIAL_ID_SEARCH != null and pd.MATERIAL_ID_SEARCH != ''">
+		AND
+				a.MATERIAL_ID = #{pd.MATERIAL_ID_SEARCH}
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.MATERIAL_ID,	
+				a.MATERIAL_NUM,	
+				a.LOCATION_ID,	
+				a.STATUS_ID
+		from 
+				STORE_STATUS_INFO a
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from STORE_STATUS_INFO
+		where 
+			STATUS_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

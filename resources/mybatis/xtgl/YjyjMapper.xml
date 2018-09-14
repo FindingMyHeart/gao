@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="YjyjMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into t_yj_yj(
+			f_fsyhid,	
+			f_jsyhid,	
+			f_jsyhmc,	
+			f_bt,	
+			f_nr,	
+			pk_id
+		) values (
+			#{f_fsyhid},	
+			#{f_jsyhid},	
+			#{f_jsyhmc},	
+			#{f_bt},	
+			#{f_nr},	
+			#{pk_id}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		update  t_yj_yj
+		set f_sfsc=1
+		where 
+			pk_id = #{pk_id}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  t_yj_yj
+			set 
+			<if test="f_fsyhid != null and f_fsyhid != ''">
+				f_fsyhid = #{f_fsyhid},
+			</if>
+			<if test="f_jsyhid != null and f_jsyhid != ''">
+				f_jsyhid = #{f_jsyhid},
+			</if>
+			<if test="f_jsyhmc != null and f_jsyhmc != ''">
+				f_jsyhmc = #{f_jsyhmc},
+			</if>
+			<if test="f_bt != null and f_bt != ''">
+				f_bt = #{f_bt},
+			</if>
+			<if test="f_nr != null and f_nr != ''">
+				f_nr = #{f_nr},
+			</if>
+			pk_id = pk_id
+			where 
+				pk_id = #{pk_id}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			f_fsyhid,	
+			f_jsyhid,	
+			f_jsyhmc,	
+			f_bt,	
+			f_nr,	
+			pk_id
+		from 
+			t_yj_yj
+		where 
+			pk_id = #{pk_id}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.f_fsyhid,	
+				a.f_jsyhid,	
+				a.f_jsyhmc,	
+				a.f_bt,	
+				a.f_nr,	
+				a.pk_id
+		from 
+				t_yj_yj a
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.f_fsyhid,	
+				a.f_jsyhid,	
+				a.f_jsyhmc,	
+				a.f_bt,	
+				a.f_nr,	
+				a.pk_id
+		from 
+				t_yj_yj a
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		update  t_yj_yj
+		set f_sfsc=1
+		where 
+			pk_id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

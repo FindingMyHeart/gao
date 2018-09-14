@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BusBuyInfoMapper">
+
+
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into BUS_BUY_INFO(  
+			BUY_SN,	
+			PROJECT_ID,	
+			APPLYBUY_ID,	
+			CREATE_USERID,	
+			CREATE_TIME,	
+			IF_DELETED,	
+			BUY_TYPE,
+			STATUS,
+			BUY_ID
+		) values (
+			#{BUY_SN},	
+			#{PROJECT_ID},	
+			#{APPLYBUY_ID},	
+			#{CREATE_USERID},	
+			#{CREATE_TIME},	
+			#{IF_DELETED},	
+			#{BUY_TYPE},
+			#{STATUS},
+			#{BUY_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+		 	BUS_BUY_INFO
+		SET
+			IF_DELETED = '1'
+		where 
+			BUY_ID = #{BUY_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  BUS_BUY_INFO
+			set 
+				BUY_ID = BUY_ID
+			where 
+				BUY_ID = #{BUY_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			a.BUY_SN,
+			a.PROJECT_ID,
+			a.APPLYBUY_ID,
+			a.CREATE_USERID,
+			a.CREATE_TIME,
+			a.IF_DELETED,
+			a.STATUS,
+			a.BUY_ID,
+			b.APPLYBUY_SN,
+			DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') AS BUY_DATE,
+			c.STAFF_NAME as BUY_USER_NAME
+		from
+			BUS_BUY_INFO a
+		left join
+			BUS_APPLYBUY_INFO b
+		on
+			a.applybuy_id = b.applybuy_id
+		left join
+			XT_STAFF_INFO c
+		on
+			a.CREATE_USERID = c.STAFF_ID
+		where 
+			a.BUY_ID = #{BUY_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.BUY_SN,	
+				a.PROJECT_ID,	
+				a.APPLYBUY_ID,	
+				a.CREATE_USERID,	
+				a.CREATE_TIME,
+				DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') AS BUY_DATE,
+				a.IF_DELETED,	
+				a.BUY_TYPE,
+				a.STATUS,
+				a.BUY_ID,
+				b.APPLYBUY_SN,
+				DATE_FORMAT(b.CREATE_TIME,'%Y-%m-%d') AS APPLY_DATE,
+				c.PROJECT_NAME,
+				d.STAFF_NAME as BUY_NAME
+		from 
+				BUS_BUY_INFO a
+		LEFT JOIN
+				BUS_APPLYBUY_INFO b
+		ON
+				a.APPLYBUY_ID = b.APPLYBUY_ID
+		LEFT JOIN
+				BUS_PROJECT_INFO c
+		ON
+				a.PROJECT_ID = c.PROJECT_ID
+	  	LEFT JOIN
+				XT_STAFF_INFO d
+	  	ON
+				a.CREATE_USERID = d.STAFF_ID
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="pd.BUY_SN_SEARCH != null and pd.BUY_SN_SEARCH != ''">
+		AND
+				a.BUY_SN  LIKE CONCAT('%',CONCAT(#{pd.BUY_SN_SEARCH},'%'))
+		</if>
+		<if test="pd.APPLYBUY_SN_SEARCH != null and pd.APPLYBUY_SN_SEARCH != ''">
+		AND
+				b.APPLYBUY_SN  LIKE CONCAT('%',CONCAT(#{pd.APPLYBUY_SN_SEARCH},'%'))
+		</if>
+		<if test="pd.BUY_DATE_SEARCH != null and pd.BUY_DATE_SEARCH != ''">
+		AND
+				a.CREATE_TIME  LIKE CONCAT('%',CONCAT(#{pd.BUY_DATE_SEARCH},'%'))
+		</if>
+		<if test="pd.APPLY_DATE_SEARCH != null and pd.APPLY_DATE_SEARCH != ''">
+		AND
+				b.CREATE_TIME  LIKE CONCAT('%',CONCAT(#{pd.APPLY_DATE_SEARCH},'%'))
+		</if>
+		<if test="pd.BUY_NAME_SEARCH != null and pd.BUY_NAME_SEARCH != ''">
+		AND
+				d.STAFF_NAME  LIKE CONCAT('%',CONCAT(#{pd.BUY_NAME_SEARCH},'%'))
+		</if>
+		<if test="pd.PROJECT_ID_SEARCH != null and pd.PROJECT_ID_SEARCH != ''">
+		AND
+				b.PROJECT_ID  = #{pd.PROJECT_ID_SEARCH}
+		</if>
+		<if test="pd.STATUS_SEARCH != null and pd.STATUS_SEARCH != ''">
+		AND
+				a.STATUS  = #{pd.STATUS_SEARCH}
+		</if>
+		ORDER BY
+				a.CREATE_TIME desc
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.BUY_SN,	
+				a.PROJECT_ID,	
+				a.APPLYBUY_ID,	
+				a.CREATE_USERID,	
+				a.CREATE_TIME,	
+				a.IF_DELETED,	
+				a.BUY_TYPE,
+				a.STATUS,
+				a.BUY_ID
+		from 
+				BUS_BUY_INFO a
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="DATE != null and DATE != ''">
+		AND
+				a.CREATE_TIME LIKE CONCAT(#{DATE},'%')
+		</if>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			BUS_BUY_INFO
+	  	SET
+			IF_DELETED = '0'
+		where 
+			BUY_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+
+
+	<!-- 修改状态 -->
+	<update id="updateStatus" parameterType="pd">
+		UPDATE
+			BUS_BUY_INFO
+		SET
+			STATUS = #{STATUS},
+			REJECT_REASON = #{REJECT_REASON},
+			BUY_ID = BUY_ID
+		WHERE
+			BUY_ID = #{BUY_ID}
+	</update>
+	
+</mapper>

@@ -1,0 +1,511 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BusProjectInfoMapper">
+
+
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into BUS_PROJECT_INFO(
+			PART_A,
+			PART_B,
+			CONTRACT_NAME,
+			PROJECT_NAME,
+			PROJECT_STATUS,
+			<if test="PROJECT_DATE != null and PROJECT_DATE != ''">
+				PROJECT_DATE,
+			</if>
+			<if test="START_DATE != null and START_DATE != ''">
+				START_DATE,
+			</if>
+			<if test="END_DATE != null and END_DATE != ''">
+				END_DATE,
+			</if>
+			<if test="MAINTENANCE_DATE != null and MAINTENANCE_DATE != ''">
+				MAINTENANCE_DATE,
+			</if>
+			PROJECT_ADDRESS,
+			<if test="CONTRACT_PRICE != null and CONTRACT_PRICE != ''">
+				CONTRACT_PRICE,
+			</if>
+			PAYMENT_MODE,
+			<if test="TOTAL_PRICE != null and TOTAL_PRICE != ''">
+				TOTAL_PRICE,
+			</if>
+			PROJECT_CASE,
+			MANAGER_USERID,
+			PROJECT_DEPUTY_MANAGER,
+			OTHER_PEOPLE,
+			RESOURCEIDS,
+			STATUS,
+			CAIWU_STATUS,
+			IF_DELETED,
+			CREATE_TIME,
+			CREATE_USERID,
+			REJECT_REASON,
+			PROJECT_ID
+		) values (
+			#{PART_A},
+			#{PART_B},
+			#{CONTRACT_NAME},
+			#{PROJECT_NAME},
+			#{PROJECT_STATUS},
+			<if test="PROJECT_DATE != null and PROJECT_DATE != ''">
+				#{PROJECT_DATE},
+			</if>
+			<if test="START_DATE != null and START_DATE != ''">
+				#{START_DATE},
+			</if>
+			<if test="END_DATE != null and END_DATE != ''">
+				#{END_DATE},
+			</if>
+			<if test="MAINTENANCE_DATE != null and MAINTENANCE_DATE != ''">
+				#{MAINTENANCE_DATE},
+			</if>
+			#{PROJECT_ADDRESS},
+			<if test="CONTRACT_PRICE != null and CONTRACT_PRICE != ''">
+				#{CONTRACT_PRICE},
+			</if>
+			#{PAYMENT_MODE},
+			<if test="TOTAL_PRICE != null and TOTAL_PRICE != ''">
+				#{TOTAL_PRICE},
+			</if>
+			#{PROJECT_CASE},
+			#{MANAGER_USERID},
+			#{PROJECT_DEPUTY_MANAGER},
+			#{OTHER_PEOPLE},
+			#{RESOURCEIDS},
+			#{STATUS},
+			#{CAIWU_STATUS},
+			#{IF_DELETED},
+			#{CREATE_TIME},
+			#{CREATE_USERID},
+			#{REJECT_REASON},
+			#{PROJECT_ID}
+		)
+	</insert>
+
+
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+			BUS_PROJECT_INFO
+		SET
+			IF_DELETED = '1'
+		where
+			PROJECT_ID = #{PROJECT_ID}
+	</delete>
+
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+			BUS_PROJECT_INFO
+		set
+			PART_A = #{PART_A},
+			PART_B = #{PART_B},
+			CONTRACT_NAME = #{CONTRACT_NAME},
+			PROJECT_NAME = #{PROJECT_NAME},
+			PROJECT_STATUS = #{PROJECT_STATUS},
+			<if test="PROJECT_DATE != null and PROJECT_DATE != ''">
+				PROJECT_DATE = #{PROJECT_DATE},
+			</if>
+			<if test="START_DATE != null and START_DATE != ''">
+				START_DATE = #{START_DATE},
+			</if>
+			<if test="END_DATE != null and END_DATE != ''">
+				END_DATE = #{END_DATE},
+			</if>
+			<if test="MAINTENANCE_DATE != null and MAINTENANCE_DATE != ''">
+				MAINTENANCE_DATE = #{MAINTENANCE_DATE},
+			</if>
+			<if test="PROJECT_ADDRESS != null">
+				PROJECT_ADDRESS = #{PROJECT_ADDRESS},
+			</if>
+			<if test="CONTRACT_PRICE != null and CONTRACT_PRICE != ''">
+				CONTRACT_PRICE = #{CONTRACT_PRICE},
+			</if>
+			<if test="PAYMENT_MODE != null">
+				PAYMENT_MODE = #{PAYMENT_MODE},
+			</if>
+			<if test="TOTAL_PRICE != null and TOTAL_PRICE != ''">
+				TOTAL_PRICE = #{TOTAL_PRICE},
+			</if>
+			<if test="PROJECT_CASE != null">
+				PROJECT_CASE = #{PROJECT_CASE},
+			</if>
+			<if test="MANAGER_USERID != null">
+				MANAGER_USERID = #{MANAGER_USERID},
+			</if>
+			<if test="PROJECT_DEPUTY_MANAGER != null">
+				PROJECT_DEPUTY_MANAGER = #{PROJECT_DEPUTY_MANAGER},
+			</if>
+			<if test="TECHNOLOGY_USERID != null">
+				TECHNOLOGY_USERID = #{TECHNOLOGY_USERID},
+			</if>
+			<if test="SECURITY_MANAGER != null">
+				SECURITY_MANAGER = #{SECURITY_MANAGER},
+			</if>
+			<if test="CONSTRUCTION_CLERK != null">
+				CONSTRUCTION_CLERK = #{CONSTRUCTION_CLERK},
+			</if>
+			<if test="SECURITY_CLERK != null">
+				SECURITY_CLERK = #{SECURITY_CLERK},
+			</if>
+			<if test="MATERIAL_CLERK != null">
+				MATERIAL_CLERK = #{MATERIAL_CLERK},
+			</if>
+			<if test="DOCUMENT_CLERK != null">
+				DOCUMENT_CLERK = #{DOCUMENT_CLERK},
+			</if>
+			<if test="BUDGET_CLERK != null">
+				BUDGET_CLERK = #{BUDGET_CLERK},
+			</if>
+			<if test="PEOPLE_MANAGER_CLERK != null">
+				PEOPLE_MANAGER_CLERK = #{PEOPLE_MANAGER_CLERK},
+			</if>
+			<if test="OTHER_PEOPLE != null">
+				OTHER_PEOPLE = #{OTHER_PEOPLE},
+			</if>
+			<if test="STATUS != null">
+				STATUS = #{STATUS},
+			</if>
+			<if test="REJECT_REASON != null">
+				REJECT_REASON = #{REJECT_REASON},
+			</if>
+			<if test="RESOURCEIDS != null">
+				RESOURCEIDS = #{RESOURCEIDS},
+			</if>
+			PROJECT_ID = PROJECT_ID
+		where
+			PROJECT_ID = #{PROJECT_ID}
+	</update>
+
+
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select
+			a.PART_A,
+			a.PART_B,
+			a.CONTRACT_NAME,
+			a.PROJECT_NAME,
+			a.PROJECT_STATUS,
+			a.PROJECT_DATE,
+			a.START_DATE,
+			a.END_DATE,
+			a.MAINTENANCE_DATE,
+			a.PROJECT_ADDRESS,
+			a.CONTRACT_PRICE,
+			a.PAYMENT_MODE,
+			a.TOTAL_PRICE,
+			a.PROJECT_CASE,
+			a.MANAGER_USERID,
+			a.PROJECT_DEPUTY_MANAGER,
+			a.TECHNOLOGY_USERID,
+			a.SECURITY_MANAGER,
+			a.CONSTRUCTION_CLERK,
+			a.SECURITY_CLERK,
+			a.MATERIAL_CLERK,
+			a.DOCUMENT_CLERK,
+			a.BUDGET_CLERK,
+			a.PEOPLE_MANAGER_CLERK,
+			a.OTHER_PEOPLE,
+			a.RESOURCEIDS,
+			a.STATUS,
+			a.IF_DELETED,
+			a.CREATE_TIME,
+			a.CREATE_USERID,
+			a.REJECT_REASON,
+			a.PROJECT_ID
+		from
+			BUS_PROJECT_INFO a
+		where
+			a.PROJECT_ID = #{PROJECT_ID}
+	</select>
+
+
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+			a.PART_A,
+			a.PART_B,
+			a.CONTRACT_NAME,
+			a.PROJECT_NAME,
+			a.PROJECT_STATUS,
+			a.PROJECT_DATE,
+			a.START_DATE,
+			a.END_DATE,
+			a.MAINTENANCE_DATE,
+			a.PROJECT_ADDRESS,
+			a.CONTRACT_PRICE,
+			a.PAYMENT_MODE,
+			a.TOTAL_PRICE,
+			a.PROJECT_CASE,
+			a.MANAGER_USERID,
+			a.PROJECT_DEPUTY_MANAGER,
+			a.TECHNOLOGY_USERID,
+			a.SECURITY_MANAGER,
+			a.CONSTRUCTION_CLERK,
+			a.SECURITY_CLERK,
+			a.MATERIAL_CLERK,
+			a.DOCUMENT_CLERK,
+			a.BUDGET_CLERK,
+			a.PEOPLE_MANAGER_CLERK,
+			a.OTHER_PEOPLE,
+			a.RESOURCEIDS,
+			a.STATUS,
+			a.IF_DELETED,
+			a.CREATE_TIME,
+			DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') AS CREATE_DATE,
+			a.CREATE_USERID,
+			a.PROJECT_ID,
+			a.REJECT_REASON,
+			b.STAFF_NAME AS MANAGER_NAME
+		from
+			BUS_PROJECT_INFO a
+		LEFT JOIN
+			XT_STAFF_INFO b
+		ON
+			a.MANAGER_USERID = b.STAFF_ID
+		WHERE
+			a.IF_DELETED = '0'
+		<if test="pd.PROJECT_ID_SEARCH != null and pd.PROJECT_ID_SEARCH != ''">
+		AND
+			a.PROJECT_ID = #{pd.PROJECT_ID_SEARCH}
+		</if>
+		<if test="pd.PROJECT_NAME_SEARCH != null and pd.PROJECT_NAME_SEARCH != ''">
+		AND
+			a.PROJECT_NAME LIKE concat('%',concat(#{pd.PROJECT_NAME_SEARCH},'%'))
+		</if>
+		<if test="pd.CONSTRUCTION_ADRESS_SEARCH != null and pd.CONSTRUCTION_ADRESS_SEARCH != ''">
+		AND
+			a.PROJECT_ADDRESS LIKE concat('%',concat(#{pd.CONSTRUCTION_ADRESS_SEARCH},'%'))
+		</if>
+		<if test="pd.PROJECT_STATUS_SEARCH != null and pd.PROJECT_STATUS_SEARCH != ''">
+		AND
+			a.PROJECT_STATUS = #{pd.PROJECT_STATUS_SEARCH}
+		</if>
+		<if test="pd.STATUS_SEARCH != null and pd.STATUS_SEARCH != ''">
+		AND
+			a.STATUS = #{pd.STATUS_SEARCH}
+		</if>
+		ORDER BY
+			a.CREATE_TIME DESC
+	</select>
+
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+			a.PART_A,
+			a.PART_B,
+			a.CONTRACT_NAME,
+			a.PROJECT_NAME,
+			a.PROJECT_STATUS,
+			a.PROJECT_DATE,
+			a.START_DATE,
+			a.END_DATE,
+			a.MAINTENANCE_DATE,
+			a.PROJECT_ADDRESS,
+			a.CONTRACT_PRICE,
+			a.PAYMENT_MODE,
+			a.TOTAL_PRICE,
+			a.PROJECT_CASE,
+			a.MANAGER_USERID,
+			a.PROJECT_DEPUTY_MANAGER,
+			a.TECHNOLOGY_USERID,
+			a.SECURITY_MANAGER,
+			a.CONSTRUCTION_CLERK,
+			a.SECURITY_CLERK,
+			a.MATERIAL_CLERK,
+			a.DOCUMENT_CLERK,
+			a.BUDGET_CLERK,
+			a.PEOPLE_MANAGER_CLERK,
+			a.OTHER_PEOPLE,
+			a.RESOURCEIDS,
+			a.STATUS,
+			a.IF_DELETED,
+			a.CREATE_TIME,
+			a.CREATE_USERID,
+			a.REJECT_REASON,
+			a.PROJECT_ID
+		from
+			BUS_PROJECT_INFO a
+		WHERE
+			a.IF_DELETED = '0'
+	</select>
+
+
+	<!--  -->
+	<select id="yskdlistPage" parameterType="page" resultType="pd">
+		select
+			a.PART_A,
+			a.PART_B,
+			a.CONTRACT_NAME,
+			a.PROJECT_NAME,
+			a.PROJECT_STATUS,
+			a.PROJECT_DATE,
+			a.START_DATE,
+			a.END_DATE,
+			a.MAINTENANCE_DATE,
+			a.PROJECT_ADDRESS,
+			a.CONTRACT_PRICE,
+			a.PAYMENT_MODE,
+			a.TOTAL_PRICE,
+			a.PROJECT_CASE,
+			a.MANAGER_USERID,
+			a.PROJECT_DEPUTY_MANAGER,
+			a.TECHNOLOGY_USERID,
+			a.SECURITY_MANAGER,
+			a.CONSTRUCTION_CLERK,
+			a.SECURITY_CLERK,
+			a.MATERIAL_CLERK,
+			a.DOCUMENT_CLERK,
+			a.BUDGET_CLERK,
+			a.PEOPLE_MANAGER_CLERK,
+			a.OTHER_PEOPLE,
+			a.STATUS,
+			a.IF_DELETED,
+			a.CREATE_TIME,
+			DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') AS CREATE_DATE,
+			a.CREATE_USERID,
+			a.PROJECT_ID,
+			a.REJECT_REASON,
+			a.CAIWU_STATUS,
+			b.STAFF_NAME AS MANAGER_NAME
+		from
+			BUS_PROJECT_INFO a
+		LEFT JOIN
+			XT_STAFF_INFO b
+		ON
+			a.MANAGER_USERID = b.STAFF_ID
+		WHERE
+		a.IF_DELETED = '0'
+		<if test="pd.project_name_search != null and pd.project_name_search != ''">
+			AND
+			a.PROJECT_NAME LIKE concat('%',concat(#{pd.project_name_search},'%'))
+		</if>
+		<if test="pd.PROJECT_ADDRESS_search != null and pd.PROJECT_ADDRESS_search != ''">
+			AND
+			a.PROJECT_ADDRESS LIKE concat('%',concat(#{pd.PROJECT_ADDRESS_search},'%'))
+		</if>
+		<if test="pd.PROJECT_ID_SEARCH != null and pd.PROJECT_ID_SEARCH != ''">
+			AND
+			a.PROJECT_ID = #{pd.PROJECT_ID_SEARCH}
+		</if>
+		<if test="pd.CAIWU_STATUS_SEARCH != null and pd.CAIWU_STATUS_SEARCH != ''">
+		AND
+			a.CAIWU_STATUS = #{pd.CAIWU_STATUS_SEARCH}
+		</if>
+	</select>
+
+
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			BUS_PROJECT_INFO
+		SET
+			IF_DELETED = '1'
+		where
+			PROJECT_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	
+	<!-- 修改状态 -->
+	<update id="updateStatus" parameterType="pd">
+		UPDATE
+			BUS_PROJECT_INFO
+		SET
+			STATUS = #{STATUS},
+			REJECT_REASON = #{REJECT_REASON},
+		  	PROJECT_ID = PROJECT_ID
+		WHERE
+			PROJECT_ID = #{PROJECT_ID}
+	</update>
+
+	<!-- 获取详细的应收款单 -->
+	<select id="findForYskd" parameterType="pd" resultType="pd">
+		select
+			a.PART_A,
+			a.PART_B,
+			a.CONTRACT_NAME,
+			a.PROJECT_NAME,
+			a.PROJECT_STATUS,
+			a.PROJECT_DATE,
+			a.START_DATE,
+			a.END_DATE,
+			a.MAINTENANCE_DATE,
+			a.PROJECT_ADDRESS,
+			a.CONTRACT_PRICE,
+			a.PAYMENT_MODE,
+			a.TOTAL_PRICE,
+			a.PROJECT_CASE,
+			a.MANAGER_USERID,
+			a.PROJECT_DEPUTY_MANAGER,
+			a.TECHNOLOGY_USERID,
+			a.SECURITY_MANAGER,
+			a.CONSTRUCTION_CLERK,
+			a.SECURITY_CLERK,
+			a.MATERIAL_CLERK,
+			a.DOCUMENT_CLERK,
+			a.BUDGET_CLERK,
+			a.PEOPLE_MANAGER_CLERK,
+			a.OTHER_PEOPLE,
+			a.STATUS,
+			a.IF_DELETED,
+			a.CREATE_TIME,
+			a.CREATE_USERID,
+			a.REJECT_REASON,
+			a.PROJECT_ID,
+			a.CAIWU_STATUS,
+			a.CAIWU_TIME,
+			a.ADD_PAYMENT_MODE,
+			a.ADD_ACCOUNT_ID,
+			a.ADD_ACCOUNT_MONEY
+		from
+			BUS_PROJECT_INFO a
+		where
+			a.PROJECT_ID = #{PROJECT_ID}
+	</select>
+
+
+	<!-- 添加信息 -->
+	<update id="addInfo" parameterType="pd">
+		update
+			BUS_PROJECT_INFO
+		set
+			ADD_PAYMENT_MODE = #{ADD_PAYMENT_MODE},
+			ADD_ACCOUNT_ID = #{ADD_ACCOUNT_ID},
+			ADD_ACCOUNT_MONEY = #{ADD_ACCOUNT_MONEY},
+			PROJECT_ID = PROJECT_ID
+		where
+			PROJECT_ID = #{PROJECT_ID}
+	</update>
+
+	<!-- 完成 -->
+	<update id="complete" parameterType="pd">
+		UPDATE
+			BUS_PROJECT_INFO
+		SET
+			CAIWU_STATUS = #{CAIWU_STATUS},
+			CAIWU_TIME = #{CAIWU_TIME},
+			PROJECT_ID = PROJECT_ID
+		WHERE
+			PROJECT_ID = #{PROJECT_ID}
+	</update>
+
+	<!-- 转入售后 -->
+	<update id="toSh" parameterType="pd">
+		UPDATE
+			BUS_PROJECT_INFO
+		SET
+			PROJECT_STATUS = '4'
+	  	WHERE
+			PROJECT_ID = #{PROJECT_ID}
+	</update>
+
+
+
+
+
+</mapper>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="YjyxMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into t_yj_yx(
+			f_yhid,	
+			f_lx,	
+			f_yjid,	
+			f_tjsj,
+			pk_id
+		) values (
+			#{f_yhid},	
+			#{f_lx},	
+			#{f_yjid},
+			#{f_tjsj},	
+			#{pk_id}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		update  t_yj_yx
+		set f_sfsc=1
+		where 
+			pk_id = #{pk_id}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  t_yj_yx
+			set 
+			<if test="f_yhid != null and f_yhid != ''">
+				f_yhid = #{f_yhid},
+			</if>
+			<if test="f_lx != null and f_lx != ''">
+				f_lx = #{f_lx},
+			</if>
+			<if test="f_yjid != null and f_yjid != ''">
+				f_yjid = #{f_yjid},
+			</if>
+			<if test="f_tjsj != null and f_tjsj != ''">
+				f_tjsj = #{f_tjsj},
+			</if>
+			<if test="f_sfyd != null and f_sfyd != ''">
+				f_sfyd = #{f_sfyd},
+			</if>
+			pk_id = pk_id
+			where 
+				pk_id = #{pk_id}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			f_yhid,	
+			f_lx,	
+			f_yjid,	
+			f_tjsj,
+			pk_id
+		from 
+			t_yj_yx
+		where 
+			pk_id = #{pk_id}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.f_yhid,	
+				a.f_lx,	
+				a.f_yjid,
+				DATE_FORMAT(a.f_tjsj,'%Y-%m-%d') f_tjsj,	
+				a.f_sfyd,
+				a.pk_id,
+				yj.f_fsyhid,
+				(select staff_name from xt_staff_info where staff_id=yj.f_fsyhid) f_fsyhmc,
+				yj.f_jsyhid,
+				yj.f_jsyhmc,
+				yj.f_bt,
+				yj.f_nr
+		from 
+				t_yj_yx a
+				join t_yj_yj yj on yj.pk_id=a.f_yjid
+		where a.f_sfsc=0
+		<if test="pd.pk_id != null and pd.pk_id != ''">
+			and a.pk_id=#{pd.pk_id}
+		</if>
+		<if test="pd.f_lx != null and pd.f_lx != ''">
+			and a.f_lx=#{pd.f_lx}
+		</if>
+		<if test="pd.session_yhid != null and pd.session_yhid != ''">
+			and  a.f_yhid = #{pd.session_yhid} 
+		</if>
+		
+		<if test="pd.keyword != null and pd.keyword != ''">
+			and ( yj.f_bt like CONCAT(CONCAT('%', #{pd.keyword}),'%') 
+				or yj.f_nr like CONCAT(CONCAT('%', #{pd.keyword}),'%') )
+		</if>
+		order by a.f_tjsj desc
+	</select>
+	<!-- 列表删除 -->
+	<select id="datalistPagesc" parameterType="page" resultType="pd">
+		select
+				a.f_yhid,	
+				a.f_lx,	
+				a.f_yjid,
+				DATE_FORMAT(a.f_tjsj,'%Y-%m-%d') f_tjsj,	
+				a.f_sfyd,
+				a.pk_id,
+				yj.f_fsyhid,
+				(select staff_name from xt_staff_info where staff_id=yj.f_fsyhid) f_fsyhmc,
+				yj.f_jsyhid,
+				yj.f_jsyhmc,
+				yj.f_bt,
+				yj.f_nr
+		from 
+				t_yj_yx a
+				join t_yj_yj yj on yj.pk_id=a.f_yjid
+		where a.f_sfsc=1
+		<if test="pd.pk_id != null and pd.pk_id != ''">
+			and a.pk_id=#{pd.pk_id}
+		</if>
+<!-- 		<if test="pd.f_lx != null and pd.f_lx != ''">
+			and a.f_lx=#{pd.f_lx}
+		</if> -->
+		<if test="pd.session_yhid != null and pd.session_yhid != ''">
+			and  a.f_yhid = #{pd.session_yhid} 
+		</if>
+		
+		<if test="pd.keyword != null and pd.keyword != ''">
+			and ( yj.f_bt like CONCAT(CONCAT('%', #{pd.keyword}),'%') 
+				or yj.f_nr like CONCAT(CONCAT('%', #{pd.keyword}),'%') )
+		</if>
+		order by a.f_tjsj desc
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.f_yhid,	
+				a.f_lx,	
+				a.f_yjid,
+				a.f_sfyd,	
+				a.pk_id
+		from 
+				t_yj_yx a
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		update  t_yj_yx
+		set f_sfsc=1
+		where 
+			pk_id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

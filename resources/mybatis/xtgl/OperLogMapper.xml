@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OperLogMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into xt_operate_log(
+			create_userid,	
+			create_username,	
+			create_deptid,	
+			create_deptname,	
+			create_time,	
+			oper_module,	
+			oper_func,	
+			oper_para,	
+			log_status,	
+			update_time,	
+			operlog_id
+		) values (
+			#{create_userid},	
+			#{create_username},	
+			#{create_deptid},	
+			#{create_deptname},	
+			#{create_time},	
+			#{oper_module},	
+			#{oper_func},	
+			#{oper_para},	
+			#{log_status},	
+			#{update_time},	
+			#{operlog_id}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		update xt_operate_log
+		set if_deleted=1
+		where 
+			operlog_id = #{operlog_id}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  xt_operate_log
+			set 
+				<if test="create_userid != null and create_userid != ''">
+				create_userid = #{create_userid},	
+				</if>
+				<if test="create_username != null and create_username != ''">
+				create_username = #{create_username},	
+				</if>
+				<if test="create_deptid != null and create_deptid != ''">
+				create_deptid = #{create_deptid},	
+				</if>
+				<if test="create_deptname != null and create_deptname != ''">
+				create_deptname = #{create_deptname},	
+				</if>
+				<if test="create_time != null and create_time != ''">
+				create_time = #{create_time},	
+				</if>
+				<if test="oper_module != null and oper_module != ''">
+				oper_module = #{oper_module},	
+				</if>
+				<if test="oper_func != null and oper_func != ''">
+				oper_func = #{oper_func},	
+				</if>
+				<if test="oper_para != null and oper_para != ''">
+				oper_para = #{oper_para},	
+				</if>
+				<if test="log_status != null and log_status != ''">
+				log_status = #{log_status},	
+				</if>
+				<if test="update_time != null and update_time != ''">
+				update_time = #{update_time},	
+				</if>
+			operlog_id = operlog_id
+			where 
+				operlog_id = #{operlog_id}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			create_userid,	
+			create_username,	
+			create_deptid,	
+			create_deptname,	
+			create_time,	
+			oper_module,	
+			oper_func,	
+			oper_para,	
+			log_status,	
+			update_time,	
+			operlog_id
+		from 
+			xt_operate_log
+		where 
+			operlog_id = #{operlog_id}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.create_userid,	
+				a.create_username,	
+				a.create_deptid,	
+				a.create_deptname,	
+				a.create_time,	
+				a.oper_module,	
+				a.oper_func,	
+				a.oper_para,	
+				a.log_status,	
+				a.update_time,	
+				a.operlog_id
+		from 
+				xt_operate_log a
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.create_userid,	
+				a.create_username,	
+				a.create_deptid,	
+				a.create_deptname,	
+				a.create_time,	
+				a.oper_module,	
+				a.oper_func,	
+				a.oper_para,	
+				a.log_status,	
+				a.update_time,	
+				a.operlog_id
+		from 
+				xt_operate_log a
+	</select>
+	
+	
+	
+</mapper>

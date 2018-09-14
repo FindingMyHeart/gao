@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ServiceMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into xt_service(
+			service_key,	
+			service_method,	
+			service_class,	
+			service_inpara,	
+			service_outpara,	
+			module_name,	
+			func_name,	
+			auth_code,	
+			service_id
+		) values (
+			#{service_key},	
+			#{service_method},	
+			#{service_class},	
+			#{service_inpara},	
+			#{service_outpara},	
+			#{module_name},	
+			#{func_name},	
+			#{auth_code},	
+			#{service_id}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		update from xt_service
+		set if_deleted=1
+		where 
+			service_id = #{service_id}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  xt_service
+			set 
+				service_key = #{service_key},	
+				service_method = #{service_method},	
+				service_class = #{service_class},	
+				service_inpara = #{service_inpara},	
+				service_outpara = #{service_outpara},	
+				module_name = #{module_name},	
+				func_name = #{func_name},	
+				auth_code = #{auth_code},	
+			service_id = service_id
+			where 
+				service_id = #{service_id}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			service_key,	
+			service_method,	
+			service_class,	
+			service_inpara,	
+			service_outpara,	
+			module_name,	
+			func_name,	
+			auth_code,	
+			service_id
+		from 
+			xt_service
+		where 
+			service_id = #{service_id}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.service_key,	
+				a.service_method,	
+				a.service_class,	
+				a.service_inpara,	
+				a.service_outpara,	
+				a.module_name,	
+				a.func_name,	
+				a.auth_code,	
+				a.service_id
+		from 
+				xt_service a
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.service_key,	
+				a.service_method,	
+				a.service_class,	
+				a.service_inpara,	
+				a.service_outpara,	
+				a.module_name,	
+				a.func_name,	
+				a.auth_code,	
+				a.service_id
+		from 
+				xt_service a
+		where 1=1
+		<if test="service_key != null and service_key != ''">
+			and service_key = #{service_key}
+		</if>
+	</select>
+	
+
+	
+</mapper>

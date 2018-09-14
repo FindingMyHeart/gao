@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>题库管理</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css" />
+
+		<script type="text/javascript" src="../../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../../js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../../js/myjstools.js"></script>
+		<script type="text/javascript">
+			var mpath = "edu/survey";
+			var questionId = myjstools.request("questionId");
+			var method = myjstools.request("method");
+			var id =  myjstools.request("id").replace("#", "");
+			
+			function save(){
+				var dataFormat = {}; 
+				dataFormat.letter = $("#iptLetter").val();
+				dataFormat.text = $("#iptText").val();
+				dataFormat.point = 0;
+				dataFormat.questionId = questionId;
+				if(method!="edit"){
+					myjstools.ajax(false, "POST", "/web/service?METHOD=surveyAnswerService_add", dataFormat, saveit_res);	
+				}else{
+					dataFormat.id = id;
+					myjstools.ajax(false, "POST", "/web/service?METHOD=surveyAnswerService_edit", dataFormat, saveit_res);
+				}
+			}
+			
+			function saveit_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+
+					//myjstools.showerrinfo("操作成功。")
+					parent.closewin();	
+					
+				} catch(e) {
+					myjstools.showerrinfo("saveit_res.error:出错了！" + e.message);
+				}
+			}
+			
+			function init(){
+				if(method == "edit"){
+					myjstools.ajax(false, "POST", "/web/service?METHOD=surveyAnswerService_query", {"id":id}, function(data){
+						if(data.success == 1){
+							var entity = data.entity;
+							$("#iptLetter").val(entity.answer_letter);
+							$("#iptText").val(entity.answer_text);
+						}
+					});	
+				}
+					
+			}
+			$(document).ready(function(){init()});
+		</script>
+	</head>
+	<body style="width:85%; text-align:center; margin:0 auto; margin-top:10px;padding:10px 10px 10px 20px">
+		<div>
+			<span>选项：</span>
+			<input id="iptLetter" />
+		</div>
+		<div style="height:5px"></div>
+		<div>
+			<span>内容：</span>
+			<input id="iptText" />
+		</div>
+		<div>
+			<div style="text-align:right;padding:5px">
+				<a href="javascript:save()" class="easyui-linkbutton">保存</a>
+			</div>
+		</div>
+	</body>
+</html>

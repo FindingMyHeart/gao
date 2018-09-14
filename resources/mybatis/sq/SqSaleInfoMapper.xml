@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SqSaleInfoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into SQ_SALE_INFO( 
+			SALE_NO,	
+			SALE_TIME,	
+			SEND_ADDRESS,	
+			OUT_STORE,	
+			RECEIVE_PERIOD,	
+			BUY_COMPANY,	
+			BUY_COMPANY_ADDRESS,	
+			OUT_COMPANY,	
+			OUT_COMPANY_ADDRESS,	
+			STORE_MANAGER,	
+			BUSINESS_USERID,	
+			OPEN_USERID,	
+			IF_INVOICE,	
+			IF_DELETED,	
+			CREATE_USERID,	
+			CREATE_TIME,	
+			SALE_ID
+		) values (
+			#{SALE_NO},	
+			#{SALE_TIME},	
+			#{SEND_ADDRESS},	
+			#{OUT_STORE},	
+			#{RECEIVE_PERIOD},	
+			#{BUY_COMPANY},	
+			#{BUY_COMPANY_ADDRESS},	
+			#{OUT_COMPANY},	
+			#{OUT_COMPANY_ADDRESS},	
+			#{STORE_MANAGER},	
+			#{BUSINESS_USERID},	
+			#{OPEN_USERID},	
+			#{IF_INVOICE},	
+			#{IF_DELETED},	
+			#{CREATE_USERID},	
+			#{CREATE_TIME},	
+			#{SALE_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from SQ_SALE_INFO
+		where 
+			SALE_ID = #{SALE_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  SQ_SALE_INFO
+			set 
+				SALE_TIME = #{SALE_TIME},
+				SEND_ADDRESS = #{SEND_ADDRESS},
+				OUT_STORE = #{OUT_STORE},
+				RECEIVE_PERIOD = #{RECEIVE_PERIOD},
+				BUY_COMPANY = #{BUY_COMPANY},
+				BUY_COMPANY_ADDRESS = #{BUY_COMPANY_ADDRESS},
+				OUT_COMPANY = #{OUT_COMPANY},
+				OUT_COMPANY_ADDRESS = #{OUT_COMPANY_ADDRESS},
+				STORE_MANAGER = #{STORE_MANAGER},
+				BUSINESS_USERID = #{BUSINESS_USERID},
+				OPEN_USERID = #{OPEN_USERID},
+				IF_INVOICE = #{IF_INVOICE},
+			SALE_ID = SALE_ID
+			where 
+				SALE_ID = #{SALE_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			SALE_NO,	
+			SALE_TIME,	
+			SEND_ADDRESS,	
+			OUT_STORE,	
+			RECEIVE_PERIOD,	
+			BUY_COMPANY,	
+			BUY_COMPANY_ADDRESS,	
+			OUT_COMPANY,	
+			OUT_COMPANY_ADDRESS,	
+			STORE_MANAGER,	
+			BUSINESS_USERID,	
+			OPEN_USERID,	
+			IF_INVOICE,	
+			IF_DELETED,	
+			CREATE_USERID,	
+			CREATE_TIME,	
+			SALE_ID
+		from 
+			SQ_SALE_INFO
+		where 
+			SALE_ID = #{SALE_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.SALE_NO,	
+				a.SALE_TIME,	
+				a.SEND_ADDRESS,	
+				a.OUT_STORE,	
+				a.RECEIVE_PERIOD,	
+				a.BUY_COMPANY,	
+				a.BUY_COMPANY_ADDRESS,	
+				a.OUT_COMPANY,	
+				a.OUT_COMPANY_ADDRESS,	
+				a.STORE_MANAGER,	
+				a.BUSINESS_USERID,	
+				a.OPEN_USERID,	
+				a.IF_INVOICE,	
+				a.IF_DELETED,	
+				a.CREATE_USERID,	
+				a.CREATE_TIME,	
+				a.SALE_ID,
+				b.STAFF_NAME AS OPEN_NAME
+		from 
+				SQ_SALE_INFO a
+		LEFT JOIN
+				XT_STAFF_INFO b
+	  	ON
+				a.OPEN_USERID = b.STAFF_ID
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="pd.SALE_TIME_SEARCH != null and pd.SALE_TIME_SEARCH != ''">
+		AND
+				a.SALE_TIME = #{pd.SALE_TIME_SEARCH}
+		</if>
+		<if test="pd.OPEN_USERID_SEARCH != null and pd.OPEN_USERID_SEARCH != ''">
+		AND
+				a.OPEN_USERID = #{pd.OPEN_USERID_SEARCH}
+		</if>
+		<if test="pd.BUY_COMPANY_SEARCH != null and pd.BUY_COMPANY_SEARCH != ''">
+		AND
+				a.BUY_COMPANY LIKE CONCAT('%',CONCAT(#{pd.BUY_COMPANY_SEARCH},'%'))
+		</if>
+		ORDER BY
+				a.CREATE_TIME DESC
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.SALE_NO,	
+				a.SALE_TIME,	
+				a.SEND_ADDRESS,	
+				a.OUT_STORE,	
+				a.RECEIVE_PERIOD,	
+				a.BUY_COMPANY,	
+				a.BUY_COMPANY_ADDRESS,	
+				a.OUT_COMPANY,	
+				a.OUT_COMPANY_ADDRESS,	
+				a.STORE_MANAGER,	
+				a.BUSINESS_USERID,	
+				a.OPEN_USERID,	
+				a.IF_INVOICE,	
+				a.IF_DELETED,	
+				a.CREATE_USERID,	
+				a.CREATE_TIME,	
+				a.SALE_ID
+		from 
+				SQ_SALE_INFO a
+		WHERE
+			a.IF_DELETED = '0'
+		<if test="DATE != null and DATE != ''">
+		AND
+			a.CREATE_TIME LIKE CONCAT(#{DATE},'%')
+		</if>
+		ORDER BY
+			a.CREATE_TIME DESC
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from SQ_SALE_INFO
+		where 
+			SALE_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

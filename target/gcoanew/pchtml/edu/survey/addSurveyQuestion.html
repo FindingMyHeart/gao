@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>题库管理</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css" />
+
+		<script type="text/javascript" src="../../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../../js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../../js/myjstools.js"></script>
+		<script type="text/javascript">
+			var mpath = "edu/survey";
+			var mid = myjstools.request("id").replace("#", "");
+			var surveyId = myjstools.request("surveyId").replace("#", "");
+			var method = myjstools.request("method");
+			var mpath = "edu/survey";
+			var firstFlag = true;
+			
+			function init(){
+				if(method == "edit"){
+					firstFlag = false;
+					loadGrid();
+					initData();
+				}else{
+					$("#divAnswer").hide();
+				}
+			}
+			
+			function loadGrid(){
+				//初始化grid
+				$('#dg').datagrid({
+					iconCls: 'icon-edit',
+					singleSelect: true,
+					toolbar: '#tt',
+					pagination: false,
+					url: myjstools.wwwroot + '/web/service?METHOD=SurveyAnswerService_queryList&questionId='+mid,
+					rownumbers: false,
+					loadMsg: '正在加载数据...',
+					onLoadError: function() {
+						myjstools.showerrinfo('数据加载出错了');
+					},
+					method: 'post',
+					columns: [
+						[{
+							field: 'letter',
+							title: '选项'
+						},
+						{
+							field:'text',
+							title:'问题'
+						},
+						{
+							field: 'id',
+							title: '操作',
+							formatter:function(value,row,index){
+								var s =
+	                        		('<a href="javascript:editinfo(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">编辑</a>'
+									+'&nbsp;<a href="javascript:delinfo(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-remove\',plain:true">删除</a>'
+									);
+									
+								return s;
+	                    	}
+						}]
+					]
+				});
+			}
+			
+			function addAnswoer(){
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/" + mpath + "/addAnswer.html?method=add&questionId="+mid);
+			}
+			
+			function editinfo(id) {
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/" + mpath + "/addAnswer.html?method=edit&id=" + id+"&questionId="+mid);
+			}
+			
+			function delinfo(uid) {
+				$.messager.confirm('提示', '确认删除当前信息吗？'
+				, function(row) {
+					if(row) {
+						var objt = {};
+						objt.id=uid;
+						
+						myjstools.ajax(false, "POST", "/web/service?METHOD=surveyAnswerService_delete", objt, delinfo_res);
+					}
+				});
+			}
+			
+			function delinfo_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+
+					$('#dg').datagrid('load'); //, objt
+					parent.reLoadDataGrid();
+				} catch(e) {
+					myjstools.showerrinfo("delinfo_res.error:出错了！" + e.message);
+				}
+			}
+			
+			function initData(){
+				myjstools.ajax(false, "POST", "/web/service?METHOD=surveyQuestionService_query", {"id":mid}, function(data){
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}else{
+						var entity = data.entity;
+						$("#txTitle").val(entity.title);
+					}
+				});
+			}
+			
+			function save(){
+				var dataFormat = {};
+				dataFormat.title = $("#txTitle").val();
+				dataFormat.surveyId = surveyId;
+				if(method!="edit" && firstFlag){
+					myjstools.ajax(false, "POST", "/web/service?METHOD=surveyQuestionService_add", dataFormat, saveit_res);	
+				}else{
+					dataFormat.id = mid;
+					myjstools.ajax(false, "POST", "/web/service?METHOD=surveyQuestionService_edit", dataFormat, saveit_res);
+				}
+				
+			}
+			
+			function saveit_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+
+					//myjstools.showerrinfo("操作成功。")
+					
+					if(firstFlag){
+						if(method != "edit"){
+							$("#divAnswer").show();
+							var entity = data.entity;
+							mid = entity.id;
+							loadGrid();
+						}
+						
+					}else{
+						parent.closewin();	
+					}
+					
+					firstFlag = false;
+					
+				} catch(e) {
+					myjstools.showerrinfo("saveit_res.error:出错了！" + e.message);
+				}
+			}
+			
+			function closewin(){
+				$('#win').window('close');
+
+				$('#dg').datagrid('reload');
+				parent.reLoadDataGrid();
+			}
+			
+			$(document).ready(function(){init()});
+			
+		</script>
+	</head>
+	<body style="width:90%; text-align:center; margin:0 auto; margin-top:10px;padding:10px 10px 10px 20px">
+		<div style="width: 100%">
+			<div style="text-align: left;">
+			<span>问题：</span>
+			<textarea id="txTitle" style="width: 300px;height: 40px"></textarea>
+		</div>
+		</div>
+		
+		<div id="divAnswer">
+			<div style="text-align:right;padding:5px">
+				<a href="javascript:addAnswoer()" class="easyui-linkbutton">添加</a>
+			</div>
+			<table id="dg"></table>
+		</div>
+		<div>
+			<div style="text-align:right;padding:5px">
+				<a href="javascript:save()" class="easyui-linkbutton">保存</a>
+			</div>
+		</div>
+		<div id="win" class="easyui-window" title="..." style="width:350px;height:150px;" data-options="modal:true,closed:true">
+			<iframe id="fra_s" width="99%" height="99%" border="0" frameborder="0"></iframe>
+		</div>
+	</body>
+</html>

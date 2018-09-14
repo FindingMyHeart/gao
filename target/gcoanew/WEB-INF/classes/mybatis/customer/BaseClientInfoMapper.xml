@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BaseClientInfoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into BASE_CLIENT_INFO(
+			CLIENT_NAME,	
+			CLIENT_TEL,	
+			CLIENT_ADDRESS,	
+			CLIENT_MAIL,	
+			MEMO,	
+			CREATE_TIME,	
+			CREATE_USERID,	
+			IF_DELETED,	
+			CLIENT_ID
+		) values (
+			#{CLIENT_NAME},	
+			#{CLIENT_TEL},	
+			#{CLIENT_ADDRESS},	
+			#{CLIENT_MAIL},	
+			#{MEMO},	
+			now(),
+			#{CREATE_USERID},	
+			'0',
+			#{CLIENT_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+			BASE_CLIENT_INFO
+		SET
+			IF_DELETED = '1'
+		where 
+			CLIENT_ID = #{CLIENT_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  BASE_CLIENT_INFO
+			set 
+				CLIENT_NAME = #{CLIENT_NAME},
+				CLIENT_TEL = #{CLIENT_TEL},
+				CLIENT_ADDRESS = #{CLIENT_ADDRESS},
+				CLIENT_MAIL = #{CLIENT_MAIL},
+				MEMO = #{MEMO},
+				CLIENT_ID = CLIENT_ID
+			where 
+				CLIENT_ID = #{CLIENT_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			CLIENT_NAME,	
+			CLIENT_TEL,	
+			CLIENT_ADDRESS,	
+			CLIENT_MAIL,	
+			MEMO,
+			DATE_FORMAT(CREATE_TIME,'%Y-%m-%d') AS JDSJ,
+			CREATE_TIME,	
+			CREATE_USERID,	
+			IF_DELETED,	
+			CLIENT_ID
+		from 
+			BASE_CLIENT_INFO
+		where 
+			CLIENT_ID = #{CLIENT_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.CLIENT_NAME,	
+				a.CLIENT_TEL,	
+				a.CLIENT_ADDRESS,	
+				a.CLIENT_MAIL,	
+				a.MEMO,	
+				DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') AS JDSJ,
+				a.CREATE_USERID,	
+				a.IF_DELETED,	
+				a.CLIENT_ID,
+				b.STAFF_NAME AS JDR
+		from 
+				BASE_CLIENT_INFO a
+		LEFT JOIN
+				XT_STAFF_INFO b
+		ON
+				a.CREATE_USERID = b.STAFF_ID
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="pd.CLIENT_NAME != null and pd.CLIENT_NAME != ''">
+		AND
+				a.CLIENT_NAME LIKE concat('%',concat(#{pd.CLIENT_NAME},'%'))
+		</if>
+		<if test="pd.CLIENT_TEL != null and pd.CLIENT_TEL != ''">
+		AND
+				a.CLIENT_TEL LIKE concat('%',concat(#{pd.CLIENT_TEL},'%'))
+		</if>
+		<if test="pd.CREATE_DATE != null and pd.CREATE_DATE != ''">
+		AND
+				a.CREATE_TIME LIKE concat(#{pd.CREATE_DATE},'%')
+		</if>
+		<if test="pd.CREATE_USERID != null and pd.CREATE_USERID != ''">
+		AND
+				a.CREATE_USERID = #{pd.CREATE_USERID}
+		</if>
+		ORDER BY
+				a.CREATE_TIME DESC
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.CLIENT_NAME,	
+				a.CLIENT_TEL,	
+				a.CLIENT_ADDRESS,	
+				a.CLIENT_MAIL,	
+				a.MEMO,	
+				a.CREATE_TIME,	
+				a.CREATE_USERID,	
+				a.IF_DELETED,	
+				a.CLIENT_ID
+		from 
+				BASE_CLIENT_INFO a
+		WHERE
+				a.IF_DELETED = '0'
+	</select>
+
+	<!-- 获取去重的列表 -->
+	<select id="getAllJdrList" parameterType="pd" resultType="pd">
+		SELECT
+			b.STAFF_ID,
+			b.STAFF_NAME
+		FROM
+			(SELECT DISTINCT CREATE_USERID FROM BASE_CLIENT_INFO) a
+		LEFT JOIN
+			XT_STAFF_INFO b
+		ON
+			a.CREATE_USERID = b.STAFF_ID
+		WHERE
+			b.STAFF_ID is not null
+		AND
+			b.IF_DELETED = '0'
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			BASE_CLIENT_INFO
+	  	SET
+		IF_DELETED = '1'
+		where
+			CLIENT_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

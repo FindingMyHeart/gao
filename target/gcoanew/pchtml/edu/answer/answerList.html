@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>答题管理</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css" />
+
+		<script type="text/javascript" src="../../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../../js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../../js/myjstools.js"></script>
+		<script type="text/javascript">
+			var result_id = myjstools.request("result_id").replace("#", "");
+		
+			function loadGrid(){
+				
+				//初始化grid
+				$('#dg').datagrid({
+					iconCls: 'icon-edit',
+					singleSelect: true,
+					toolbar: '#tt',
+					pagination: false,
+					url: myjstools.wwwroot + '/web/service?METHOD=surveyResultService_querylist&result_id='+result_id,
+					rownumbers: true,
+					loadMsg: '正在加载数据...',
+					onLoadError: function() {
+						myjstools.showerrinfo('数据加载出错了');
+					},
+					method: 'post',
+					pageNumber: 1,
+					pageSize: 20,
+					pageList: [10, 20, 50, 100],
+					columns: [
+						[{field:'create_time',
+							title:'答题时间',
+							formatter:function(value,row,index){
+								var time1 = new Date(value).format("yyyy-MM-dd hh:mm:ss");  
+								var htm = "<span>"+time1+"</span>";
+								return htm;
+							}
+						 },
+						 {
+							field: 'study_number',
+							title: '学号'
+						},
+						{
+							field:'survey_typeValue',
+							title:'答题类型',
+							
+						},
+						{
+							field:'result_id',
+							title:'操作',
+							formatter:function(value,row,index){
+								var res = '<a href="javascript:openResult(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">详细答题</a>';
+								return res;		
+							}
+						}]
+					]
+				});
+			}
+			
+			function openResult(value){
+				
+				//myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/edu/answer/resultDetail.html?resultId=" + value);
+				window.open(myjstools.wwwroot + "/pchtml/edu/answer/resultDetail.html?resultId=" + value);
+			}
+			
+			Date.prototype.format = function (fmt) { //author: meizz
+				  var o = {
+				    "M+": this.getMonth() + 1, //月份
+				    "d+": this.getDate(), //日
+				    "h+": this.getHours(), //小时
+				    "m+": this.getMinutes(), //分
+				    "s+": this.getSeconds(), //秒
+				    "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+				    "S": this.getMilliseconds() //毫秒
+				  };
+				  if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+				  for (var k in o)
+				  if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+				  return fmt;
+				}
+			
+			$(document).ready(function(){loadGrid()});
+		</script>
+	</head>
+	<body>
+		<table id="dg" title="" ></table>
+	
+		<div id="win" class="easyui-window" title="..." style="width:300px;height:400px;" data-options="modal:true,closed:true">
+			<iframe id="fra_s" width="99%" height="99%" border="0" frameborder="0"></iframe>
+		</div>
+	</body>
+</html>

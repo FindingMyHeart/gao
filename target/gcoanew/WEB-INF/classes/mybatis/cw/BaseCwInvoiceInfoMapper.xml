@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BaseCwInvoiceInfoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into CW_INVOICE_INFO(  
+			PROJECT_ID,	
+			INVOICE_SN,
+			SUPPLIER_ID,
+			DEPT_ID,	
+			INVOICE_DATE,	
+			AMOUNT_MONEY,	
+			PROJECT_LOCATION,	
+			MEMO,	
+			RESOURCEIDS,
+			CREATE_TIME,
+			CREATE_USERID,	
+			IF_DELETED,	
+			INVOICE_ID
+		) values (
+			#{PROJECT_ID},	
+			#{INVOICE_SN},
+			#{SUPPLIER_ID},
+			#{DEPT_ID},	
+			#{INVOICE_DATE},	
+			#{AMOUNT_MONEY},	
+			#{PROJECT_LOCATION},	
+			#{MEMO},	
+			#{RESOURCEIDS},
+			#{CREATE_TIME},
+			#{CREATE_USERID},	
+			#{IF_DELETED},	
+			#{INVOICE_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+			CW_INVOICE_INFO
+		SET
+			IF_DELETED = '1'
+		where 
+			INVOICE_ID = #{INVOICE_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  CW_INVOICE_INFO
+			set 
+				PROJECT_ID = #{PROJECT_ID},
+				SUPPLIER_ID = #{SUPPLIER_ID},
+				DEPT_ID = #{DEPT_ID},
+				INVOICE_DATE = #{INVOICE_DATE},
+				AMOUNT_MONEY = #{AMOUNT_MONEY},
+				PROJECT_LOCATION = #{PROJECT_LOCATION},
+				RESOURCEIDS = #{RESOURCEIDS},
+				MEMO = #{MEMO},
+			INVOICE_ID = INVOICE_ID
+			where 
+				INVOICE_ID = #{INVOICE_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			a.PROJECT_ID,
+			a.INVOICE_SN,
+			a.SUPPLIER_ID,
+			a.DEPT_ID,
+			a.INVOICE_DATE,
+			a.AMOUNT_MONEY,
+			a.PROJECT_LOCATION,
+			a.MEMO,
+			a.CREATE_TIME,
+			DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') AS CREATE_DATE,
+			a.CREATE_USERID,
+			a.IF_DELETED,
+			a.INVOICE_ID,
+			a.RESOURCEIDS,
+			b.STAFF_NAME
+		from 
+			CW_INVOICE_INFO a
+		LEFT JOIN
+			XT_STAFF_INFO b
+		ON
+			a.CREATE_USERID = b.STAFF_ID
+		where 
+			a.INVOICE_ID = #{INVOICE_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.PROJECT_ID,	
+				a.INVOICE_SN,
+				a.SUPPLIER_ID,
+				a.DEPT_ID,	
+				a.INVOICE_DATE,	
+				a.AMOUNT_MONEY,	
+				a.PROJECT_LOCATION,	
+				a.MEMO,	
+				a.CREATE_TIME,
+				DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') AS CREATE_DATE,
+				a.CREATE_USERID,
+				a.IF_DELETED,	
+				a.INVOICE_ID,
+				b.DEPT_NAME,
+				c.STAFF_NAME AS CREATE_USER_NAME,
+				d.SUPPLIER_NAME
+		from 
+				CW_INVOICE_INFO a
+		LEFT JOIN
+				XT_DEPT_INFO b
+	  	ON
+				a.DEPT_ID = b.DEPT_ID
+	  	LEFT JOIN
+				XT_STAFF_INFO c
+	  	ON
+				a.CREATE_USERID = c.STAFF_ID
+	  	LEFT JOIN
+				BASE_SUPPLIER_INFO d
+		ON
+				a.SUPPLIER_ID = d.SUPPLIER_ID
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="pd.INVOICE_SN_SEARCH != null and pd.INVOICE_SN_SEARCH != ''">
+		AND
+				a.INVOICE_SN LIKE CONCAT('%',CONCAT(#{pd.INVOICE_SN_SEARCH},'%'))
+		</if>
+		<if test="pd.DEPT_ID_SEARCH != null and pd.DEPT_ID_SEARCH != ''">
+		AND
+				a.DEPT_ID = #{pd.DEPT_ID_SEARCH}
+		</if>
+		<if test="pd.CREATE_USERID_SEARCH != null and pd.CREATE_USERID_SEARCH != ''">
+		AND
+				a.CREATE_USERID = #{pd.CREATE_USERID_SEARCH}
+		</if>
+		<if test="pd.SUPPLIER_ID_SEARCH != null and pd.SUPPLIER_ID_SEARCH != ''">
+		AND
+				a.SUPPLIER_ID = #{pd.SUPPLIER_ID_SEARCH}
+		</if>
+		<if test="pd.PROJECT_ID_SEARCH != null and pd.PROJECT_ID_SEARCH != ''">
+		AND
+				a.PROJECT_ID = #{pd.PROJECT_ID_SEARCH}
+		</if>
+		<if test="pd.INVOICE_DATE_SEARCH != null and pd.INVOICE_DATE_SEARCH != ''">
+		AND
+				a.INVOICE_DATE = #{pd.INVOICE_DATE_SEARCH}
+		</if>
+		ORDER BY
+				a.CREATE_TIME DESC
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.PROJECT_ID,	
+				a.SUPPLIER_ID,	
+				a.DEPT_ID,	
+				a.INVOICE_DATE,	
+				a.AMOUNT_MONEY,	
+				a.PROJECT_LOCATION,	
+				a.MEMO,	
+				a.CREATE_TIME,	
+				a.CREATE_USERID,	
+				a.IF_DELETED,	
+				a.INVOICE_ID
+		from 
+				CW_INVOICE_INFO a
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="DATE != null and DATE != ''">
+		AND
+				a.CREATE_TIME LIKE CONCAT(#{DATE},'%')
+		</if>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			CW_INVOICE_INFO
+		SET
+			IF_DELETED = '1'
+		where 
+			INVOICE_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

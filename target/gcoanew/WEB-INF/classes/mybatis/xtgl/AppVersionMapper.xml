@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AppVersionMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into app_version(
+			version_name,	
+			current_version,	
+			force_version,	
+			download_url,	
+			download_count,	
+			version_id
+		) values (
+			#{version_name},	
+			#{current_version},	
+			#{force_version},	
+			#{download_url},	
+			#{download_count},	
+			#{version_id}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from app_version
+		where 
+			version_id = #{version_id}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  app_version
+			set 
+				<if test="version_name !='' and version_name !=null">
+					version_name = #{version_name},
+				</if>
+				<if test="current_version !='' and current_version !=null">
+					current_version = #{current_version},
+				</if>
+				<if test="force_version !='' and force_version !=null">
+					force_version = #{force_version},
+				</if>
+				<if test="download_url !='' and download_url !=null">
+					download_url = #{download_url},
+				</if>
+				<if test="download_count !='' and download_count !=null">
+					download_count = #{download_count},
+				</if>
+				version_id = version_id
+			where 
+				version_id = #{version_id}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			version_name,	
+			current_version,	
+			force_version,	
+			download_url,	
+			download_count,	
+			version_id
+		from 
+			app_version
+		where 
+			version_id = #{version_id}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.version_name,	
+				a.current_version,	
+				a.force_version,	
+				a.download_url,	
+				a.download_count,	
+				a.version_id
+		from 
+				app_version a
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listQuery" parameterType="pd" resultType="pd">
+		select
+				a.version_name,	
+				a.current_version,	
+				a.force_version,	
+				a.download_url,	
+				a.download_count,	
+				a.version_id
+		from 
+				app_version a
+		where 1=1
+			<if test="version_name !='' and version_name !=null">
+			and a.version_name = #{version_name}
+			</if>
+			
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from app_version
+		where 
+			version_id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

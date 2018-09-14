@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BaseMaterialInfoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into BASE_MATERIAL_INFO(  
+			MATERIAL_CODE,	
+			MATERIAL_TYPE,	
+			MATERIAL_NAME,	
+			MATERIAL_BRAND,	
+			MATERIAL_SPEC,	
+			MATERIAL_UNIT,	
+			MATERIAL_MEMO,	
+			CREATE_TIME,	
+			CREATE_USERID,	
+			IF_DELETED,	
+			MATERIAL_ID
+		) values (
+			#{MATERIAL_CODE},	
+			#{MATERIAL_TYPE},	
+			#{MATERIAL_NAME},	
+			#{MATERIAL_BRAND},	
+			#{MATERIAL_SPEC},	
+			#{MATERIAL_UNIT},	
+			#{MATERIAL_MEMO},	
+			now(),
+			#{CREATE_USERID},	
+			'0',
+			#{MATERIAL_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+			BASE_MATERIAL_INFO
+		SET
+			IF_DELETED = '1'
+		where 
+			MATERIAL_ID = #{MATERIAL_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  BASE_MATERIAL_INFO
+			set 
+				MATERIAL_CODE = #{MATERIAL_CODE},
+				MATERIAL_TYPE = #{MATERIAL_TYPE},
+				MATERIAL_NAME = #{MATERIAL_NAME},
+				MATERIAL_BRAND = #{MATERIAL_BRAND},
+				MATERIAL_SPEC = #{MATERIAL_SPEC},
+				MATERIAL_UNIT = #{MATERIAL_UNIT},
+				MATERIAL_MEMO = #{MATERIAL_MEMO},
+			MATERIAL_ID = MATERIAL_ID
+			where 
+				MATERIAL_ID = #{MATERIAL_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			MATERIAL_CODE,	
+			MATERIAL_TYPE,	
+			MATERIAL_NAME,	
+			MATERIAL_BRAND,	
+			MATERIAL_SPEC,	
+			MATERIAL_UNIT,	
+			MATERIAL_MEMO,	
+			CREATE_TIME,	
+			CREATE_USERID,	
+			IF_DELETED,	
+			MATERIAL_ID
+		from 
+			BASE_MATERIAL_INFO
+		where 
+			MATERIAL_ID = #{MATERIAL_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.MATERIAL_CODE,	
+				a.MATERIAL_TYPE,	
+				a.MATERIAL_NAME,	
+				a.MATERIAL_BRAND,	
+				a.MATERIAL_SPEC,	
+				a.MATERIAL_UNIT,	
+				a.MATERIAL_MEMO,	
+				a.CREATE_TIME,	
+				a.CREATE_USERID,	
+				a.IF_DELETED,	
+				a.MATERIAL_ID,
+				b.TYPE_NAME AS MATERIAL_TYPE_NAME
+		from 
+				BASE_MATERIAL_INFO a
+	  	LEFT JOIN
+				BASE_MATERIAL_TYPE b
+	  	ON
+				a.MATERIAL_TYPE = b.TYPE_ID
+		LEFT JOIN
+				BASE_MATERIAL_TYPE c
+		ON
+				b.PID = c.TYPE_ID
+		LEFT JOIN
+				BASE_MATERIAL_TYPE d
+		ON
+				c.PID = d.TYPE_ID
+		LEFT JOIN
+				BASE_MATERIAL_TYPE e
+		ON
+				d.PID = e.TYPE_ID
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="pd.pid_search != null and pd.pid_search != ''">
+		AND
+			(
+				(b.TYPE_ID = #{pd.pid_search})
+				OR
+				(b.PID = #{pd.pid_search})
+				OR
+				(c.PID = #{pd.pid_search})
+				OR
+				(d.PID = #{pd.pid_search})
+				OR
+				(e.PID = #{pd.pid_search})
+			)
+		</if>
+		<if test="pd.material_name_search != null and pd.material_name_search != ''">
+		AND
+				a.MATERIAL_NAME LIKE CONCAT('%',CONCAT(#{pd.material_name_search},'%'))
+		</if>
+		<if test="pd.material_brand_search != null and pd.material_brand_search != ''">
+		AND
+				a.MATERIAL_BRAND LIKE CONCAT('%',CONCAT(#{pd.material_brand_search},'%'))
+		</if>
+		<if test="pd.material_spec_search != null and pd.material_spec_search != ''">
+		AND
+				a.MATERIAL_SPEC LIKE CONCAT('%',CONCAT(#{pd.material_spec_search},'%'))
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.MATERIAL_CODE,	
+				a.MATERIAL_TYPE,	
+				a.MATERIAL_NAME,	
+				a.MATERIAL_BRAND,	
+				a.MATERIAL_SPEC,	
+				a.MATERIAL_UNIT,	
+				a.MATERIAL_MEMO,	
+				a.CREATE_TIME,	
+				a.CREATE_USERID,	
+				a.IF_DELETED,	
+				a.MATERIAL_ID
+		from 
+				BASE_MATERIAL_INFO a
+		WHERE
+				a.IF_DELETED = '0'
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			BASE_MATERIAL_INFO
+		SET
+		IF_DELETED = '1'
+		where 
+			MATERIAL_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

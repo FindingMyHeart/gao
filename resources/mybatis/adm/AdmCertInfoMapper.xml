@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AdmCertInfoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into ADM_CERT_INFO(  
+			CERT_NAME,	
+			CERT_CODE,	
+			VALID_DATE,	
+			USE_CASE,
+			RESOURCEIDS,
+			CREATE_TIME,
+			CREATE_USERID,	
+			IF_DELETED,	
+			CERT_ID
+		) values (
+			#{CERT_NAME},	
+			#{CERT_CODE},	
+			#{VALID_DATE},	
+			#{USE_CASE},
+			#{RESOURCEIDS},
+			#{CREATE_TIME},
+			#{CREATE_USERID},	
+			#{IF_DELETED},	
+			#{CERT_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+			ADM_CERT_INFO
+		SET
+			IF_DELETED = '1'
+		where 
+			CERT_ID = #{CERT_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  ADM_CERT_INFO
+			set 
+				CERT_NAME = #{CERT_NAME},
+				CERT_CODE = #{CERT_CODE},
+				VALID_DATE = #{VALID_DATE},
+				RESOURCEIDS = #{RESOURCEIDS},
+			CERT_ID = CERT_ID
+			where 
+				CERT_ID = #{CERT_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			CERT_NAME,	
+			CERT_CODE,	
+			VALID_DATE,	
+			USE_CASE,
+			RESOURCEIDS,
+			CREATE_TIME,
+			CREATE_USERID,	
+			IF_DELETED,	
+			CERT_ID
+		from 
+			ADM_CERT_INFO
+		where 
+			CERT_ID = #{CERT_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.CERT_NAME,	
+				a.CERT_CODE,	
+				a.VALID_DATE,	
+				a.USE_CASE,
+				a.RESOURCEIDS,
+				a.CREATE_TIME,
+				a.CREATE_USERID,	
+				a.IF_DELETED,	
+				a.CERT_ID
+		from 
+				ADM_CERT_INFO a
+		WHERE
+	  			a.IF_DELETED = '0'
+	  	<if test="pd.CERT_NAME_SEARCH != null and pd.CERT_NAME_SEARCH != ''">
+		AND
+				a.CERT_NAME LIKE CONCAT('%',CONCAT(#{pd.CERT_NAME_SEARCH},'%'))
+		</if>
+	  	<if test="pd.CERT_CODE_SEARCH != null and pd.CERT_CODE_SEARCH != ''">
+		AND
+				a.CERT_CODE LIKE CONCAT('%',CONCAT(#{pd.CERT_CODE_SEARCH},'%'))
+		</if>
+	  	<if test="pd.USE_CASE_SEARCH != null and pd.USE_CASE_SEARCH != ''">
+		AND
+				a.USE_CASE = #{pd.USE_CASE_SEARCH}
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.CERT_NAME,	
+				a.CERT_CODE,	
+				a.VALID_DATE,	
+				a.USE_CASE,
+				a.RESOURCEIDS,
+				a.CREATE_TIME,
+				a.CREATE_USERID,	
+				a.IF_DELETED,	
+				a.CERT_ID
+		from 
+				ADM_CERT_INFO a
+		WHERE
+	  			a.IF_DELETED = '0'
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			ADM_CERT_INFO
+		SET
+			IF_DELETED = '1'
+		where 
+			CERT_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+
+	<!-- 修改使用情况 -->
+	<update id="updateUseCase" parameterType="pd">
+		UPDATE
+			ADM_CERT_INFO
+		SET
+			USE_CASE = #{USE_CASE}
+		WHERE
+			CERT_ID = #{CERT_ID}
+	</update>
+	
+</mapper>

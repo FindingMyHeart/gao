@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	<title></title>
+	<link rel="icon" href="../assets/images/favicon.ico" type="image/x-icon">
+	<!-- Custom Css -->
+	<link href="../assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+	<link href="../assets/css/main.css" rel="stylesheet" type="text/css">
+	<link href="../assets/css/authentication.css" rel="stylesheet" type="text/css">
+	<!-- adminX You can choose a theme from css/themes instead of get all themes -->
+	<link href="../assets/css/themes/all-themes.css" rel="stylesheet" type="text/css" />
+	<!-- custom js file -->
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/myjstools.js"></script>
+    <script type="text/javascript">
+		$(function(){ 
+			myjstools.setframeauto();
+		}); 
+		
+	</script>
+ </head>
+<body style="background:#f0f3f5;">
+	<div class="block-header">
+		<h2>客户信息查询</h2>
+		<ul class="breadcrumb">
+			<li class="breadcrumb-item">
+				<a href="index.html">首页</a>
+			</li>
+			<li class="breadcrumb-item active">客户管理</li>
+		</ul>
+	</div>
+	<!-- Input -->
+	<div class="row clearfix">
+		<div class="col-lg-12 col-md-12 col-sm-12">
+			<div class="card">
+				<div class="header">
+					<h2> 客户信息查询 <small>请填写相关内容</small> </h2>
+					<ul class="header-dropdown m-r--5">
+						<li class="dropdown">
+							<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <i class="zmdi zmdi-more-vert"></i> </a>
+						</li>
+					</ul>
+				</div>
+				<div class="body">
+					<h2 class="card-inside-title">条件查询</h2>
+					<div class="row clearfix">	
+						<div class="col-sm-4 col-md-2 col-xs-6 col-gl-2">
+							<div class="form-group form-float">
+						        <div class="form-line">
+							        <select class="form-control show-tick">
+								        <option value="" >-- 建档人 --</option>
+								        <option value="" >系统内部选取</option>
+							        </select>
+						        </div>
+						    </div>
+						</div>
+						<div class="col-sm-4 col-md-2 col-xs-6 col-gl-2">
+							<div class="form-group form-float">
+								<div class="form-line">
+									<input class="datepicker form-control" placeholder="建档日期" type="text">
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-4 col-md-2 col-xs-6 col-gl-2">
+							<div class="form-group form-float">
+								<div class="form-line">
+									<input type="text" class="form-control" />
+									<label class="form-label">客户</label>
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-4 col-md-2 col-xs-6 col-gl-2">
+							<div class="form-group form-float">
+								<div class="form-line">
+									<input type="text" class="form-control" />
+									<label class="form-label">联系电话</label>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="body">
+		            <div class="col-lg-offset-2 col-md-offset-3 col-sm-offset-4 col-xs-offset-5">
+			            <button type="button" class="btn btn-raised btn-primary m-t-15 waves-effect">查询</button>
+		            </div>
+	            </div>
+			</div>
+		</div>
+	</div>
+	<div class="row clearfix">
+	    <div class="col-lg-12 col-md-12 col-sm-12">
+			<div class="card">
+				<div class="body table-responsive">
+				    <h2 class="card-inside-title">查询结果</h2>
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>建档人</th>
+								<th>建档日期</th>
+								<th>客户</th>
+								<th>联系电话</th>
+								<th>地址</th>
+								<th>邮箱</th>
+								<th>备注</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+								    <input class="form-control" type="text" name="id" value="${vs.index + 1 }" readonly/>
+								</td>
+								<td>
+								    <input class="form-control" type="text" value="" readonly/>
+								</td>
+								<td>
+								    <input class="form-control" type="text" value="" readonly/>
+								</td>
+								<td>
+								    <input class="form-control" type="text" value="" readonly/>
+								</td>
+								<td>
+								    <input class="form-control" type="text" value="" readonly/>
+								</td>
+								<td>
+								    <input class="form-control" type="text" value="" readonly/>
+								</td>
+								<td>
+								    <input class="form-control" type="text" value="" readonly/>
+								</td>
+								<td>
+								    <input class="form-control" type="text" value="" readonly/>
+								</td>
+								<td>
+								    <button type="button" class="btn btn-raised btn-success btn-xs waves-effect">修改</button>
+					                <button type="button" class="btn btn-raised btn-danger btn-xs waves-effect">删除</button>
+						            <button type="button" class="btn btn-raised btn-info btn-xs waves-effect">预览</button>
+							        <button type="button" class="btn btn-raised btn-primary btn-xs waves-effect">打印</button>
+							        <button type="button" class="btn btn-raised btn-default btn-xs waves-effect">下载</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+	        </div>
+	    </div>
+	</div>
+
+
+</body>
+</html>

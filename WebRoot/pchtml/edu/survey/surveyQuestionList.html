@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>题库管理</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css" />
+
+		<script type="text/javascript" src="../../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../../js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../../js/myjstools.js"></script>
+		<script type="text/javascript">
+			var mpath = "edu/survey";
+			var mid = myjstools.request("id").replace("#", "");
+			function loadGrid(){
+				
+				//初始化grid
+				$('#tabQuestion').datagrid({
+					iconCls: 'icon-edit',
+					singleSelect: true,
+					toolbar: '#tt',
+					pagination: false,
+					url: myjstools.wwwroot + '/web/service?METHOD=SurveyQuestionService_queryList&surveyId='+mid,
+					rownumbers: false,
+					loadMsg: '正在加载数据...',
+					onLoadError: function() {
+						myjstools.showerrinfo('数据加载出错了');
+					},
+					method: 'post',
+					columns: [
+						[{
+							field: 'order_num',
+							title: '序号'
+						},
+						{
+							field:'title',
+							title:'问题'
+						},
+						{
+							field:'answerInfo',
+							title:'选项'
+						},
+						{
+							field: 'question_id',
+							title: '操作',
+							formatter:function(value,row,index){
+								var s =
+	                        		('<a href="javascript:editinfo(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">编辑</a>'
+									+'&nbsp;<a href="javascript:delinfo(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-remove\',plain:true">删除</a>'
+									);
+									
+								return s;
+	                    	}
+						}]
+					]
+				});
+			}
+			
+			function add(){
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/" + mpath + "/addSurveyQuestion.html?method=add&surveyId="+mid);
+			}
+			
+			function editinfo(id){
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/" + mpath + "/addSurveyQuestion.html?method=edit&surveyId="+mid+"&id="+id);
+			}
+			
+			function delinfo(uid) {
+				$.messager.confirm('提示', '确认删除当前信息吗？'
+				, function(row) {
+					if(row) {
+						var objt = {};
+						objt.id=uid;
+						
+						myjstools.ajax(false, "POST", "/web/service?METHOD=surveyQuestionService_delete", objt, delinfo_res);
+					}
+				});
+			}
+			
+			function delinfo_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+
+					$('#tabQuestion').datagrid('load'); //, objt
+				} catch(e) {
+					myjstools.showerrinfo("delinfo_res.error:出错了！" + e.message);
+				}
+			}
+			
+			function closewin() {
+				$('#win').window('close');
+				reLoadDataGrid();
+			}
+			
+			function reLoadDataGrid(){
+				$('#tabQuestion').datagrid('reload');
+			}
+			
+			
+			$(document).ready(function(){loadGrid()});
+		</script>
+	</head>
+<body style="width:95%; text-align:center; margin:0 auto; margin-top:10px;padding:10px 10px 10px 20px">
+
+	<div style="text-align:right;padding:5px">
+		<a href="javascript:parent.closewin()" class="easyui-linkbutton">关闭</a>
+		<a href="javascript:add()" class="easyui-linkbutton">添加</a>
+	</div>
+	<table id="tabQuestion"></table>
+	<div id="win" class="easyui-window" title="..." style="width:500px;height:400px;" data-options="modal:true,closed:true">
+		<iframe id="fra_s" width="99%" height="99%" border="0" frameborder="0"></iframe>
+	</div>
+</body>
+</html>

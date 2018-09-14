@@ -1,0 +1,716 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StaffMapper">
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into xt_staff_info(
+			<if test="login_name != null">
+				login_name,
+			</if>
+			<if test="login_password != null">
+				login_password,
+			</if>
+			<if test="staff_name != null">
+				staff_name,
+			</if>
+			<if test="staff_level != null">
+				staff_level,
+			</if>
+			<if test="staff_status != null">
+				staff_status,
+			</if>
+			<if test="vacation_type != null">
+				vacation_type,
+			</if>
+			<if test="dept_id != null">
+				dept_id,
+			</if>
+			<if test="role_id != null">
+				role_id,
+			</if>
+			<if test="staff_sex != null">
+				staff_sex,
+			</if>
+			<if test="staff_nation != null">
+				staff_nation,
+			</if>
+			<if test="political_status != null">
+				political_status,
+			</if>
+			<if test="marital != null">
+				marital,
+			</if>
+			<if test="birthday != null">
+				birthday,
+			</if>
+			<if test="education != null">
+				education,
+			</if>
+			<if test="major != null">
+				major,
+			</if>
+			<if test="graduate_school != null">
+				graduate_school,
+			</if>
+			<if test="graduate_date != null">
+				graduate_date,
+			</if>
+			<if test="degree != null">
+				degree,
+			</if>
+			<if test="english_level != null">
+				english_level,
+			</if>
+			<if test="id_card != null">
+				id_card,
+			</if>
+			<if test="hukou_location != null">
+				hukou_location,
+			</if>
+			<if test="contact != null">
+				contact,
+			</if>
+			<if test="home_tel != null">
+				home_tel,
+			</if>
+			<if test="email != null">
+				email,
+			</if>
+			<if test="address != null">
+				address,
+			</if>
+			<if test="emergency_contact != null">
+				emergency_contact,
+			</if>
+			<if test="emergency_contact_tel != null">
+				emergency_contact_tel,
+			</if>
+			<if test="staff_code != null">
+				staff_code,
+			</if>
+			<if test="post != null">
+				post,
+			</if>
+			<if test="rank != null">
+				rank,
+			</if>
+			<if test="join_date != null">
+				join_date,
+			</if>
+			<if test="zhuanzheng_date != null">
+				zhuanzheng_date,
+			</if>
+			<if test="shebao_date != null">
+				shebao_date,
+			</if>
+			<if test="gongjijin_date != null">
+				gongjijin_date,
+			</if>
+			<if test="jbsysc != null">
+				jbsysc,
+			</if>
+			<if test="resourceIds != null">
+				resourceIds,
+			</if>
+			if_deleted,
+			create_time,
+			create_userid,
+			staff_id
+		) values (
+			<if test="login_name != null">
+				#{login_name},
+			</if>
+			<if test="login_password != null">
+				#{login_password},
+			</if>
+			<if test="staff_name != null">
+				#{staff_name},
+			</if>
+			<if test="staff_level != null">
+				#{staff_level},
+			</if>
+			<if test="staff_status != null">
+				#{staff_status},
+			</if>
+			<if test="vacation_type != null">
+				#{vacation_type},
+			</if>
+			<if test="dept_id != null">
+				#{dept_id},
+			</if>
+			<if test="role_id != null">
+				#{role_id},
+			</if>
+			<if test="staff_sex != null">
+				#{staff_sex},
+			</if>
+			<if test="staff_nation != null">
+				#{staff_nation},
+			</if>
+			<if test="political_status != null">
+				#{political_status},
+			</if>
+			<if test="marital != null">
+				#{marital},
+			</if>
+			<if test="birthday != null">
+				#{birthday},
+			</if>
+			<if test="education != null">
+				#{education},
+			</if>
+			<if test="major != null">
+				#{major},
+			</if>
+			<if test="graduate_school != null">
+				#{graduate_school},
+			</if>
+			<if test="graduate_date != null">
+				#{graduate_date},
+			</if>
+			<if test="degree != null">
+				#{degree},
+			</if>
+			<if test="english_level != null">
+				#{english_level},
+			</if>
+			<if test="id_card != null">
+				#{id_card},
+			</if>
+			<if test="hukou_location != null">
+				#{hukou_location},
+			</if>
+			<if test="contact != null">
+				#{contact},
+			</if>
+			<if test="home_tel != null">
+				#{home_tel},
+			</if>
+			<if test="email != null">
+				#{email},
+			</if>
+			<if test="address != null">
+				#{address},
+			</if>
+			<if test="emergency_contact != null">
+				#{emergency_contact},
+			</if>
+			<if test="emergency_contact_tel != null">
+				#{emergency_contact_tel},
+			</if>
+			<if test="staff_code != null">
+				#{staff_code},
+			</if>
+			<if test="post != null">
+				#{post},
+			</if>
+			<if test="rank != null">
+				#{rank},
+			</if>
+			<if test="join_date != null">
+				#{join_date},
+			</if>
+			<if test="zhuanzheng_date != null">
+				#{zhuanzheng_date},
+			</if>
+			<if test="shebao_date != null">
+				#{shebao_date},
+			</if>
+			<if test="gongjijin_date != null">
+				#{gongjijin_date},
+			</if>
+			<if test="jbsysc != null">
+				#{jbsysc},
+			</if>
+			<if test="resourceIds != null">
+				#{resourceIds},
+			</if>
+			#{if_deleted},
+			#{create_time},
+			#{create_userid},
+			#{staff_id}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		update xt_staff_info
+		set if_deleted=1
+		where 
+			staff_id = #{staff_id}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  xt_staff_info
+			set
+				<if test="login_name != null">
+					login_name =#{login_name},
+				</if>
+				<if test="login_password != null">
+					login_password =#{login_password},
+				</if>
+				<if test="staff_name != null">
+					staff_name =#{staff_name},
+				</if>
+				<if test="staff_level != null">
+					staff_level =#{staff_level},
+				</if>
+				<if test="staff_status != null">
+					staff_status =#{staff_status},
+				</if>
+				<if test="vacation_type != null">
+					vacation_type =#{vacation_type},
+				</if>
+				<if test="dept_id != null">
+					dept_id =#{dept_id},
+				</if>
+				<if test="role_id != null">
+					role_id =#{role_id},
+				</if>
+				<if test="staff_sex != null">
+					staff_sex =#{staff_sex},
+				</if>
+				<if test="staff_nation != null">
+					staff_nation =#{staff_nation},
+				</if>
+				<if test="political_status != null">
+					political_status =#{political_status},
+				</if>
+				<if test="marital != null">
+					marital =#{marital},
+				</if>
+				<if test="birthday != null">
+					birthday =#{birthday},
+				</if>
+				<if test="education != null">
+					education =#{education},
+				</if>
+				<if test="major != null">
+					major =#{major},
+				</if>
+				<if test="graduate_school != null">
+					graduate_school =#{graduate_school},
+				</if>
+				<if test="graduate_date != null">
+					graduate_date =#{graduate_date},
+				</if>
+				<if test="degree != null">
+					degree =#{degree},
+				</if>
+				<if test="english_level != null">
+					english_level =#{english_level},
+				</if>
+				<if test="id_card != null">
+					id_card =#{id_card},
+				</if>
+				<if test="hukou_location != null">
+					hukou_location =#{hukou_location},
+				</if>
+				<if test="contact != null">
+					contact =#{contact},
+				</if>
+				<if test="home_tel != null">
+					home_tel =#{home_tel},
+				</if>
+				<if test="email != null">
+					email =#{email},
+				</if>
+				<if test="address != null">
+					address =#{address},
+				</if>
+				<if test="emergency_contact != null">
+					emergency_contact =#{emergency_contact},
+				</if>
+				<if test="emergency_contact_tel != null">
+					emergency_contact_tel =#{emergency_contact_tel},
+				</if>
+				<if test="staff_code != null">
+					staff_code =#{staff_code},
+				</if>
+				<if test="post != null">
+					post =#{post},
+				</if>
+				<if test="rank != null">
+					rank =#{rank},
+				</if>
+				<if test="join_date != null">
+					join_date =#{join_date},
+				</if>
+				<if test="zhuanzheng_date != null">
+					zhuanzheng_date =#{zhuanzheng_date},
+				</if>
+				<if test="shebao_date != null">
+					shebao_date =#{shebao_date},
+				</if>
+				<if test="gongjijin_date != null">
+					gongjijin_date =#{gongjijin_date},
+				</if>
+				<if test="jbsysc != null">
+					jbsysc =#{jbsysc},
+				</if>
+				<if test="resourceIds != null">
+					resourceIds =#{resourceIds},
+				</if>
+				<if test="token != null and token != ''">
+				token = #{token},	
+				</if>
+				<if test="token_expire != null and token_expire != ''">
+				token_expire = #{token_expire},	
+				</if>
+			staff_id = staff_id
+			where 
+				staff_id = #{staff_id}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select
+			login_name,
+			login_password,
+			staff_name,
+			staff_level,
+			staff_status,
+			vacation_type,
+			dept_id,
+			role_id,
+			staff_sex,
+			staff_nation,
+			political_status,
+			marital,
+			birthday,
+			education,
+			major,
+			graduate_school,
+			graduate_date,
+			degree,
+			english_level,
+			id_card,
+			hukou_location,
+			contact,
+			home_tel,
+			email,
+			address,
+			emergency_contact,
+			emergency_contact_tel,
+			staff_code,
+			post,
+			rank,
+			join_date,
+			zhuanzheng_date,
+			shebao_date,
+			gongjijin_date,
+			jbsysc,
+			token,
+			token_expire,	
+			resourceIds,
+			staff_id
+		from 
+			xt_staff_info
+		where 
+			staff_id = #{staff_id}
+	</select>
+	<!-- 通过ID获取数据 -->
+	<select id="findByLoginName" parameterType="pd" resultType="pd">
+		select 
+			login_name,	
+			staff_name,	
+			staff_level,	
+			staff_status,	
+			token,	
+			token_expire,	
+			staff_id
+		from 
+			xt_staff_info
+		where if_deleted=0
+		and login_name = #{login_name}
+		<if test="not_pk_id != null and not_pk_id != ''">
+			and staff_id not in (#{not_pk_id})	
+		</if>
+			
+			
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+			a.login_name,
+			a.login_password,
+			a.staff_name,
+			a.staff_level,
+			a.staff_status,
+			a.vacation_type,
+			a.dept_id,
+			a.role_id,
+			a.staff_sex,
+			a.staff_nation,
+			a.political_status,
+			a.marital,
+			a.birthday,
+			a.education,
+			a.major,
+			a.graduate_school,
+			a.graduate_date,
+			a.degree,
+			a.english_level,
+			a.id_card,
+			a.hukou_location,
+			a.contact,
+			a.home_tel,
+			a.email,
+			a.address,
+			a.emergency_contact,
+			a.emergency_contact_tel,
+			a.staff_code,
+			a.post,
+			a.rank,
+			a.join_date,
+			a.zhuanzheng_date,
+			a.shebao_date,
+			a.gongjijin_date,
+			a.jbsysc,
+			a.token,
+			a.token_expire,
+			a.staff_id,
+			d.dept_name,
+			d.dept_code,
+			r.role_name,
+			dic.dic_label AS post_name,
+			c.dic_label as staff_status_name,
+			e.dic_label as vacation_type_name
+		from 
+			xt_staff_info a
+		left join
+			xt_dept_info d
+		on
+			d.dept_id=a.dept_id
+		left join
+			xt_role r
+		on
+			r.role_id=a.role_id
+		left join
+			xt_dic dic
+		on
+			a.post = dic.dic_value AND dic.dic_type = 'zw'
+		left join
+			xt_dic c
+	  	on
+			a.staff_status = c.dic_value AND c.dic_type = 'zyzt'
+		left join
+			xt_dic e
+		on
+			a.vacation_type = e.dic_value AND e.dic_type = 'xjlx'
+		where
+			a.if_deleted=0
+			<if test="pd.staff_id != null and pd.staff_id != ''">
+				and a.staff_id = #{pd.staff_id}	
+			</if>
+			<if test="pd.dept_id != null and pd.dept_id != ''">
+				and a.dept_id = #{pd.dept_id}	
+			</if>
+			<if test="pd.role_id != null and pd.role_id != ''">
+				and a.role_id = #{pd.role_id}	
+			</if>
+			<if test="pd.dept_name != null and pd.dept_name != ''">
+				and d.dept_name  like concat(concat('%', #{pd.dept_name}),'%')
+			</if>
+			<if test="pd.login_name != null and pd.login_name != ''">
+				and a.login_name  like concat(concat('%', #{pd.login_name}),'%')
+			</if>
+			<if test="pd.staff_name != null and pd.staff_name != ''">
+				and a.staff_name  like concat(concat('%', #{pd.staff_name}),'%')
+			</if>
+			<if test="pd.staff_level != null and pd.staff_level != ''">
+				and a.staff_level = #{pd.staff_level}	
+			</if>
+			<if test="pd.staff_status != null and pd.staff_status != ''">
+				and a.staff_status = #{pd.staff_status}	
+			</if>
+			<if test="pd.staff_name_search != null and pd.staff_name_search != ''">
+			and
+				a.staff_name like concat('%',concat(#{pd.staff_name_search},'%'))
+			</if>
+			<if test="pd.dept_id_search != null and pd.dept_id_search != ''">
+			and
+				a.dept_id = #{pd.dept_id_search}
+			</if>
+			<if test="pd.post_search != null and pd.post_search != ''">
+			and
+				a.post = #{pd.post_search}
+			</if>
+			<if test="pd.staff_status_search != null and pd.staff_status_search != ''">
+			and
+				a.staff_status = #{pd.staff_status_search}
+			</if>
+			<if test="pd.vacation_type_search != null and pd.vacation_type_search != ''">
+			and
+				a.vacation_type = #{pd.vacation_type_search}
+			</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.login_name,
+				a.login_password,
+				a.staff_name,
+				a.staff_level,
+				a.staff_status,
+				a.vacation_type,
+				a.dept_id,
+				a.role_id,
+				a.staff_sex,
+				a.staff_nation,
+				a.political_status,
+				a.marital,
+				a.birthday,
+				a.education,
+				a.major,
+				a.graduate_school,
+				a.graduate_date,
+				a.degree,
+				a.english_level,
+				a.id_card,
+				a.hukou_location,
+				a.contact,
+				a.home_tel,
+				a.email,
+				a.address,
+				a.emergency_contact,
+				a.emergency_contact_tel,
+				a.staff_code,
+				a.post,
+				a.rank,
+				a.join_date,
+				a.zhuanzheng_date,
+				a.shebao_date,
+				a.gongjijin_date,
+				a.jbsysc,
+				a.token,
+				a.token_expire,
+				a.staff_id,
+				b.dept_name,
+				c.dic_label as post_name
+		from 
+				xt_staff_info a
+		left join
+				xt_dept_info b
+		on
+				a.dept_id = b.dept_id
+		left join
+				xt_dic c
+		on
+				a.post = c.dic_value AND c.dic_type = 'zw'
+		where
+				a.if_deleted=0
+		<if test="date != null and date != ''">
+		and
+				a.create_time like concat(#{date},'%')
+		</if>
+		<if test="S_TYPE == 'select'">
+		and
+			    a.staff_name is not null
+		and
+				a.staff_name != ''
+		</if>
+		order by
+				a.create_time desc
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		update xt_staff_info
+		set if_deleted=1
+		where 
+			staff_id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	<!-- 列表(q) -->
+	<select id="listq" parameterType="pd" resultType="pd">
+		select a.staff_id,a.login_name,a.staff_name
+		from xt_staff_info a
+		where a.if_deleted=0 
+		<if test="q != null and q != ''">
+			and ( a.staff_name like concat(concat('%', #{q}),'%') or  a.staff_name like concat(concat('%', #{q}),'%') )
+		</if>	
+		order by a.staff_name
+		limit 20
+	</select>
+
+
+	<!-- 判断用户名和密码 -->
+	<select id="getUserByNameAndPwd" parameterType="pd" resultType="pd" useCache="false">
+		select
+			a.staff_id,
+			a.login_name,
+			a.staff_name,
+			a.staff_status,
+			a.token,
+			a.token_expire,
+			a.staff_level,
+			a.dept_id,
+			a.staff_code,
+			a.join_date,
+			a.zhuanzheng_date,
+			a.shebao_date,
+			a.gongjijin_date,
+			a.jbsysc,
+			d.dept_name,
+			d.dept_code,
+			r.role_name,
+			r.role_auth,
+			dic.dic_label as post_name
+		from
+			xt_staff_info a
+		left join
+			xt_dept_info d
+		on
+			d.dept_id=a.dept_id
+		left join
+			xt_role r
+		on
+			r.role_id=a.role_id
+		LEFT JOIN
+			xt_dic dic
+		ON
+			a.post = dic.dic_value AND dic.dic_type = 'zw'
+		where
+			a.if_deleted=0
+		and
+			a.login_name = #{login_name}
+		and
+			a.login_password = #{login_password}
+	</select>
+	<!-- 通过token获取数据 -->
+	<select id="findByToken" parameterType="pd" resultType="pd">
+		select a.staff_id,a.login_name,a.staff_name,a.staff_status,a.token,a.token_expire,a.staff_level,a.dept_id
+		,d.dept_name,d.dept_code,r.role_name,r.role_auth
+		from xt_staff_info a
+		left join xt_dept_info d on d.dept_id=a.dept_id
+		left join xt_role r on r.role_id=a.role_id
+		where a.if_deleted=0
+			and a.token = #{token}
+	</select>
+	<!-- 修改 -->
+	<update id="update_token" parameterType="pd">
+		update  xt_staff_info
+			set 
+				token = #{token},
+				token_expire = date_add(now(), interval 10 day)
+			where 
+				if_deleted=0
+				and staff_id = #{staff_id}
+	</update>
+	<!-- 修改密码 -->
+	<update id="editpassword" parameterType="pd">
+		update xt_staff_info
+		set login_password = #{login_password}
+		where 
+			staff_id = #{staff_id}
+	</update>
+</mapper>

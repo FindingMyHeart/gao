@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StaffDailyInfoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into STAFF_DAILY_INFO(
+			DAILY_TYPE,
+			TODAY_CONTENT,
+			TOMORROW_PLAN,
+			CREATE_TIME,
+			CREATE_USERID,	
+			IF_DELETED,	
+			DAILY_ID
+		) values (
+			#{DAILY_TYPE},
+			#{TODAY_CONTENT},
+			#{TOMORROW_PLAN},
+			#{CREATE_TIME},
+			#{CREATE_USERID},	
+			#{IF_DELETED},	
+			#{DAILY_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+		 	STAFF_DAILY_INFO
+		SET
+			IF_DELETED = '1'
+		where 
+			DAILY_ID = #{DAILY_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  STAFF_DAILY_INFO
+			set
+				TODAY_CONTENT = #{TODAY_CONTENT},
+				TOMORROW_PLAN = #{TOMORROW_PLAN},
+				DAILY_ID = DAILY_ID
+			where 
+				DAILY_ID = #{DAILY_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select
+				a.TODAY_CONTENT,
+				a.TOMORROW_PLAN,
+				a.DAILY_TYPE,
+				a.CREATE_TIME,
+				DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') AS TX_DATE,
+				a.CREATE_USERID,
+				a.IF_DELETED,
+				a.DAILY_ID,
+				b.STAFF_CODE,
+				b.STAFF_NAME,
+				c.DEPT_NAME,
+				d.DIC_LABEL AS POST_NAME
+		from
+				STAFF_DAILY_INFO a
+		LEFT JOIN
+				XT_STAFF_INFO b
+		ON
+				a.CREATE_USERID = b.STAFF_ID
+		LEFT JOIN
+				XT_DEPT_INFO c
+		ON
+				b.DEPT_ID = c.DEPT_ID
+		LEFT JOIN
+				XT_DIC d
+		ON
+				b.POST = d.DIC_VALUE AND d.DIC_TYPE = 'zw'
+		WHERE
+			DAILY_ID = #{DAILY_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.TODAY_CONTENT,	
+				a.TOMORROW_PLAN,
+				a.DAILY_TYPE,
+				a.CREATE_TIME,
+				DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') AS TX_DATE,
+				a.CREATE_USERID,	
+				a.IF_DELETED,	
+				a.DAILY_ID,
+				b.STAFF_CODE,
+				b.STAFF_NAME,
+				c.DEPT_NAME,
+				d.DIC_LABEL AS POST_NAME
+		from 
+				STAFF_DAILY_INFO a
+		LEFT JOIN
+				XT_STAFF_INFO b
+		ON
+				a.CREATE_USERID = b.STAFF_ID
+		LEFT JOIN
+				XT_DEPT_INFO c
+		ON
+				b.DEPT_ID = c.DEPT_ID
+		LEFT JOIN
+				XT_DIC d
+		ON
+				b.POST = d.DIC_VALUE AND d.DIC_TYPE = 'zw'
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="pd.STAFF_CODE_SEARCH != null and pd.STAFF_CODE_SEARCH != ''">
+		AND
+				b.STAFF_CODE LIKE CONCAT('%',CONCAT(#{pd.STAFF_CODE_SEARCH},'%'))
+		</if>
+		<if test="pd.STAFF_NAME_SEARCH != null and pd.STAFF_NAME_SEARCH != ''">
+			AND
+			b.STAFF_NAME LIKE CONCAT('%',CONCAT(#{pd.STAFF_NAME_SEARCH},'%'))
+		</if>
+		<if test="pd.DEPT_ID_SEARCH != null and pd.DEPT_ID_SEARCH != ''">
+		AND
+			b.DEPT_ID = #{pd.DEPT_ID_SEARCH}
+		</if>
+		<if test="pd.POST_SEARCH != null and pd.POST_SEARCH != ''">
+		AND
+			b.POST = #{pd.POST_SEARCH}
+		</if>
+		<if test="pd.DAILY_TYPE_SEARCH != null and pd.DAILY_TYPE_SEARCH != ''">
+		AND
+			a.DAILY_TYPE = #{pd.DAILY_TYPE_SEARCH}
+		</if>
+		<if test="pd.CREATE_DATE_SEARCH != null and pd.CREATE_DATE_SEARCH != ''">
+		AND
+			.a.CREATE_TIME LIKE CONCAT('%',CONCAT(#{pd.CREATE_DATE_SEARCH},'%'))
+		</if>
+		ORDER BY
+			a.CREATE_TIME DESC
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.TODAY_CONTENT,	
+				a.TOMORROW_PLAN,
+				a.DAILY_TYPE,
+				a.CREATE_TIME,
+				a.CREATE_USERID,	
+				a.IF_DELETED,	
+				a.DAILY_ID
+		from 
+				STAFF_DAILY_INFO a
+		WHERE
+				a.IF_DELETED = '0'
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			STAFF_DAILY_INFO
+	  	SET
+			IF_DELETED = '1'
+		where 
+			DAILY_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+
+	<!-- 查看是否已经上报过日报 -->
+	<select id="findByUidAndDate" parameterType="pd" resultType="pd">
+		select
+				a.TODAY_CONTENT,
+				a.TOMORROW_PLAN,
+				a.CREATE_TIME,
+				a.CREATE_USERID,
+				a.IF_DELETED,
+				a.DAILY_ID
+		from
+				STAFF_DAILY_INFO a
+		WHERE
+				a.IF_DELETED = '0'
+		AND
+				a.CREATE_TIME LIKE '${DATE}%'
+		AND
+				a.CREATE_USERID = #{USERID}
+	</select>
+	
+</mapper>

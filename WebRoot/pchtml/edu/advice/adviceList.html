@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>意见建议</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css" />
+
+		<script type="text/javascript" src="../../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../../js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../../js/myjstools.js"></script>
+		<script type="text/javascript">
+			var mpath = "edu/report";
+			var viewType =  myjstools.request("viewType");
+			function loadGrid(){
+				var url="";
+				url = myjstools.wwwroot + '/web/service?METHOD=advice_list';
+				
+				
+				//初始化grid
+				$('#dg').datagrid({
+					iconCls: 'icon-edit',
+					singleSelect: true,
+					toolbar: '#tt',
+					pagination: true,
+					url: url,
+					onBeforeLoad: onBeforeLoad,
+					rownumbers: true,
+					loadMsg: '正在加载数据...',
+					onLoadError: function() {
+						myjstools.showerrinfo('数据加载出错了');
+					},
+					method: 'post',
+					pageNumber: 1,
+					pageSize: 20,
+					pageList: [10, 20, 50, 100],
+					columns: [
+						[{
+							field: 'advice_mobile',
+							title: '电话'
+							
+						},
+						{
+							field:'advice_content',
+							title:'建议内容'
+							
+						},
+						{
+							field:'staff_name',
+							title:'建议人'
+						},
+						{
+							field:'create_time',
+							title:'时间'
+						}]
+					]
+				});
+			}
+			
+			$(document).ready(function(){loadGrid();});
+			
+			
+			
+			function onBeforeLoad(param){
+				param.staff_name = $("#staff_name").val();
+				param.start_date = $("#startDate").datebox("getValue");
+				param.end_date= $("#endDate").datebox("getValue");
+			}
+			//查询
+	        function seek() {
+	            $('#dg').datagrid('load');
+	        }
+			function closewin() {
+				$('#win').window('close');
+
+				$('#dg').datagrid('reload');
+			}
+			
+		
+		</script>
+	</head>
+	<body style="width:100%; margin:0; height:100%">
+		<div id="tt" style="height:auto;">
+			&nbsp;<span class="icon-edit">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;意见建议 &nbsp;
+			<!--<span id="spaninfo"><a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" >查看选中项</a></span>-->
+			<div class="main_form">
+	            学号：<input id="studyNumber" name="staff_name" value="" placeholder="请输入姓名"/>
+	            时间：<input class="easyui-datetimebox" name="startDate" id="startDate" data-options="showSeconds:false" style="width:150px" >
+	            到&nbsp;<input class="easyui-datetimebox" name="endDate" id="endDate" data-options="showSeconds:false" style="width:150px" >
+	           
+	            <span><a href="javascript:seek();"  class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true"></a></span>
+           </div>
+		</div>
+		<table id="dg" title="" style="height:600px;"></table>
+
+		<div id="win" class="easyui-window" title="..." style="width:650px;height:400px;" data-options="modal:true,closed:true">
+			<iframe id="fra_s" width="99%" height="99%" border="0" frameborder="0"></iframe>
+		</div>
+		
+		<div id="smallWin" class="easyui-window" title="..." style="width:350px;height:250px;" data-options="modal:true,closed:true">
+			<iframe id="fra_sw" width="99%" height="99%" border="0" frameborder="0"></iframe>
+		</div>
+	</body>
+</html>

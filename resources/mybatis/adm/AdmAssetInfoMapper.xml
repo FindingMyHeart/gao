@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AdmAssetInfoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into ADM_ASSET_INFO(  
+			ASSET_NAME,	
+			ASSET_CODE,
+			ASSET_TYPE,
+			BUY_TIME,	
+			SALVAGE_VALUE,	
+			ASSET_BRAND,	
+			ASSET_SPEC,	
+			ASSET_UNIT,	
+			ASSET_NUM,	
+			ASSET_MEMO,	
+			STATUS,	
+			RESOURCEIDS,
+			BELONG_USERID,
+			BELONG_DEPTID,
+			CREATE_USERID,
+			CREATE_TIME,	
+			IF_DELETED,	
+			ASSET_ID
+		) values (
+			#{ASSET_NAME},	
+			#{ASSET_CODE},	
+			#{ASSET_TYPE},
+			#{BUY_TIME},
+			#{SALVAGE_VALUE},	
+			#{ASSET_BRAND},	
+			#{ASSET_SPEC},	
+			#{ASSET_UNIT},	
+			#{ASSET_NUM},	
+			#{ASSET_MEMO},
+			#{STATUS},
+			#{RESOURCEIDS},
+			#{BELONG_USERID},
+			#{BELONG_DEPTID},
+			#{CREATE_USERID},
+			#{CREATE_TIME},	
+			#{IF_DELETED},	
+			#{ASSET_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+			ADM_ASSET_INFO
+		SET
+			IF_DELETED = '1'
+		where 
+			ASSET_ID = #{ASSET_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  ADM_ASSET_INFO
+			set 
+				ASSET_NAME = #{ASSET_NAME},
+				ASSET_CODE = #{ASSET_CODE},
+				ASSET_TYPE = #{ASSET_TYPE},
+				BUY_TIME = #{BUY_TIME},
+				SALVAGE_VALUE = #{SALVAGE_VALUE},
+				ASSET_BRAND = #{ASSET_BRAND},
+				ASSET_SPEC = #{ASSET_SPEC},
+				ASSET_UNIT = #{ASSET_UNIT},
+				ASSET_NUM = #{ASSET_NUM},
+				ASSET_MEMO = #{ASSET_MEMO},
+				BELONG_USERID = #{BELONG_USERID},
+				BELONG_DEPTID = #{BELONG_DEPTID},
+				RESOURCEIDS = #{RESOURCEIDS},
+			ASSET_ID = ASSET_ID
+			where 
+				ASSET_ID = #{ASSET_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			ASSET_NAME,	
+			ASSET_CODE,	
+			ASSET_TYPE,
+			BUY_TIME,
+			SALVAGE_VALUE,	
+			ASSET_BRAND,	
+			ASSET_SPEC,	
+			ASSET_UNIT,	
+			ASSET_NUM,	
+			ASSET_MEMO,	
+			STATUS,
+			RESOURCEIDS,
+			BELONG_USERID,
+			BELONG_DEPTID,
+			CREATE_USERID,
+			CREATE_TIME,	
+			IF_DELETED,	
+			ASSET_ID
+		from 
+			ADM_ASSET_INFO
+		where 
+			ASSET_ID = #{ASSET_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.ASSET_NAME,	
+				a.ASSET_CODE,	
+				a.BUY_TIME,	
+				DATE_FORMAT(BUY_TIME,'%Y-%m-%d') AS BUY_DATE,
+				a.SALVAGE_VALUE,
+				a.ASSET_BRAND,	
+				a.ASSET_SPEC,	
+				a.ASSET_UNIT,	
+				a.ASSET_NUM,	
+				a.ASSET_MEMO,	
+				a.STATUS,	
+				a.CREATE_USERID,
+				a.CREATE_TIME,	
+				DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') AS CREATE_DATE,
+				a.IF_DELETED,
+				a.ASSET_ID,
+				b.STAFF_NAME,
+				c.DEPT_NAME
+		from 
+				ADM_ASSET_INFO a
+	  	LEFT JOIN
+				XT_STAFF_INFO b
+		ON
+			    a.CREATE_USERID = b.STAFF_ID
+	  	LEFT JOIN
+				XT_DEPT_INFO c
+	  	ON
+				b.DEPT_ID = c.DEPT_ID
+	  	WHERE
+	  			a.IF_DELETED = '0'
+	  	<if test="pd.ASSET_CODE_SEARCH != null and pd.ASSET_CODE_SEARCH != ''">
+		AND
+				a.ASSET_CODE LIKE CONCAT('%',CONCAT(#{pd.ASSET_CODE_SEARCH},'%'))
+		</if>
+	  	<if test="pd.ASSET_NAME_SEARCH != null and pd.ASSET_NAME_SEARCH != ''">
+		AND
+				a.ASSET_NAME LIKE CONCAT('%',CONCAT(#{pd.ASSET_NAME_SEARCH},'%'))
+		</if>
+	  	<if test="pd.USER_NAME_SEARCH != null and pd.USER_NAME_SEARCH != ''">
+		AND
+				b.STAFF_NAME LIKE CONCAT('%',CONCAT(#{pd.USER_NAME_SEARCH},'%'))
+		</if>
+	  	<if test="pd.DEPT_ID_SEARCH != null and pd.DEPT_ID_SEARCH != ''">
+		AND
+				b.DEPT_ID = #{pd.DEPT_ID_SEARCH}
+		</if>
+	  	<if test="pd.STATUS_SEARCH != null and pd.STATUS_SEARCH != ''">
+		AND
+				a.STATUS = #{pd.STATUS_SEARCH}
+		</if>
+	  	<if test="pd.ASSET_TYPE_SEARCH != null and pd.ASSET_TYPE_SEARCH != ''">
+		AND
+				a.ASSET_TYPE = #{pd.ASSET_TYPE_SEARCH}
+		</if>
+		ORDER BY
+			a.CREATE_TIME DESC
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.ASSET_NAME,	
+				a.ASSET_CODE,	
+				a.BUY_TIME,	
+				a.SALVAGE_VALUE,	
+				a.ASSET_BRAND,	
+				a.ASSET_SPEC,	
+				a.ASSET_UNIT,	
+				a.ASSET_NUM,	
+				a.ASSET_MEMO,	
+				a.STATUS,	
+				a.CREATE_USERID,	
+				a.CREATE_TIME,	
+				a.IF_DELETED,	
+				a.ASSET_ID
+		from 
+				ADM_ASSET_INFO a
+		WHERE
+	  			a.IF_DELETED = '0'
+	  	<if test="DATE != null and DATE != ''">
+		AND
+				a.CREATE_TIME LIKE CONCAT(#{DATE},'%')
+		</if>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			ADM_ASSET_INFO
+		SET
+			IF_DELETED = '1'
+		where 
+			ASSET_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 修改状态 -->
+	<update id="updateStatus" parameterType="pd">
+		UPDATE
+			ADM_ASSET_INFO
+	  	SET
+	  		STATUS = #{STATUS}
+	  	WHERE
+	  		ASSET_ID = #{ASSET_ID}
+	</update>
+	
+</mapper>

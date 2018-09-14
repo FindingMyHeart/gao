@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>测评管理</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css" />
+
+		<script type="text/javascript" src="../../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../../js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../../js/myjstools.js"></script>
+		<script type="text/javascript">
+			var mpath = "edu/survey";
+			
+			function initit() {
+	
+				//双击明细
+				function onDblClickRow(rowIndex, rowData) {
+					//var row = $('#dg').datagrid('getSelected');
+					//if(rowData) {
+						//openinfo(rowData[idfield]);
+					//}
+				}
+
+				function info() {
+					//var row = $('#dg').datagrid('getSelected');
+					//if(row) {
+						//openinfo(row[idfield]);
+					//}
+				}
+				
+				function onBeforeLoad(param) {
+					param.surveyName = $("#surveyName").val();
+				}
+				
+				//查询
+		        function seek() {
+		            $('#dg').datagrid('load');
+		        }
+				
+				//初始化grid
+				$('#dg').datagrid({
+					iconCls: 'icon-edit',
+					singleSelect: true,
+					onDblClickRow: onDblClickRow,
+					toolbar: '#tt',
+					pagination: true,
+					url: myjstools.wwwroot + '/web/service?METHOD=surveyInfoService_queryList',
+					onBeforeLoad: onBeforeLoad,
+					rownumbers: true,
+					loadMsg: '正在加载数据...',
+					onLoadError: function() {
+						myjstools.showerrinfo('数据加载出错了');
+					},
+					method: 'post',
+					pageNumber: 1,
+					pageSize: 20,
+					pageList: [10, 20, 50, 100],
+					columns: [
+						[{
+							field: 'survey_name',
+							title: '名称'
+						},
+						{
+							field:'survey_typeValue',
+							title:'类型'
+						},
+						{
+							field:'survey_rem',
+							title:'描述'
+						},
+						{
+							field: 'survey_id',
+							title: '操作',
+							formatter:function(value,row,index){
+								var s =
+	                        		('<a href="javascript:editinfo(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">编辑</a>'
+	                        		+'&nbsp;<a href="javascript:openinfo(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">题库</a>'
+									+'&nbsp;<a href="javascript:delinfo(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-remove\',plain:true">删除</a>'
+									);
+									
+								return s;
+	                    	}
+						}]
+					]
+				});
+			}
+	
+			$(document).ready(function() {
+					initit();
+				}
+			);
+			
+			
+			function add() {
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/" + mpath + "/addSurveyInfo.html");
+			}
+			
+			function editinfo(id) {
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/" + mpath + "/addSurveyInfo.html?id=" + id);
+			}
+			
+			function openinfo(id){
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/" + mpath + "/surveyQuestionList.html?id=" + id);
+				
+			}
+			
+			function closewin() {
+				$('#win').window('close');
+
+				$('#dg').datagrid('reload');
+			}
+			function delinfo(uid) {
+				$.messager.confirm('提示', '确认删除当前信息吗？'
+				, function(row) {
+					if(row) {
+						var objt = {};
+						objt.id=uid;
+						
+						myjstools.ajax(false, "POST", "/web/service?METHOD=surveyInfoService_delete", objt, delinfo_res);
+					}
+				});
+			}
+			
+			function delinfo_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+
+					$('#dg').datagrid('load'); //, objt
+				} catch(e) {
+					myjstools.showerrinfo("delinfo_res.error:出错了！" + e.message);
+				}
+			}
+			
+			function onBeforeLoad(param){
+				param.surveyName = $("#surveyName").val();
+				
+			}
+			
+			//查询
+	        function seek() {
+	            $('#dg').datagrid('load');
+	        }
+		</script>
+		<body style="width:100%; margin:0; height:100%">
+			<div id="tt" style="height:auto;">
+				&nbsp;<span class="icon-edit">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;题库管理 &nbsp;
+				<span id="spanadd"><a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="add()">添加</a></span> &nbsp;
+				<!--<span id="spaninfo"><a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" >查看选中项</a></span>-->
+				<div class="main_form">
+	            题目：<input id="surveyName" name="surveyName" value="" placeholder="请输题目"/>
+	           
+	            <span><a href="javascript:seek();"  class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true"></a></span>
+           </div>
+			</div>
+			<table id="dg" title="" ></table>
+	
+			<div id="win" class="easyui-window" title="..." style="width:700px;height:500px;" data-options="modal:true,closed:true">
+				<iframe id="fra_s" width="99%" height="99%" border="0" frameborder="0"></iframe>
+			</div>
+		</body>
+</html>

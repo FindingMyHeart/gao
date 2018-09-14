@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CwAccountInfoMapper">
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into CW_ACCOUNT_INFO(   
+			ACCOUNT_NAME,
+			ACCOUNT_PROPERTY,	
+			KAIHU_BANK,	
+			BANK_ACCOUNT,	
+			BANK_ADDRESS,	
+			ACCOUNT_TYPE,	
+			CREATE_USERID,	
+			CREATE_TIME,	
+			IF_DELETED,	
+			ACCOUNT_ID
+		) values (
+			#{ACCOUNT_NAME},	
+			#{ACCOUNT_PROPERTY},	
+			#{KAIHU_BANK},	
+			#{BANK_ACCOUNT},	
+			#{BANK_ADDRESS},	
+			#{ACCOUNT_TYPE},	
+			#{CREATE_USERID},	
+			#{CREATE_TIME},	
+			#{IF_DELETED},	
+			#{ACCOUNT_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+			CW_ACCOUNT_INFO
+		SET
+			IF_DELETED = '1'
+		where 
+			ACCOUNT_ID = #{ACCOUNT_ID}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  CW_ACCOUNT_INFO
+			set 
+				<if test="ACCOUNT_NAME != null and ACCOUNT_NAME != ''">
+					ACCOUNT_NAME = #{ACCOUNT_NAME},
+				</if>
+				<if test="ACCOUNT_PROPERTY != null and ACCOUNT_PROPERTY != ''">
+					ACCOUNT_PROPERTY = #{ACCOUNT_PROPERTY},
+				</if>
+				<if test="KAIHU_BANK != null and KAIHU_BANK != ''">
+					KAIHU_BANK = #{KAIHU_BANK},
+				</if>
+				<if test="BANK_ACCOUNT != null and BANK_ACCOUNT != ''">
+					BANK_ACCOUNT = #{BANK_ACCOUNT},
+				</if>
+				<if test="BANK_ADDRESS != null and BANK_ADDRESS != ''">
+					BANK_ADDRESS = #{BANK_ADDRESS},
+				</if>
+				<if test="ACCOUNT_TYPE != null and ACCOUNT_TYPE != ''">
+					ACCOUNT_TYPE = #{ACCOUNT_TYPE},
+				</if>
+				ACCOUNT_ID = ACCOUNT_ID
+			where 
+				ACCOUNT_ID = #{ACCOUNT_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			ACCOUNT_NAME,
+			ACCOUNT_PROPERTY,	
+			KAIHU_BANK,	
+			BANK_ACCOUNT,	
+			BANK_ADDRESS,	
+			ACCOUNT_TYPE,	
+			CREATE_USERID,	
+			CREATE_TIME,	
+			IF_DELETED,	
+			ACCOUNT_ID
+		from 
+			CW_ACCOUNT_INFO
+		where 
+			ACCOUNT_ID = #{ACCOUNT_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+			a.ACCOUNT_NAME,
+			a.ACCOUNT_PROPERTY,	
+			a.KAIHU_BANK,	
+			a.BANK_ACCOUNT,	
+			a.BANK_ADDRESS,	
+			a.ACCOUNT_TYPE,	
+			a.CREATE_USERID,	
+			a.CREATE_TIME,	
+			a.IF_DELETED,	
+			a.ACCOUNT_ID
+		from 
+				CW_ACCOUNT_INFO a
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="pd.ACCOUNT_ID != null and pd.ACCOUNT_ID != ''">
+			AND a.ACCOUNT_ID = #{pd.ACCOUNT_ID}
+		</if>
+		<if test="pd.KAIHU_BANK != null and pd.KAIHU_BANK != ''">
+			AND a.KAIHU_BANK LIKE concat('%',concat(#{pd.KAIHU_BANK},'%'))
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+			a.ACCOUNT_NAME,
+			a.ACCOUNT_PROPERTY,	
+			a.KAIHU_BANK,	
+			a.BANK_ACCOUNT,	
+			a.BANK_ADDRESS,	
+			a.ACCOUNT_TYPE,	
+			a.CREATE_USERID,	
+			a.CREATE_TIME,	
+			a.IF_DELETED,	
+			a.ACCOUNT_ID
+		from 
+				CW_ACCOUNT_INFO a
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="KAIHU_BANK != null and KAIHU_BANK != ''">
+		AND
+				a.KAIHU_BANK = #{KAIHU_BANK}
+		</if>
+	</select>
+
+	<!-- 获取所有开户行列表 -->
+	<select id="listAllKhh" parameterType="pd" resultType="pd">
+		SELECT
+			DISTINCT  a.KAIHU_BANK
+		FROM
+			CW_ACCOUNT_INFO a
+		WHERE
+			a.IF_DELETED = '0'
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			CW_ACCOUNT_INFO
+	  	SET
+			IF_DELETED = '0'
+		where 
+			ACCOUNT_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

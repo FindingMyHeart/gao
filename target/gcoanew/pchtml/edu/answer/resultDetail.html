@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>答题管理</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css" />
+
+		<script type="text/javascript" src="../../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../../js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../../js/myjstools.js"></script>
+		<script type="text/javascript">
+			var resultId = myjstools.request("resultId").replace("#", "");
+			function init(){
+				var objt={};
+				myjstools.ajax(false, "GET", "/web/service?METHOD=surveyResultService_queryDetailList&resultId="+resultId, objt, delinfo_res);
+			}
+			
+			function delinfo_res(data){
+
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+					
+					var row = data.rows;
+
+					for(var i=0;i<row.length;i++){
+						$("#ulAns").append("<li style='list-style:none'>"+row[i].title+" <b>("+row[i].answer_letter+")</b></li>")
+						$("#ulAns").append("<li style='list-style:none'>&nbsp;&nbsp;"+row[i].answerInfo+"</li>")
+					}
+					//$('#dg').datagrid('load'); //, objt
+				} catch(e) {
+					myjstools.showerrinfo("delinfo_res.error:出错了！" + e.message);
+				}
+				
+			}
+			
+			$(document).ready(function(){init()});
+		</script>
+	</head>
+<body>
+	<ul id="ulAns">
+		
+	</ul>
+</body>
+</html>

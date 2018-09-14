@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BusApplybuyDetailMapper">
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into BUS_APPLYBUY_DETAIL( 
+			APPLYBUY_ID,	
+			MATERIAL_ID,	
+			SYSTEM_NAME,	
+			SUB_NO,	
+			MATERIAL_NUM,	
+			MEMO,	
+			APPLYBUY_DETAIL_ID
+		) values (
+			#{APPLYBUY_ID},	
+			#{MATERIAL_ID},	
+			#{SYSTEM_NAME},	
+			#{SUB_NO},	
+			#{MATERIAL_NUM},	
+			#{MEMO},	
+			#{APPLYBUY_DETAIL_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from BUS_APPLYBUY_DETAIL
+		where 
+			APPLYBUY_DETAIL_ID = #{APPLYBUY_DETAIL_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  BUS_APPLYBUY_DETAIL
+			set 
+				APPLYBUY_ID = #{APPLYBUY_ID},
+				MATERIAL_ID = #{MATERIAL_ID},
+				SYSTEM_NAME = #{SYSTEM_NAME},
+				SUB_NO = #{SUB_NO},
+				MATERIAL_NUM = #{MATERIAL_NUM},
+				MEMO = #{MEMO},
+			APPLYBUY_DETAIL_ID = APPLYBUY_DETAIL_ID
+			where 
+				APPLYBUY_DETAIL_ID = #{APPLYBUY_DETAIL_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			APPLYBUY_ID,	
+			MATERIAL_ID,	
+			SYSTEM_NAME,	
+			SUB_NO,	
+			MATERIAL_NUM,	
+			MEMO,	
+			APPLYBUY_DETAIL_ID
+		from 
+			BUS_APPLYBUY_DETAIL
+		where 
+			APPLYBUY_DETAIL_ID = #{APPLYBUY_DETAIL_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.APPLYBUY_ID,	
+				a.MATERIAL_ID,	
+				a.SYSTEM_NAME,	
+				a.SUB_NO,	
+				a.MATERIAL_NUM,	
+				a.MEMO,	
+				a.APPLYBUY_DETAIL_ID,
+				b.APPLYBUY_SN,
+				DATE_FORMAT(b.CREATE_TIME,'%Y-%m-%d') AS CREATE_DATE,
+				c.PROJECT_NAME,
+				b.STATUS,
+				d.DIC_LABEL AS SYS_NAME,
+				e.STAFF_NAME AS CREATE_USERNAME
+		from 
+				BUS_APPLYBUY_DETAIL a
+		LEFT JOIN
+				BUS_APPLYBUY_INFO b
+		ON
+				a.APPLYBUY_ID = b.APPLYBUY_ID
+		LEFT JOIN
+				BUS_PROJECT_INFO c
+		ON
+				b.PROJECT_ID = c.PROJECT_ID
+		LEFT JOIN
+				XT_DIC d
+		ON
+				a.SYSTEM_NAME = d.DIC_ID
+		LEFT JOIN
+				XT_STAFF_INFO e
+		ON
+				b.CREATE_USERID = e.STAFF_ID
+		WHERE
+				b.IF_DELETED = '0'
+		<if test="pd.APPLYBUY_SN_SEARCH != null and pd.APPLYBUY_SN_SEARCH != ''">
+		AND
+				b.APPLYBUY_SN LIKE CONCAT('%',CONCAT(#{pd.APPLYBUY_SN_SEARCH},'%'))
+		</if>
+		<if test="pd.CREATE_DATE_SEARCH != null and pd.CREATE_DATE_SEARCH != ''">
+		AND
+				b.CREATE_TIME LIKE CONCAT(#{pd.CREATE_DATE_SEARCH},'%')
+		</if>
+		<if test="pd.PROJECT_ID_SEARCH != null and pd.PROJECT_ID_SEARCH != ''">
+		AND
+				b.PROJECT_ID  = #{pd.PROJECT_ID_SEARCH}
+		</if>
+		<if test="pd.SYSTEM_NAME_SEARCH != null and pd.SYSTEM_NAME_SEARCH != ''">
+		AND
+				a.SYSTEM_NAME  = #{pd.SYSTEM_NAME_SEARCH}
+		</if>
+		<if test="pd.CREATE_USERID_SEARCH != null and pd.CREATE_USERID_SEARCH != ''">
+		AND
+				b.CREATE_USERID  = #{pd.CREATE_USERID_SEARCH}
+		</if>
+		<if test="pd.STATUS_SEARCH != null and pd.STATUS_SEARCH != ''">
+		AND
+				a.STATUS  = #{pd.STATUS_SEARCH}
+		</if>
+	  	ORDER BY
+				b.CREATE_TIME DESC,a.SUB_NO ASC
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.APPLYBUY_ID,	
+				a.MATERIAL_ID,	
+				a.SYSTEM_NAME,	
+				a.SUB_NO,	
+				a.MATERIAL_NUM,	
+				a.MEMO,	
+				a.APPLYBUY_DETAIL_ID,
+				b.MATERIAL_NAME,
+				b.MATERIAL_BRAND,
+				b.MATERIAL_SPEC,
+				b.MATERIAL_UNIT,
+				c.DIC_LABEL AS SYSTEM_LABEL
+		from 
+				BUS_APPLYBUY_DETAIL a
+		LEFT JOIN
+				BASE_MATERIAL_INFO b
+	  	ON
+				a.MATERIAL_ID = b.MATERIAL_ID
+		LEFT JOIN
+				XT_DIC c
+	  	ON
+				a.SYSTEM_NAME = c.DIC_VALUE AND c.DIC_TYPE = 'xtmc'
+		WHERE
+				1 = 1
+		<if test="APPLYBUY_ID != null and APPLYBUY_ID != ''">
+		AND
+			    APPLYBUY_ID = #{APPLYBUY_ID}
+		</if>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from BUS_APPLYBUY_DETAIL
+		where 
+			APPLYBUY_DETAIL_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+
+	<!-- 根据申请主表删除 -->
+	<delete id="deleteByApplybuyId" parameterType="pd">
+		DELETE FROM
+			BUS_APPLYBUY_DETAIL
+		WHERE
+			APPLYBUY_ID = #{APPLYBUY_ID}
+	</delete>
+	
+</mapper>

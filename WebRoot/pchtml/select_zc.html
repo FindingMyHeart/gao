@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>资产字典管理</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="themes/icon.css" />
+
+		<script type="text/javascript" src="js/jquery.min.js"></script>
+		<script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="js/myjstools.js"></script>
+
+		<script type="text/javascript">
+			var EQUIP_KIND = myjstools.request("EQUIP_KIND").replace("#", "");
+			var mpath = ".";
+			var idfield = "EQUIP_ID";
+		
+			//双击明细
+			function onDblClickRow(rowIndex, rowData) {
+				//var row = $('#dg').datagrid('getSelected');
+				if(rowData) {
+					openinfo(rowData[idfield]);
+				}
+			}
+
+			function info() {
+				var row = $('#dg').datagrid('getSelected');
+				if(row) {
+					openinfo(row[idfield]);
+				}
+			}
+
+			function openinfo(id) {
+				var rows = $('#dg').datagrid('getRows');
+				
+				var info;
+				for(var i=0;i<rows.length;i++)
+				{
+					info = rows[i];
+					if(info.EQUIP_ID == id)
+					{
+						parent.selectvalue(info)
+						break;
+					}
+				}
+				
+				parent.closewin();
+			}
+			
+			function closewin() {
+				$('#win').window('close');
+
+				$('#dg').datagrid('reload');
+			}
+
+			//查询
+			function submitForm() {
+				$('#dg').datagrid('load');
+			}
+
+			function initit() {
+				loadtree();
+
+				//初始化grid
+				$('#dg').datagrid({
+					iconCls: 'icon-edit',
+					singleSelect: true,
+					onDblClickRow: onDblClickRow,
+					onBeforeLoad: onBeforeLoad,
+					toolbar: '#tt',
+					pagination: true,
+					url: myjstools.wwwroot + '/web/service?METHOD=equip_list',
+					rownumbers: true,
+					loadMsg: '正在加载数据...',
+					onLoadError: function() {
+						myjstools.showerrinfo('数据加载出错了');
+					},
+					method: 'post',
+					pageNumber: 1,
+					pageSize: 20,
+					pageList: [10, 20, 50, 100],
+					columns: [
+						[{
+							field: 'EQUIP_CODE',
+							title: '资产编码'
+						}, {
+							field: 'STANDARD_CODE',
+							title: '国标编码'
+						}, {
+							field: 'EQUIP_NAME',
+							title: '资产名称'
+						}, {
+							field: 'EQUIP_CLASS',
+							title: '资产类别'
+						}, {
+							field: 'EQUIP_SPEC',
+							title: '规格'
+						}, {
+							field: 'EQUIP_PRICE',
+							title: '单价'
+						}, {
+							field: 'EQUIP_UNIT',
+							title: '单位'
+						}, {
+							field: 'DEPRE_FLAG',
+							title: '是否折旧'
+						}, {
+							field: 'CHECK_FLAG',
+							title: '是否强检'
+						}
+						,{
+							field: idfield,
+							title: '操作'
+							, formatter:function(value,row,index){
+								var s =
+	                        		('<a href="javascript:openinfo(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">选择</a>'
+	                        		);
+									
+								return s;
+                        	}
+						}
+						]
+					]
+				});
+			}
+
+			$(
+				function() {
+					initit();
+				}
+			);
+		</script>
+		
+		<script language="javascript" type="text/javascript">
+			function treeclick(node) {
+
+				$('#tabmain').tabs('select', "列表");
+
+				$('#dg').datagrid('load'); //, objt
+			}
+
+			//加载分类
+			function loadtree() {
+				myjstools.ajax(false, "POST", "/web/service?METHOD=class_list", {
+					page: 1,
+					rows: 10000
+					, CLASS_ID_LIKE:EQUIP_KIND
+				}, showtree);
+			}
+
+			//
+			function showtree(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+
+					var rows = data.rows;
+
+					$('#ultree').tree({
+						data: [{
+							"id": 0,
+							"text": "全部",
+							CLASS_ID: 0,
+							checked: false
+						}],
+						lines: true,
+						checkbox: false,
+						onlyLeafCheck: true
+						, onClick: treeclick
+					});
+
+					//添加部门结点
+					var root = $('#ultree').tree('find', 0).target;
+
+					for(var i = 0; i < rows.length; i++) {
+						$('#ultree').tree('append', {
+							parent: $('#ultree').tree('find', rows[i].PID).target,
+							data: [{
+								id: rows[i].CLASS_ID,
+								text: rows[i].CLASS_NAME + "(" + rows[i].CLASS_CODE + ")",
+								CLASS_ID: rows[i].CLASS_ID,
+								CLASS_CODE: rows[i].CLASS_CODE,
+								checked: false
+							}]
+						});
+					}
+				} catch(e) {
+					myjstools.showerrinfo("showtree.error:出错了！" + e.message);
+				}
+			}
+		</script>
+		
+
+		<script language="javascript" type="text/javascript">
+			function onBeforeLoad(param) {
+				var nodes = $('#ultree').tree('getSelected');
+
+				if(nodes != null) {
+					param.EQUIP_CLASS = nodes.CLASS_ID;
+				}
+				
+				param.EQUIP_NAME = $("#EQUIP_NAME").val();
+				param.EQUIP_CODE = $("#EQUIP_CODE").val();
+			}
+		</script>
+	</head>
+
+	<body style="width:100%; margin:0; height:100%">
+		<div id="tt" style="height:auto;">
+			&nbsp;<span class="icon-edit">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;选择资产  &nbsp;
+			<span id="spaninfo"><a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onClick="info()">选择选中项</a></span>
+			&nbsp;&nbsp;&nbsp;<a href="javascript:parent.closewin()" class="easyui-linkbutton">退出</a>
+		</div>
+		<div id="tabmain" class="easyui-tabs">
+			<div title="列表" data-options="iconCls:'icon-tip',closable:false" style="padding:0px;width:99%">
+				<div class="easyui-layout" style="width:99%;height:450px;">
+					<div data-options="region:'west',border:true" style="width:240px;padding:10px;">
+						<ul id="ultree" class="easyui-tree" data-options="animate:true"></ul>
+					</div>
+					<div data-options="region:'center',border:true" style="padding:0px">
+						<table id="dg" title=""></table>
+					</div>
+				</div>
+			</div>
+			<div title="查询" data-options="iconCls:'icon-search',closable:false" style="padding:10px;width:98%">
+				<div style="text-align:center; margin:0 auto;width:400px">
+					<div class="easyui-panel" title="查询条件">
+						<div style="padding:10px 0 10px 60px;">
+							<form id="ff" method="post">
+								<table>
+									<tr>
+										<td align="right">资产名称:</td>
+										<td><input class="easyui-validatebox" type="text" name="EQUIP_NAME" id="EQUIP_NAME" data-options="required:false" /></td>
+									</tr>
+									<tr>
+										<td align="right">资产编码:</td>
+										<td><input class="easyui-validatebox" type="text" name="EQUIP_CODE" id="EQUIP_CODE" data-options="required:false" /></td>
+									</tr>
+									<tr>
+										<td colspan="2">
+											<div style="text-align:center;padding:5px">
+												<a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()">查询</a>
+											</div>
+										</td>
+									</tr>
+								</table>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="win" class="easyui-window" title="..." style="width:800px;height:600px;" data-options="modal:true,closed:true">
+			<iframe id="fra_s" width="99%" height="99%" border="0" frameborder="0"></iframe>
+		</div>
+
+	</body>
+
+</html>

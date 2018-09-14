@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>添加部门</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../themes/icon.css" />
+
+		<script type="text/javascript" src="../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../js/myjstools.js"></script>
+		<script language="javascript" type="text/javascript" src="../js/hr.js"></script>
+		<script type="text/javascript">
+			var pid = myjstools.request("pid").replace("#", "");
+
+			function initit() {
+
+			}
+
+			$(
+				function() {
+					initit();
+				}
+			);
+		</script>
+		<script type="text/javascript">
+			function saveit() {
+				if($("#dept_code").val() == "") {
+					myjstools.showerrinfo('请输入编码');
+					return;
+				}
+				if($("#dept_name").val() == "") {
+					myjstools.showerrinfo('请输入名称');
+					return;
+				}
+
+				var objt = myjstools.getallinput();
+
+
+				objt.pid = pid;
+
+				
+				myjstools.ajax(false, "POST", "/web/service?METHOD=dept_add", objt, saveit_res);
+			}
+
+			function saveit_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+
+					myjstools.showerrinfo("操作成功。")
+
+					parent.closewin();
+				} catch(e) {
+					myjstools.showerrinfo("saveit_res.error:出错了！" + e.message);
+				}
+			}
+
+			function gethr(str) {
+				$("#spell_code").val(myhr.getpy(str));
+			}
+		</script>
+	</head>
+
+	<body style="width:90%; text-align:center; margin:0 auto; margin-top:10px;padding:10px 10px 10px 20px">
+		<div class="easyui-panel" title="添加" style="width:100%">
+			<div style="padding:10px 10px 10px 60px">
+				<form id="ff" method="post">
+					<table>
+						<tr>
+							<td align="right">部门编码:</td>
+							<td><input class="easyui-validatebox" type="text" name="dept_code" id="dept_code" data-options="required:true" up="up" /></td>
+						</tr>
+						<tr>
+							<td align="right">部门名称:</td>
+							<td><input class="easyui-validatebox" type="text" name="dept_name" id="dept_name" data-options="required:true" up="up" onchange="gethr(this.value)" /></td>
+						</tr>
+						<tr>
+							<td align="right">拼音码:</td>
+							<td><input class="easyui-validatebox" type="text" name="spell_code" id="spell_code" data-options="required:false" up="up" /></td>
+						</tr>
+					</table>
+				</form>
+			</div>
+			<div style="text-align:center;padding:5px">
+				<a href="javascript:saveit()" class="easyui-linkbutton">保存</a>
+			</div>
+		</div>
+	</body>
+
+</html>

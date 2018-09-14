@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BusBuyContractInfoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into BUS_BUY_CONTRACT_INFO(  
+			CONTRACT_NO,	
+			CONTRACT_NAME,	
+			BUYER_NAME,	
+			PROJECT_ID,	
+			SUPPLIER_ID,	
+			CONTRACT_PRICE,	
+			PAYMENT_MODE,	
+			BILL_TYPE,	
+			CONTRACT_DATE,	
+			MEMO,	
+			DEPT_ID,	
+			CREATE_USERID,	
+			CREATE_TIME,	
+			IF_DELETED,	
+			CONTRACT_ID
+		) values (
+			#{CONTRACT_NO},	
+			#{CONTRACT_NAME},	
+			#{BUYER_NAME},	
+			#{PROJECT_ID},	
+			#{SUPPLIER_ID},	
+			#{CONTRACT_PRICE},	
+			#{PAYMENT_MODE},	
+			#{BILL_TYPE},	
+			#{CONTRACT_DATE},	
+			#{MEMO},	
+			#{DEPT_ID},	
+			#{CREATE_USERID},	
+			#{CREATE_TIME},	
+			#{IF_DELETED},	
+			#{CONTRACT_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+			BUS_BUY_CONTRACT_INFO
+		SET
+			IF_DELETED = '1'
+		where 
+			CONTRACT_ID = #{CONTRACT_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  BUS_BUY_CONTRACT_INFO
+			set 
+				CONTRACT_NAME = #{CONTRACT_NAME},
+				BUYER_NAME = #{BUYER_NAME},
+				PROJECT_ID = #{PROJECT_ID},
+				SUPPLIER_ID = #{SUPPLIER_ID},
+				CONTRACT_PRICE = #{CONTRACT_PRICE},
+				PAYMENT_MODE = #{PAYMENT_MODE},
+				BILL_TYPE = #{BILL_TYPE},
+				CONTRACT_DATE = #{CONTRACT_DATE},
+				MEMO = #{MEMO},
+			CONTRACT_ID = CONTRACT_ID
+			where 
+				CONTRACT_ID = #{CONTRACT_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			a.CONTRACT_NO,
+			a.CONTRACT_NAME,
+			a.BUYER_NAME,
+			a.PROJECT_ID,
+			a.SUPPLIER_ID,
+			a.CONTRACT_PRICE,
+			a.PAYMENT_MODE,
+			a.BILL_TYPE,
+			a.CONTRACT_DATE,
+			a.MEMO,
+			a.DEPT_ID,
+			a.CREATE_USERID,
+			a.CREATE_TIME,
+			a.IF_DELETED,
+			a.CONTRACT_ID,
+			DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') AS CREATE_DATE,
+			b.DEPT_NAME,
+			c.STAFF_NAME
+		from 
+			BUS_BUY_CONTRACT_INFO a
+		LEFT JOIN
+			XT_DEPT_INFO b
+		ON
+			a.DEPT_ID = b.DEPT_ID
+		LEFT JOIN
+			XT_STAFF_INFO c
+		ON
+			a.CREATE_USERID = c.STAFF_ID
+		where 
+			CONTRACT_ID = #{CONTRACT_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.CONTRACT_NO,	
+				a.CONTRACT_NAME,	
+				a.BUYER_NAME,	
+				a.PROJECT_ID,	
+				a.SUPPLIER_ID,	
+				a.CONTRACT_PRICE,	
+				a.PAYMENT_MODE,	
+				a.BILL_TYPE,	
+				a.CONTRACT_DATE,	
+				a.MEMO,	
+				a.DEPT_ID,	
+				a.CREATE_USERID,	
+				a.CREATE_TIME,	
+				a.IF_DELETED,	
+				a.CONTRACT_ID,
+				b.PROJECT_NAME,
+				c.SUPPLIER_NAME,
+				d.DIC_LABEL AS BILL_TYPE_NAME
+		from 
+				BUS_BUY_CONTRACT_INFO a
+		LEFT JOIN
+				BUS_PROJECT_INFO b
+		ON
+				a.PROJECT_ID = b.PROJECT_ID
+		LEFT JOIN
+				BASE_SUPPLIER_INFO c
+		ON
+				a.SUPPLIER_ID = c.SUPPLIER_ID
+		LEFT JOIN
+				XT_DIC d
+		ON
+				a.BILL_TYPE = d.DIC_VALUE AND d.DIC_TYPE = 'pjlx'
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="pd.CONTRACT_NO_SEARCH != null and pd.CONTRACT_NO_SEARCH != ''">
+		AND
+				a.CONTRACT_NO LIKE CONCAT('%',CONCAT(#{pd.CONTRACT_NO_SEARCH},'%'))
+		</if>
+		<if test="pd.CONTRACT_DATE_SEARCH != null and pd.CONTRACT_DATE_SEARCH != ''">
+		AND
+				a.CONTRACT_DATE = #{pd.CONTRACT_DATE_SEARCH}
+		</if>
+		<if test="pd.CONTRACT_NAME_SEARCH != null and pd.CONTRACT_NAME_SEARCH != ''">
+		AND
+			a.CONTRACT_NAME LIKE CONCAT('%',CONCAT(#{pd.CONTRACT_NAME_SEARCH},'%'))
+		</if>
+		<if test="pd.BUYER_NAME_SEARCH != null and pd.BUYER_NAME_SEARCH != ''">
+		AND
+			a.BUYER_NAME LIKE CONCAT('%',CONCAT(#{pd.BUYER_NAME_SEARCH},'%'))
+		</if>
+		<if test="pd.PROJECT_ID_SEARCH != null and pd.PROJECT_ID_SEARCH != ''">
+		AND
+			a.PROJECT_ID = #{pd.PROJECT_ID_SEARCH}
+		</if>
+		<if test="pd.SUPPLIER_ID_SEARCH != null and pd.SUPPLIER_ID_SEARCH != ''">
+		AND
+			a.SUPPLIER_ID = #{pd.SUPPLIER_ID_SEARCH}
+		</if>
+		<if test="pd.BILL_TYPE_SEARCH != null and pd.BILL_TYPE_SEARCH != ''">
+		AND
+			a.BILL_TYPE = #{pd.BILL_TYPE_SEARCH}
+		</if>
+ 	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.CONTRACT_NO,	
+				a.CONTRACT_NAME,	
+				a.BUYER_NAME,	
+				a.PROJECT_ID,	
+				a.SUPPLIER_ID,	
+				a.CONTRACT_PRICE,	
+				a.PAYMENT_MODE,	
+				a.BILL_TYPE,	
+				a.CONTRACT_DATE,	
+				a.MEMO,	
+				a.DEPT_ID,	
+				a.CREATE_USERID,	
+				a.CREATE_TIME,	
+				a.IF_DELETED,	
+				a.CONTRACT_ID
+		from 
+				BUS_BUY_CONTRACT_INFO a
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="PROJECT_ID != null and PROJECT_ID != ''">
+		AND
+				a.PROJECT_ID = #{PROJECT_ID}
+		</if>
+		<if test="SUPPLIER_ID != null and SUPPLIER_ID != ''">
+		AND
+				a.SUPPLIER_ID = #{SUPPLIER_ID}
+		</if>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			BUS_BUY_CONTRACT_INFO
+	  	SET
+			IF_DELETED = '1'
+		where 
+			CONTRACT_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

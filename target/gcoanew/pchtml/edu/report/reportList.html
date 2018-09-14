@@ -1,0 +1,274 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>上报管理</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css" />
+
+		<script type="text/javascript" src="../../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../../js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../../js/myjstools.js"></script>
+		<script type="text/javascript">
+			var mpath = "edu/report";
+			var viewType =  myjstools.request("viewType");
+			function loadGrid(){
+				var url="";
+				
+				if(viewType == "specil"){
+					url = myjstools.wwwroot + '/web/service?METHOD=reportService_queryReportList&specil=true';
+				}else if(viewType == "student"){
+					url = myjstools.wwwroot + '/web/service?METHOD=reportService_queryReportList&all=true';
+				}else{
+					url = myjstools.wwwroot + '/web/service?METHOD=reportService_queryReportList';
+				}
+				
+				//初始化grid
+				$('#dg').datagrid({
+					iconCls: 'icon-edit',
+					singleSelect: true,
+					toolbar: '#tt',
+					pagination: true,
+					url: url,
+					onBeforeLoad: onBeforeLoad,
+					rownumbers: true,
+					loadMsg: '正在加载数据...',
+					onLoadError: function() {
+						myjstools.showerrinfo('数据加载出错了');
+					},
+					method: 'post',
+					pageNumber: 1,
+					pageSize: 20,
+					pageList: [10, 20, 50, 100],
+					columns: [
+						[{
+							field: 'study_number',
+							title: '学号',
+							formatter:function(value,row,index){
+								var res = '<a href="javascript:openStudy(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">'+value+'</a>';
+								return res;		
+							}
+						},
+						{
+							field:'report_time',
+							title:'上报时间',
+							formatter:function(value,row,index){
+								var time1 = new Date(value).format("yyyy-MM-dd hh:mm:ss");  
+								var htm = "<span>"+time1+"</span>";
+								return htm;
+							}
+						},
+						{
+							field: 'sn_number',
+							width: 85,
+							title: '编号'
+						},
+						{
+							field:'staff_name',
+							width:50,
+							title:'上报人'
+						},
+						{
+							field:'dept_name',
+							width:100,
+							title:'上报部门'
+						},
+						{
+							field:'ill_date',
+							width:70,
+							title:'症状开始时间',
+							formatter:function(value,row,index){
+								if(value==null || value.length<=0){
+									return "";
+								}
+								var time1 = new Date(value).format("yyyy-MM-dd");  
+								var htm = "<span>"+time1+"</span>";
+								return htm;
+							}
+						},
+						{
+							field:'effect',
+							width:40,
+							title:'对生活及学习状态影响程度'
+						},
+						{
+							field:'reason',
+							width:100,
+							title:'可能的原因或事件'
+						},
+						{
+							field:'description',
+							width:100,
+							title:'我的观察'
+						},
+						{
+							field:'typeLabel',
+							width:50,
+							title:'状态'
+						},
+						{
+							field:'report_level',
+							width:40,
+							title:'等级'
+						},
+						{
+							field:'答词情况',
+							title:'答词情况',
+							formatter:function(value,row,index){
+								var res = '<a href="javascript:openWordResult(\''+ row.report_id +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">查看</a>';
+								return res;		
+							}
+						},
+						{
+							field:'result_id',
+							title:'评测情况',
+							formatter:function(value,row,index){
+								if(row.result_id!=null && row.result_id!=""){
+									var res = '<a href="javascript:openResult(\''+ row.result_id +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">查看</a>';
+									return res;	
+								}else{
+									return "";	
+								}
+									
+							}
+						},
+						{
+							field:'handle_id',
+							title:'处理情况',
+							formatter:function(value,row,index){
+								var let = '<a href="javascript:openReportHandle(\''+ row.report_id +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">处理过程</a>';
+								return let;	
+							}
+						},
+						{
+							field: 'report_id',
+							title: '操作',
+							formatter:function(value,row,index){
+								var s = '<a href="javascript:excuteHandle(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">处理</a>';
+								s += '&nbsp;<a href="javascript:excuteDetail(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">详细</a>';
+								return s;
+	                    	}
+						}]
+					]
+				});
+			}
+			
+			$(document).ready(function(){loadGrid();});
+			
+			function openReportHandle(id){
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/edu/report/reportHandleList.html?reportId=" + id);
+			}
+			
+			function openResult(result_id){
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/edu/answer/answerList.html?result_id=" + result_id);
+			}
+			function openWordResult(report_id){
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/edu/word/answerWordList.html?report_id=" + report_id);
+			}
+			function excuteHandle(reportId){
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/edu/report/addReportHandle.html?reportId=" + reportId);
+			}
+			function excuteDetail(reportId){
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/edu/report/reportView.html?reportId=" + reportId);
+			}
+			function openStudy(studyNumber){
+
+				$('#smallWin').window('open');
+				$('#smallWin').window('setTitle', "");
+				
+				$("#fra_sw").attr("src", myjstools.wwwroot + "/pchtml/edu/study/studyInfo.html?studyNumber="+studyNumber);
+				
+				//myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/edu/report/addReportHandle.html?reportId=" + reportId);
+			}
+			Date.prototype.format = function (fmt) { //author: meizz
+				  var o = {
+				    "M+": this.getMonth() + 1, //月份
+				    "d+": this.getDate(), //日
+				    "h+": this.getHours(), //小时
+				    "m+": this.getMinutes(), //分
+				    "s+": this.getSeconds(), //秒
+				    "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+				    "S": this.getMilliseconds() //毫秒
+				  };
+				  if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+				  for (var k in o)
+				  if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+				  return fmt;
+			}
+			
+			function onBeforeLoad(param){
+				param.study_number = $("#studyNumber").val();
+				param.report_username = $("#report_username").val();
+				param.report_deptname = $("#report_deptname").val();
+				param.report_status = $('#report_status').combobox('getValue');
+				param.report_level = $('#report_level').combobox('getValue');
+				param.effect = $('#effect').combobox('getValue');
+				
+				param.start_date = $("#startDate").datebox("getValue");
+				param.end_date= $("#endDate").datebox("getValue");
+			}
+			//查询
+	        function seek() {
+	            $('#dg').datagrid('load');
+	        }
+			function closewin() {
+				$('#win').window('close');
+
+				$('#dg').datagrid('reload');
+			}
+			
+		
+		</script>
+	</head>
+	<body style="width:100%; margin:0; height:100%">
+		<div id="tt" style="height:auto;">
+			&nbsp;<span class="icon-edit">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;上报管理 &nbsp;
+			<!--<span id="spaninfo"><a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" >查看选中项</a></span>-->
+			<div class="main_form">
+	            学号：<input id="studyNumber" name="studyNumber" value="" placeholder="请输学号"/>
+	            上报人：<input id="report_username" name="report_username" value="" placeholder="请输上报人"/>
+	            上报部门：<input id="report_deptname" name="report_deptname" value="" placeholder="请输上报部门"/>
+	            上报状态：<input class="easyui-combobox" id="report_status" name="report_status" 
+					data-options="
+						url: myjstools.wwwroot+'/web/service?METHOD=globaldic_combox&dic_type=report_type',
+						method: 'get',
+						valueField:'dic_value',
+						textField:'dic_label',
+						groupField:'pvalue'
+					">
+	            上报等级：<select class="easyui-combobox" id="report_level" name="report_level">
+	            		<option value="">请选择</option>
+	            		<option value="2">2</option>
+	            		<option value="3">3</option>
+	            	</select>
+	      &nbsp;<div>对生活影响程度：<select class="easyui-combobox" id="effect" name="effect">
+	      								<option value="">请选择</option>
+	            						<option value="0">0对学习及生活无影响</option>
+										<option value="1">1对学习及生活轻微影响</option>
+										<option value="2">2对学习及生活轻度影响</option>
+										<option value="3">3对学习及生活中度影响</option>
+										<option value="4">4对学习及生活严重度影响</option>
+										<option value="5">5无法正常学习及生活</option> 
+									</select></div>
+	            上报时间：<input class="easyui-datetimebox" name="startDate" id="startDate" data-options="showSeconds:false" style="width:150px" >
+	            到&nbsp;<input class="easyui-datetimebox" name="endDate" id="endDate" data-options="showSeconds:false" style="width:150px" >
+	           
+	            <span><a href="javascript:seek();"  class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true"></a></span>
+           </div>
+		</div>
+		<table id="dg" title="" style="height:600px;"></table>
+
+		<div id="win" class="easyui-window" title="..." style="width:650px;height:400px;" data-options="modal:true,closed:true">
+			<iframe id="fra_s" width="99%" height="99%" border="0" frameborder="0"></iframe>
+		</div>
+		
+		<div id="smallWin" class="easyui-window" title="..." style="width:350px;height:250px;" data-options="modal:true,closed:true">
+			<iframe id="fra_sw" width="99%" height="99%" border="0" frameborder="0"></iframe>
+		</div>
+	</body>
+</html>

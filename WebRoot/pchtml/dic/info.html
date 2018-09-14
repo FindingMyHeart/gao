@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>详细信息</title>
+		<link id="linkm" rel="stylesheet" type="text/css" href="../themes/default/easyui.css" />
+			<script type="text/javascript" src="../js/jquery.searchableSelect.js"></script>
+		
+		<script type="text/javascript" src="../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+
+
+		<script language="javascript" type="text/javascript" src="../js/myjstools.js"></script>
+		<script type="text/javascript">
+			var mid = myjstools.request("id").replace("#", "");
+			
+			function initit() {
+				myjstools.ajax(false, "POST", "/web/service?METHOD=dic_list", {
+					dic_id: mid,
+					rows: 10,
+					page: 1
+				}, loadinfo_res);
+			}
+
+			$(document).ready(
+				function() {
+					initit();
+                    $('select').searchableSelect();
+				}
+			);
+
+            function close() {
+            	parent.closewin();
+            }
+		</script>
+		
+		<script type="text/javascript">
+			function loadinfo_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo(data.msg);
+						return;
+					}
+
+					var info = data.rows[0];
+
+					myjstools.setallinput(info);
+
+				} catch(e) {
+					myjstools.showerrinfo("loadinfo_res.error:出错了！" + e.message);
+				}
+			}
+		</script>
+	</head>
+
+	<body style="width:85%; text-align:left; margin:0 auto; margin-top:10px;padding:10px 10px 10px 20px">
+		<!-- 添加弹出框 -->
+<!--		<div class="row">
+			标签:
+			<span class="inputBox">
+                                <select>
+                                    <option value="123">
+                                        123
+                                    </option>
+                                    <option value="456">
+                                        456
+                                    </option>
+                                    <option value="789">
+                                        789
+                                    </option>
+                                </select>
+                            </span>
+		</div>-->
+		<div>
+			<span class="lTips">标签:　</span>
+			<span class="inputBox">
+                                <input type="text" id="dic_key" name="dic_key" up="up" disabled="disabled" />
+                            </span>
+		</div>
+		<div style="height:5px"></div>
+		<div>
+			<span class="lTips">值:　　</span>
+			<span class="inputBox">
+                                <input type="text" id="dic_value" name="dic_value" up="up" disabled="disabled" />
+                            </span>
+		</div>
+		<div style="height:5px"></div>
+		<div>
+			<span class="lTips">类型:　</span>
+			<span class="inputBox">
+                                <input type="text" id="dic_type" name="dic_type" up="up" disabled="disabled" />
+                            </span>
+		</div>
+		<div style="height:5px"></div>
+		<div>
+			<span class="lTips">父级值:</span>
+			<span class="inputBox">
+                                <input type="text" id="pvalue" name="pvalue" up="up" disabled="disabled" />
+                            </span>
+		</div>
+		<div style="height:5px"></div>
+		<div>
+			<span class="lTips">排序号:</span>
+			<span class="inputBox">
+                                <input type="text" id="order_num" name="order_num" up="up" disabled="disabled" />
+                            </span>
+		</div>
+		<div style="height:5px"></div>
+		<div>
+			<span class="lTips">备注:　</span>
+			<span class="inputBox">
+				<input type="text" id="demo" name="memo" up="up" disabled="disabled" />
+			</span>
+		</div>
+		<div style="height:5px"></div>
+		<div class="line">
+		</div>
+		<div style="height:5px"></div>
+		<div style="text-align:right;padding:5px">
+			<a href="javascript:close();" id="nobtn"  class="easyui-linkbutton">取消</a>
+		</div>
+	</body>
+
+</html>

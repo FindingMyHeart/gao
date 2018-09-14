@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BaseCwFeeApplyInfoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into CW_FEE_APPLY(  
+			FEE_SN,
+			<if test="PROJECT_ID != null">
+				PROJECT_ID,
+			</if>
+			<if test="FEE_TYPE != null">
+				FEE_TYPE,
+			</if>
+			<if test="PAYMENT_MODE != null">
+				PAYMENT_MODE,
+			</if>
+			<if test="AMOUNT_MONEY != null">
+				AMOUNT_MONEY,
+			</if>
+			<if test="PURPOSE != null">
+				PURPOSE,
+			</if>
+			<if test="KAIHU_BANK != null">
+				KAIHU_BANK,
+			</if>
+			<if test="BANK_ACCOUNT != null">
+				BANK_ACCOUNT,
+			</if>
+			<if test="ACCOUNT_NAME != null">
+				ACCOUNT_NAME,
+			</if>
+			<if test="SHIGONGDUI != null">
+				SHIGONGDUI,
+			</if>
+			<if test="BUY_CONTRACT_NO != null">
+				BUY_CONTRACT_NO,
+			</if>
+			<if test="BUY_SUPPLIER_ID != null">
+				BUY_SUPPLIER_ID,
+			</if>
+			<if test="BUY_FEE_TYPE != null">
+				BUY_FEE_TYPE,
+			</if>
+			<if test="BUY_INVOICE_TYPE != null">
+				BUY_INVOICE_TYPE,
+			</if>
+			<if test="BORROW_REAL_MONEY != null">
+				BORROW_REAL_MONEY,
+			</if>
+			<if test="BORROW_BACK_MONEY != null">
+				BORROW_BACK_MONEY,
+			</if>
+			<if test="BORROW_BU_MONEY != null">
+				BORROW_BU_MONEY,
+			</if>
+			<if test="BAOXIAO_TYPE != null">
+				BAOXIAO_TYPE,
+			</if>
+			<if test="BAOXIAO_INVOICE_NUM != null">
+				BAOXIAO_INVOICE_NUM,
+			</if>
+			<if test="CHAILV_LOCATION != null">
+				CHAILV_LOCATION,
+			</if>
+			<if test="CHAILV_START_LOCATION != null">
+				CHAILV_START_LOCATION,
+			</if>
+			<if test="CHAILV_START_DATE != null">
+				CHAILV_START_DATE,
+			</if>
+			<if test="CHAILV_END_LOCATION != null">
+				CHAILV_END_LOCATION,
+			</if>
+			<if test="CHAILV_END_DATE != null">
+				CHAILV_END_DATE,
+			</if>
+			<if test="CHAILV_PERSON_NUM != null">
+				CHAILV_PERSON_NUM,
+			</if>
+			<if test="CHAILV_DAY_NUM != null">
+				CHAILV_DAY_NUM,
+			</if>
+			<if test="RESOURCEIDS != null">
+				RESOURCEIDS,
+			</if>
+			<if test="RESOURCEIDS != null">
+				RESOURCEIDS,
+			</if>
+			STATUS,
+			IF_DELETED,	
+			CREATE_USERID,	
+			CREATE_TIME,	
+			FEE_ID
+		) values (
+			#{FEE_SN},
+			<if test="PROJECT_ID != null">
+				#{PROJECT_ID},
+			</if>
+			<if test="FEE_TYPE != null">
+				#{FEE_TYPE},
+			</if>
+			<if test="PAYMENT_MODE != null">
+				#{PAYMENT_MODE},
+			</if>
+			<if test="AMOUNT_MONEY != null">
+				#{AMOUNT_MONEY},
+			</if>
+			<if test="PURPOSE != null">
+				#{PURPOSE},
+			</if>
+			<if test="KAIHU_BANK != null">
+				#{KAIHU_BANK},
+			</if>
+			<if test="BANK_ACCOUNT != null">
+				#{BANK_ACCOUNT},
+			</if>
+			<if test="ACCOUNT_NAME != null">
+				#{ACCOUNT_NAME},
+			</if>
+			<if test="SHIGONGDUI != null">
+				#{SHIGONGDUI},
+			</if>
+			<if test="BUY_CONTRACT_NO != null">
+				#{BUY_CONTRACT_NO},
+			</if>
+			<if test="BUY_SUPPLIER_ID != null">
+				#{BUY_SUPPLIER_ID},
+			</if>
+			<if test="BUY_FEE_TYPE != null">
+				#{BUY_FEE_TYPE},
+			</if>
+			<if test="BUY_INVOICE_TYPE != null">
+				#{BUY_INVOICE_TYPE},
+			</if>
+			<if test="BORROW_REAL_MONEY != null">
+				#{BORROW_REAL_MONEY},
+			</if>
+			<if test="BORROW_BACK_MONEY != null">
+				#{BORROW_BACK_MONEY},
+			</if>
+			<if test="BORROW_BU_MONEY != null">
+				#{BORROW_BU_MONEY},
+			</if>
+			<if test="BAOXIAO_TYPE != null">
+				#{BAOXIAO_TYPE},
+			</if>
+			<if test="BAOXIAO_INVOICE_NUM != null">
+				#{BAOXIAO_INVOICE_NUM},
+			</if>
+			<if test="CHAILV_LOCATION != null">
+				#{CHAILV_LOCATION},
+			</if>
+			<if test="CHAILV_START_LOCATION != null">
+				#{CHAILV_START_LOCATION},
+			</if>
+			<if test="CHAILV_START_DATE != null">
+				#{CHAILV_START_DATE},
+			</if>
+			<if test="CHAILV_END_LOCATION != null">
+				#{CHAILV_END_LOCATION},
+			</if>
+			<if test="CHAILV_END_DATE != null">
+				#{CHAILV_END_DATE},
+			</if>
+			<if test="CHAILV_PERSON_NUM != null">
+				#{CHAILV_PERSON_NUM},
+			</if>
+			<if test="CHAILV_DAY_NUM != null">
+				#{CHAILV_DAY_NUM},
+			</if>
+			<if test="RESOURCEIDS != null">
+				#{RESOURCEIDS},
+			</if>
+			#{STATUS},	
+			#{IF_DELETED},	
+			#{CREATE_USERID},	
+			#{CREATE_TIME},	
+			#{FEE_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from CW_FEE_APPLY
+		where 
+			FEE_ID = #{FEE_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  CW_FEE_APPLY
+			set
+				<if test="PROJECT_ID != null">
+					PROJECT_ID = #{PROJECT_ID},
+				</if>
+				<if test="FEE_TYPE != null">
+					FEE_TYPE = #{FEE_TYPE},
+				</if>
+				<if test="PAYMENT_MODE != null">
+					PAYMENT_MODE = #{PAYMENT_MODE},
+				</if>
+				<if test="AMOUNT_MONEY != null">
+					AMOUNT_MONEY = #{AMOUNT_MONEY},
+				</if>
+				<if test="PURPOSE != null">
+					PURPOSE = #{PURPOSE},
+				</if>
+				<if test="KAIHU_BANK != null">
+					KAIHU_BANK = #{KAIHU_BANK},
+				</if>
+				<if test="BANK_ACCOUNT != null">
+					BANK_ACCOUNT = #{BANK_ACCOUNT},
+				</if>
+				<if test="ACCOUNT_NAME != null">
+					ACCOUNT_NAME = #{ACCOUNT_NAME},
+				</if>
+				<if test="SHIGONGDUI != null">
+					SHIGONGDUI = #{SHIGONGDUI},
+				</if>
+				<if test="BUY_CONTRACT_NO != null">
+					BUY_CONTRACT_NO = #{BUY_CONTRACT_NO},
+				</if>
+				<if test="BUY_SUPPLIER_ID != null">
+					BUY_SUPPLIER_ID = #{BUY_SUPPLIER_ID},
+				</if>
+				<if test="BUY_FEE_TYPE != null">
+					BUY_FEE_TYPE = #{BUY_FEE_TYPE},
+				</if>
+				<if test="BUY_INVOICE_TYPE != null">
+					BUY_INVOICE_TYPE = #{BUY_INVOICE_TYPE},
+				</if>
+				<if test="BORROW_REAL_MONEY != null">
+					BORROW_REAL_MONEY = #{BORROW_REAL_MONEY},
+				</if>
+				<if test="BORROW_BACK_MONEY != null">
+					BORROW_BACK_MONEY = #{BORROW_BACK_MONEY},
+				</if>
+				<if test="BORROW_BU_MONEY != null">
+					BORROW_BU_MONEY = #{BORROW_BU_MONEY},
+				</if>
+				<if test="BAOXIAO_TYPE != null">
+					BAOXIAO_TYPE = #{BAOXIAO_TYPE},
+				</if>
+				<if test="BAOXIAO_INVOICE_NUM != null">
+					BAOXIAO_INVOICE_NUM = #{BAOXIAO_INVOICE_NUM},
+				</if>
+				<if test="CHAILV_LOCATION != null">
+					CHAILV_LOCATION = #{CHAILV_LOCATION},
+				</if>
+				<if test="CHAILV_START_LOCATION != null">
+					CHAILV_START_LOCATION = #{CHAILV_START_LOCATION},
+				</if>
+				<if test="CHAILV_START_DATE != null">
+					CHAILV_START_DATE = #{CHAILV_START_DATE},
+				</if>
+				<if test="CHAILV_END_LOCATION != null">
+					CHAILV_END_LOCATION = #{CHAILV_END_LOCATION},
+				</if>
+				<if test="CHAILV_END_DATE != null">
+					CHAILV_END_DATE = #{CHAILV_END_DATE},
+				</if>
+				<if test="CHAILV_PERSON_NUM != null">
+					CHAILV_PERSON_NUM = #{CHAILV_PERSON_NUM},
+				</if>
+				<if test="CHAILV_DAY_NUM != null">
+					CHAILV_DAY_NUM = #{CHAILV_DAY_NUM},
+				</if>
+				<if test="RESOURCEIDS != null">
+					RESOURCEIDS = #{RESOURCEIDS},
+				</if>
+				FEE_ID = FEE_ID
+			where 
+				FEE_ID = #{FEE_ID}
+	</update>
+
+	<update id="addInfo" parameterType="pd">
+		update
+			CW_FEE_APPLY
+		set
+			ADD_PAYMENT_MODE = #{ADD_PAYMENT_MODE},
+			ADD_ACCOUNT_ID = #{ADD_ACCOUNT_ID},
+			FEE_ID = FEE_ID
+		where
+			FEE_ID = #{FEE_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			a.FEE_SN,
+			a.PROJECT_ID,
+			a.FEE_TYPE,
+			a.PAYMENT_MODE,
+			a.AMOUNT_MONEY,
+			a.PURPOSE,
+			a.KAIHU_BANK,
+			a.BANK_ACCOUNT,
+			a.ACCOUNT_NAME,
+			a.SHIGONGDUI,
+			a.BUY_CONTRACT_NO,
+			a.BUY_SUPPLIER_ID,
+			a.BUY_FEE_TYPE,
+			a.BUY_INVOICE_TYPE,
+			a.BORROW_REAL_MONEY,
+			a.BORROW_BACK_MONEY,
+			a.BORROW_BU_MONEY,
+			a.BAOXIAO_TYPE,
+			a.BAOXIAO_INVOICE_NUM,
+			a.CHAILV_LOCATION,
+			a.CHAILV_START_LOCATION,
+			a.CHAILV_START_DATE,
+			a.CHAILV_END_LOCATION,
+			a.CHAILV_END_DATE,
+			a.CHAILV_PERSON_NUM,
+			a.CHAILV_DAY_NUM,
+			a.STATUS,
+			a.IF_DELETED,
+			a.CREATE_USERID,
+			DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') AS CREATE_DATE,
+			a.CREATE_TIME,
+			a.CHECK_USERID,
+			a.CHECK_TIME,
+			a.RESOURCEIDS,
+			a.FEE_ID,
+			a.CAIWU_STATUS,
+			a.CAIWU_TIME,
+			a.ADD_PAYMENT_MODE,
+			a.ADD_ACCOUNT_ID,
+			b.STAFF_NAME AS CREATE_USERNAME,
+			c.DEPT_NAME,
+			d.DIC_LABEL AS POST_NAME,
+			e.KAIHU_BANK AS CW_KAIHU_BANK
+		from 
+			CW_FEE_APPLY a
+		LEFT JOIN
+			XT_STAFF_INFO b
+		ON
+			a.CREATE_USERID = b.STAFF_ID
+		LEFT JOIN
+			XT_DEPT_INFO c
+		ON
+			b.DEPT_ID = c.DEPT_ID
+		left join
+			XT_DIC d
+		on
+			b.POST = d.DIC_VALUE AND d.DIC_TYPE = 'zw'
+		LEFT JOIN
+			CW_ACCOUNT_INFO e
+	  	ON
+	  		a.ADD_ACCOUNT_ID = e.ACCOUNT_ID
+		where 
+			a.FEE_ID = #{FEE_ID}
+	</select>
+
+
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.FEE_SN,	
+				a.PROJECT_ID,	
+				a.FEE_TYPE,	
+				a.PAYMENT_MODE,	
+				a.AMOUNT_MONEY,	
+				a.PURPOSE,	
+				a.KAIHU_BANK,	
+				a.BANK_ACCOUNT,	
+				a.ACCOUNT_NAME,	
+				a.SHIGONGDUI,	
+				a.BUY_CONTRACT_NO,	
+				a.BUY_SUPPLIER_ID,	
+				a.BUY_FEE_TYPE,	
+				a.BUY_INVOICE_TYPE,	
+				a.BORROW_REAL_MONEY,	
+				a.BORROW_BACK_MONEY,	
+				a.BORROW_BU_MONEY,	
+				a.BAOXIAO_TYPE,
+				a.BAOXIAO_INVOICE_NUM,
+				a.CHAILV_LOCATION,	
+				a.CHAILV_START_LOCATION,	
+				a.CHAILV_START_DATE,	
+				a.CHAILV_END_LOCATION,	
+				a.CHAILV_END_DATE,	
+				a.CHAILV_PERSON_NUM,	
+				a.CHAILV_DAY_NUM,	
+				a.STATUS,	
+				a.IF_DELETED,	
+				a.CREATE_USERID,	
+				a.CREATE_TIME,
+				DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') AS CREATE_DATE,
+				a.REJECT_REASON,
+				a.CHECK_USERID,
+				a.CHECK_TIME,
+				a.RESOURCEIDS,	
+				a.FEE_ID,
+				a.CAIWU_STATUS,
+				b.STAFF_NAME AS CREATE_USERNAME,
+				c.DEPT_NAME,
+				b.STAFF_NAME,
+				d.PROJECT_NAME,
+				e.BANK_ACCOUNT AS FKZH,
+				f.SUPPLIER_NAME
+		from 
+				CW_FEE_APPLY a
+		LEFT JOIN
+				XT_STAFF_INFO b
+		ON
+				a.CREATE_USERID  = b.STAFF_ID
+		LEFT JOIN
+				XT_DEPT_INFO c
+		ON
+				b.DEPT_ID = c.DEPT_ID
+	  	LEFT JOIN
+				BUS_PROJECT_INFO d
+		ON
+				a.PROJECT_ID = d.PROJECT_ID
+		LEFT JOIN
+				CW_ACCOUNT_INFO e
+		ON
+				a.ADD_ACCOUNT_ID = e.ACCOUNT_ID
+	  	LEFT JOIN
+				BASE_SUPPLIER_INFO f
+		ON
+				a.BUY_SUPPLIER_ID = f.SUPPLIER_ID
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="pd.FEE_SN_SEARCH != null and pd.FEE_SN_SEARCH != ''">
+		AND
+				a.FEE_SN LIKE CONCAT('%',CONCAT(#{pd.FEE_SN_SEARCH},'%'))
+		</if>
+		<if test="pd.DEPT_ID_SEARCH != null and pd.DEPT_ID_SEARCH != ''">
+		AND
+				b.DEPT_ID = #{pd.DEPT_ID_SEARCH}
+		</if>
+		<if test="pd.CREATE_USERID_SEARCH != null and pd.CREATE_USERID_SEARCH != ''">
+		AND
+				a.CREATE_USERID = #{pd.CREATE_USERID_SEARCH}
+		</if>
+		<if test="pd.FEE_TYPE_SEARCH != null and pd.FEE_TYPE_SEARCH != ''">
+		AND
+				a.FEE_TYPE = #{pd.FEE_TYPE_SEARCH}
+		</if>
+		<if test="pd.CAIWU_STATUS_SEARCH != null and pd.CAIWU_STATUS_SEARCH != ''">
+		AND
+				a.CAIWU_STATUS = #{pd.CAIWU_STATUS_SEARCH}
+		</if>
+		<if test="pd.CREATE_DATE_SEARCH != null and pd.CREATE_DATE_SEARCH != ''">
+		AND
+				DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') = #{pd.CREATE_DATE_SEARCH}
+		</if>
+		<if test="pd.STATUS_SEARCH != null and pd.STATUS_SEARCH != ''">
+		AND
+				a.STATUS = #{pd.STATUS_SEARCH}
+		</if>
+		<if test="pd.MENU_TYPE == 'feePay'">
+		AND
+				a.FEE_TYPE IN ('1','2','4','5','6')
+		</if>
+		<if test="pd.MENU_TYPE == 'shouldPay'">
+		AND
+				a.FEE_TYPE IN ('3')
+		</if>
+		ORDER BY
+			a.CREATE_TIME DESC
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.FEE_SN,	
+				a.PROJECT_ID,	
+				a.FEE_TYPE,	
+				a.PAYMENT_MODE,	
+				a.AMOUNT_MONEY,	
+				a.PURPOSE,	
+				a.KAIHU_BANK,	
+				a.BANK_ACCOUNT,	
+				a.ACCOUNT_NAME,	
+				a.SHIGONGDUI,	
+				a.BUY_CONTRACT_NO,	
+				a.BUY_SUPPLIER_ID,	
+				a.BUY_FEE_TYPE,	
+				a.BUY_INVOICE_TYPE,	
+				a.BORROW_REAL_MONEY,	
+				a.BORROW_BACK_MONEY,	
+				a.BORROW_BU_MONEY,	
+				a.BAOXIAO_TYPE,
+				a.BAOXIAO_INVOICE_NUM,
+				a.CHAILV_LOCATION,	
+				a.CHAILV_START_LOCATION,	
+				a.CHAILV_START_DATE,	
+				a.CHAILV_END_LOCATION,	
+				a.CHAILV_END_DATE,	
+				a.CHAILV_PERSON_NUM,	
+				a.CHAILV_DAY_NUM,	
+				a.STATUS,	
+				a.IF_DELETED,	
+				a.CREATE_USERID,	
+				a.CREATE_TIME,	
+				a.CHECK_USERID,	
+				a.CHECK_TIME,	
+				a.RESOURCEIDS,	
+				a.FEE_ID
+		from 
+				CW_FEE_APPLY a
+		where
+				1 = 1
+		<if test="DATE != null and DATE != ''">
+		and
+				a.CREATE_TIME like CONCAT(#{DATE},'%')
+		</if>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from CW_FEE_APPLY
+		where 
+			FEE_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+
+	<!-- 修改状态 -->
+	<update id="updateStatus" parameterType="pd">
+		UPDATE
+			CW_FEE_APPLY
+		SET
+			STATUS = #{STATUS},
+		<if test="REJECT_REASON != null and REJECT_REASON != ''">
+			REJECT_REASON = #{REJECT_REASON},
+		</if>
+		<if test="CHECK_TIME != null and CHECK_TIME != ''">
+			CHECK_TIME = #{CHECK_TIME},
+		</if>
+		<if test="CHECK_USERID != null and CHECK_USERID != ''">
+			CHECK_USERID = #{CHECK_USERID},
+		</if>
+			FEE_ID = FEE_ID
+		WHERE
+			FEE_ID = #{FEE_ID}
+	</update>
+
+	<!-- 完成 -->
+	<update id="complete" parameterType="pd">
+		UPDATE
+			CW_FEE_APPLY
+		SET
+			CAIWU_STATUS = #{CAIWU_STATUS},
+			CAIWU_TIME = #{CAIWU_TIME},
+			FEE_ID = FEE_ID
+		WHERE
+			FEE_ID = #{FEE_ID}
+	</update>
+
+
+	
+</mapper>

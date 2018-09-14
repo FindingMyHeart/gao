@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BusOtherBuyInfoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into BUS_OTHER_BUY_INFO(  
+			BUY_TYPE,
+			BUY_SN,
+			DEPT_ID,	
+			POST,	
+			CREATE_USERID,	
+			CREATE_TIME,	
+			IF_DELETED,	
+			STATUS,	
+			OTHER_BUY_ID
+		) values (
+			#{BUY_TYPE},	
+			#{BUY_SN},
+			#{DEPT_ID},
+			#{POST},	
+			#{CREATE_USERID},	
+			#{CREATE_TIME},	
+			#{IF_DELETED},	
+			#{STATUS},	
+			#{OTHER_BUY_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+			BUS_OTHER_BUY_INFO
+		SET
+			IF_DELETED = '1'
+		where 
+			OTHER_BUY_ID = #{OTHER_BUY_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  BUS_OTHER_BUY_INFO
+			set 
+				BUY_TYPE = #{BUY_TYPE},
+				DEPT_ID = #{DEPT_ID},
+				POST = #{POST},
+				OTHER_BUY_ID = OTHER_BUY_ID
+			where 
+				OTHER_BUY_ID = #{OTHER_BUY_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			a.BUY_TYPE,
+			a.BUY_SN,
+			a.DEPT_ID,
+			a.POST,
+			a.CREATE_USERID,
+			a.CREATE_TIME,
+			a.IF_DELETED,
+			a.STATUS,
+			a.REJECT_REASON,
+			DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') AS CREATE_DATE,
+			a.OTHER_BUY_ID,
+			b.STAFF_NAME AS APPLY_NAME
+		from 
+			BUS_OTHER_BUY_INFO a
+		LEFT JOIN
+			XT_STAFF_INFO b
+		ON
+			a.CREATE_USERID = b.STAFF_ID
+		where 
+			OTHER_BUY_ID = #{OTHER_BUY_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.BUY_TYPE,	
+				a.BUY_SN,
+				a.DEPT_ID,
+				a.POST,	
+				a.CREATE_USERID,	
+				a.CREATE_TIME,	
+				a.IF_DELETED,	
+				a.STATUS,	
+				a.OTHER_BUY_ID,
+				b.DEPT_NAME,
+				c.DIC_LABEL AS POST_NAME,
+				d.STAFF_NAME AS APPLY_NAME,
+				a.REJECT_REASON,
+				DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') AS CREATE_DATE,
+				e.DIC_LABEL AS BUY_TYPE_NAME
+		from 
+				BUS_OTHER_BUY_INFO a
+		LEFT JOIN
+				XT_DEPT_INFO b
+		ON
+				a.DEPT_ID = b.DEPT_ID
+		LEFT JOIN
+				XT_DIC c
+		ON
+				a.POST = c.DIC_VALUE AND c.DIC_TYPE = 'zw'
+		LEFT JOIN
+				XT_STAFF_INFO d
+		ON
+				a.CREATE_USERID = d.STAFF_ID
+		LEFT JOIN
+				XT_DIC e
+		ON
+				a.BUY_TYPE = e.DIC_VALUE AND e.DIC_TYPE = 'cglx'
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="pd.BUY_TYPE_SEARCH != null and pd.BUY_TYPE_SEARCH != ''">
+		AND
+				a.BUY_TYPE = #{pd.BUY_TYPE_SEARCH}
+		</if>
+		<if test="pd.BUY_SN_SEARCH != null and pd.BUY_SN_SEARCH != ''">
+		AND
+				a.BUY_SN LIKE CONCAT('%',CONCAT(#{pd.BUY_SN_SEARCH},'%'))
+		</if>
+		<if test="pd.DEPT_ID_SEARCH != null and pd.DEPT_ID_SEARCH != ''">
+		AND
+			a.DEPT_ID = #{pd.DEPT_ID_SEARCH}
+		</if>
+		<if test="pd.POST_SEARCH != null and pd.POST_SEARCH != ''">
+		AND
+			a.POST = #{pd.POST_SEARCH}
+		</if>
+		<if test="pd.APPLY_ID_SEARCH != null and pd.APPLY_ID_SEARCH != ''">
+		AND
+			a.CREATE_USERID = #{pd.APPLY_ID_SEARCH}
+		</if>
+		<if test="pd.APPLY_DATE_SEARCH != null and pd.APPLY_DATE_SEARCH != ''">
+		AND
+			a.CREATE_TIME LIKE CONCAT(#{pd.APPLY_DATE_SEARCH},'%')
+		</if>
+		<if test="pd.SHENHE != null and pd.SHENHE != ''">
+		AND
+			a.STATUS NOT IN ('1')
+		</if>
+		<if test="pd.SHENHE == null or pd.SHENHE == ''">
+		AND
+			a.CREATE_USERID = #{pd.STAFF_ID}
+		</if>
+		<if test="pd.STATUS_SEARCH != null and pd.STATUS_SEARCH != ''">
+		AND
+			a.STATUS = #{pd.STATUS_SEARCH}
+		</if>
+		ORDER BY
+			a.CREATE_TIME DESC
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.BUY_TYPE,	
+				a.BUY_SN,
+				a.DEPT_ID,
+				a.POST,	
+				a.CREATE_USERID,	
+				a.CREATE_TIME,	
+				a.IF_DELETED,	
+				a.STATUS,
+				a.REJECT_REASON,
+				a.OTHER_BUY_ID
+		from 
+				BUS_OTHER_BUY_INFO a
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="DATE != null and DATE != ''">
+		AND
+				a.CREATE_TIME LIKE '%${DATE}%'
+		</if>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			BUS_OTHER_BUY_INFO
+		SET
+			IF_DELETED = '0'
+		where 
+			OTHER_BUY_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 修改状态 -->
+	<update id="updateStatus" parameterType="pd">
+		UPDATE
+			BUS_OTHER_BUY_INFO
+		SET
+			STATUS = #{STATUS},
+			<if test="REJECT_REASON != null and REJECT_REASON != ''">
+			REJECT_REASON = #{REJECT_REASON},
+			</if>
+		OTHER_BUY_ID = OTHER_BUY_ID
+		WHERE
+			OTHER_BUY_ID = #{OTHER_BUY_ID}
+	</update>
+	
+</mapper>

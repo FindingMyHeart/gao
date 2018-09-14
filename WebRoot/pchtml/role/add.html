@@ -1,0 +1,168 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>添加</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../themes/icon.css" />
+
+		<script type="text/javascript" src="../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../js/myjstools.js"></script>
+		<script language="javascript" type="text/javascript" src="../js/hr.js"></script>
+		<script type="text/javascript">
+			var mpath = "role";
+			var mid = myjstools.request("id").replace("#", "");
+			
+
+            function initit() {
+                myjstools.ajax(false, "POST", "/web/service?METHOD=auth_list", {
+                    rows: 10000
+                    ,page: 1
+                }, loadinfo_auth);
+            }
+			$(
+				function() {
+					initit();
+				}
+			);
+			function initAuth() {
+				if (mid != null && mid != ""){
+					myjstools.ajax(true, "POST", "/web/service?METHOD=role_list", {
+						role_id: mid
+						,rows: 10000
+						,page: 1
+					}, loadinfo_res);
+				}
+			}
+		</script>
+		<script type="text/javascript">
+            function loadinfo_res(data) {
+                try {
+                    if(data.success != 1) {
+                        myjstools.showerrinfo(data.msg);
+                        return;
+                    }
+
+
+                    var info = data.rows[0];
+                    //alert(info.role_name);
+                    myjstools.setallinput(info);
+
+					if (info.role_auth == null || info.role_auth == ""){
+						return;
+					}
+                    var f_jsqx = info.role_auth.split(",");
+
+                    for (var i = 0; i < f_jsqx.length; i++){
+						$("input:checkbox[value='" + f_jsqx[i] + "']").prop('checked','true');
+                    }
+
+                } catch(e) {
+                    myjstools.showerrinfo("loadinfo_res.error:出错了！" + e.message);
+                }
+            }
+			function loadinfo_auth(data) {
+                try {
+                    if(data.success != 1) {
+                        myjstools.showerrinfo(data.msg);
+                        return;
+                    }
+                    var html = "";
+                    for (var i = 0; i < data.rows.length; i++){
+                        html += "<h3>" + data.rows[i].key + "</h3>";
+                        for (var j = 0; j < data.rows[i].value.length; j++){
+                            html += "<input type='checkbox' name='" + data.rows[i].value[j].auth_code + "' value='" + data.rows[i].value[j].auth_code + "' />" + data.rows[i].value[j].auth_name + "&nbsp;&nbsp;";
+                        }
+					}
+                    $("#dg").html(html);
+					initAuth();
+
+				} catch(e) {
+					myjstools.showerrinfo("loadinfo_res.error:出错了！" + e.message);
+				}
+			}
+		</script>
+		<script type="text/javascript">
+			function saveit() {
+				if($("#role_name").val() == "") {
+					myjstools.showerrinfo('请输入名称');
+					return;
+				}
+				
+				var objt = myjstools.getallinput();
+				
+				objt.role_auth = "";
+
+                $('input:checkbox:checked').each(function(i){
+                    if(0==i){
+                        objt.role_auth = $(this).val();
+                    }else{
+                        objt.role_auth += (","+$(this).val());
+                    }
+                });
+
+				if(mid == "")
+				{
+					myjstools.ajax(false, "POST", "/web/service?METHOD=role_add", objt, saveit_res);
+				}else
+				{
+					objt.role_id = mid;
+					myjstools.ajax(false, "POST", "/web/service?METHOD=role_edit", objt, saveit_res);
+				}
+				
+			}
+
+			function saveit_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo(data.msg);
+						return;
+					}
+
+//					myjstools.showerrinfo("操作成功。")
+					parent.closewin();
+				} catch(e) {
+					myjstools.showerrinfo("saveit_res.error:出错了！" + e.message);
+				}
+			}
+		</script>
+	</head>
+
+	<body style="width:90%; text-align:center; margin:0 auto; margin-top:10px;padding:10px 10px 10px 20px">
+		<!--<div class="easyui-panel" title="添加" style="width:100%">-->
+			<div style="padding:10px 10px 10px 10px">
+				<form id="ff" method="post">
+					<table>
+						<tr>
+							<td align="right">名称:</td>
+							<td><input class="easyui-validatebox" type="text" name="role_name" id="role_name" data-options="required:false" style="width: 280px;" up="up" /></td>
+						</tr>
+					</table>
+					
+					<div id="tabmain" class="easyui-tabs">
+						<div title="权限" data-options="iconCls:'icon-search',closable:false" style="padding:10px;width:98%">
+							<div id="dg"></div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div style="text-align:center;padding:5px">
+				<a href="javascript:saveit()" class="easyui-linkbutton">保存</a>
+				<a href="javascript:parent.closewin()" class="easyui-linkbutton">退出</a>
+			</div>
+		<!--</div>-->
+		
+		
+		<div id="win" class="easyui-window" title="..." style="width:950px;height:650px;" data-options="modal:true,closed:true">
+			<iframe id="fra_s" width="99%" height="99%" border="0" frameborder="0"></iframe>
+		</div>
+		
+	</body>
+
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>添加试卷</title>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="pragma" content="no-cache" />
+
+	<link id="linkm" rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" />
+	<link rel="stylesheet" type="text/css" href="../../themes/icon.css" />
+
+	<script type="text/javascript" src="../../js/jquery.min.js"></script>
+	<script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../js/easyui-lang-zh_CN.js"></script>
+
+	<script language="javascript" type="text/javascript" src="../../js/myjstools.js"></script>
+	<script language="javascript" type="text/javascript" src="../../js/hr.js"></script>
+	<script type="text/javascript">
+		var mid = myjstools.request("id").replace("#", "");
+		var surveyType = "";
+		function saveit() {
+			if($("#ipt_Name").val() == "") {
+				myjstools.showerrinfo('请输入名称');
+				return;
+			}
+			
+			var dataFormat = {};
+			dataFormat.name=$("#ipt_Name").val();
+			dataFormat.type=$("#sel_Type").val();
+			dataFormat.rem=$("#ipt_Rem").val();
+
+			if(mid == "")
+			{
+				myjstools.ajax(false, "POST", "/web/service?METHOD=surveyInfoService_add", dataFormat, saveit_res);
+			}else
+			{
+				dataFormat.id = mid;
+				myjstools.ajax(false, "POST", "/web/service?METHOD=surveyInfoService_edit", dataFormat, saveit_res);
+			}
+			
+		}
+		
+		
+		function saveit_res(data) {
+			try {
+				if(data.success != 1) {
+					myjstools.showerrinfo("server.error:" + data.msg);
+					return;
+				}
+
+				myjstools.showerrinfo("操作成功。")
+
+				parent.closewin();
+			} catch(e) {
+				myjstools.showerrinfo("saveit_res.error:出错了！" + e.message);
+			}
+		}
+		
+		$(document).ready(function(){
+			myjstools.ajax(false, "POST", "/web/service?METHOD=surveyInfoService_query", {
+				id: mid
+			}, loadinfo_res)
+		});
+		function loadinfo_res(data){
+			if(data.success == 1){
+				var entity = data.entity;
+				$("#ipt_Name").val(entity.survey_name);
+				//$("#ipt_Type").val(entity.survey_type);
+				$("#ipt_Rem").val(entity.survey_rem);
+				surveyType = entity.survey_type;
+				myjstools.ajax(false, "POST", "/web/service?METHOD=diccService_queryDicByType", {
+					dic_type: "question_type"
+				}, loadinfo_type)
+				
+			}else{
+				myjstools.showerrinfo("saveit_res.error:出错了！" + data.msg);
+			}
+		}
+		
+		function loadinfo_type(data){
+			if(data.success == 1){
+				var row = data.rows;
+				
+				if(row.length>=0){
+					for (var i=0;i<row.length;i++){
+						if(surveyType == row[i].dic_value){
+							$("#sel_Type").append("<option selected='selected' value='"+row[i].dic_value+"'>"+row[i].dic_label+"</option>");
+						}else{
+							$("#sel_Type").append("<option value='"+row[i].dic_value+"'>"+row[i].dic_label+"</option>");
+						}
+						
+					}
+				}
+			}
+		}
+		
+	</script>
+</head>
+<body style="width:90%; text-align:center; margin:0 auto; margin-top:10px;padding:10px 10px 10px 20px">
+	<div class="easyui-panel" title="添加" style="width:100%">
+		<div style="padding:10px 10px 10px 10px">
+			<form id="ff" method="post">
+				<table>
+					<tr>
+						<td align="right">名称:</td>
+						<td><input class="easyui-validatebox" type="text" name="name" id="ipt_Name" data-options="required:false" style="width: 180px;" up="up" /></td>
+					</tr>
+					<tr>
+						<td align="right">类型:</td>
+						<td><select id="sel_Type"></select></td>
+						<!-- <td><input class="easyui-validatebox" type="text" name="type" id="ipt_Type" data-options="required:false" style="width: 180px;" up="up" /></td> -->
+					</tr>
+					<tr>
+						<td align="right">描述:</td>
+						<td><input class="easyui-validatebox" type="text" name="rem" id="ipt_Rem" data-options="required:false" style="width: 180px;" up="up" /></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<div>
+			<table id="tabQuestion">
+				
+			</table>
+		</div>
+		<div style="text-align:center;padding:5px">
+			<a href="javascript:saveit()" class="easyui-linkbutton">保存</a>
+			<a href="javascript:parent.closewin()" class="easyui-linkbutton">退出</a>
+		</div>
+	</div>
+	
+	
+	<div id="win" class="easyui-window" title="..." style="width:950px;height:650px;" data-options="modal:true,closed:true">
+		<iframe id="fra_s" width="99%" height="99%" border="0" frameborder="0"></iframe>
+	</div>
+	
+</body>
+
+</html>

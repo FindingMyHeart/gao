@@ -1,0 +1,229 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	<title>menu</title>
+	<!-- Favicon-->
+	<link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+	<!-- Custom Css -->
+	<link href="assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+	<link href="assets/css/main.css" rel="stylesheet" type="text/css">
+	<link href="assets/css/authentication.css" rel="stylesheet" type="text/css">
+	<!-- adminX You can choose a theme from css/themes instead of get all themes -->
+	<link href="assets/css/themes/all-themes.css" rel="stylesheet" type="text/css" />
+	<!-- jquery.js -->
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/myjstools.js"></script>
+    <script type="text/javascript">
+			//iframe
+			function setIframeHeight(iframe) {
+				if (iframe) {
+					var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
+					if (iframeWin.document.body) {
+						iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
+						//iframe.height = iframe.height;
+						//alert(iframe.height );
+					}
+				}
+			};
+			window.onload = function () {
+				setIframeHeight(document.getElementById('mainframe'));
+			};
+			function top_setframeheight(h)
+			{
+				var iframe=document.getElementById("mainframe");
+				iframe.height=h;
+			}
+			function clickMenu(menu_id)
+			{
+				document.getElementById("mainframe").src=myjstools.wwwroot+"/pchtml/client/list.html";
+			}
+
+			function getuserinfo() {
+				myjstools.ajax(true, "POST", "/web/findbysession", {}, getuserinfo_res);
+			}
+
+			function getuserinfo_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo(data.msg);
+						return;
+					}
+
+					$("#spuserinfo").html("欢迎：" + data.entity.STAFF_NAME);
+				} catch(e) {
+					myjstools.showerrinfo("logout_res.error:出错了！" + e.message);
+				}
+			}
+			
+			function logout() {
+				myjstools.ajax(true, "POST", "/web/logout", {
+
+				}, logout_res);
+			}
+
+			function logout_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo(data.msg);
+						return;
+					}
+
+					document.location.href = "login.html";
+				} catch(e) {
+					myjstools.showerrinfo("logout_res.error:出错了！" + e.message);
+				}
+			}
+
+			function restate() {
+				myjstools.ajax(true, "POST", "/web/heartbeat", {
+
+				}, restate_res);
+			}
+
+			function restate_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo(data.msg);
+						return;
+					}
+
+				} catch(e) {
+					myjstools.showerrinfo("restate_res.error:出错了！" + e.message);
+				}
+			}
+
+			function getmenu() {
+				myjstools.ajax(true, "POST", "/web/getmenutree", {
+
+				}, getmenu_res);
+			}
+			
+			function getmenu_res(data) {
+				try {
+					var content="";
+					for(var i=0;i<data.length;i++){
+						content+=createTree(data[i]);
+					}
+					//console.log(content);
+					$("#ulmenu").append(content);
+					console.log($("#ulmenu").html());
+				} catch(e) {
+					myjstools.showerrinfo("getmenu_res.error:出错了！" + e.message);
+				}
+			}
+			
+			function createTree(jsons){
+				 var ul="";
+				 if(jsons != null){
+				 	//alert(jsons.children);
+		          	
+	             	if(jsons.children.length>0){
+	             		ul+="<li>";
+	             		ul+="<a href='javascript:void(0);' class='menu-toggle'><span>"+jsons.name+"</span></a>";
+	             		ul+="<ul class='ml-menu'>" ;
+	             		for(var j=0;j<jsons.children.length;j++){
+	             			ul += createTree(jsons.children[j]);
+	             		}
+		                ul += "</ul>" ;
+	             		ul += "</li>" ;
+	             	}else{
+	             		var murl = myjstools.wwwroot + jsons.url;
+	         			ul +="<li>";
+	             		ul += "<a href='callurl(\""+murl+"\");' ><span>"+jsons.name+"</span></a>";
+	             		ul += "</li>" ;
+	             	}		         			            
+		        }
+		         return ul ;
+		     }
+
+			$(function() {
+				
+				getmenu();
+				//setInterval("restate()", 5 * 60 * 1000);
+				getuserinfo();
+			});
+	</script>
+</head>
+
+<body class="theme-blue" style="width:99%;">
+<!-- header start -->
+<nav class="navbar clearHeader">
+	<div class="col-12">
+		<div class="navbar-header">
+			<a href="javascript:void(0);" class="bars"></a>
+			<a class="navbar-brand" href="index.html">admin<img class="logo" src="assets/images/logo.svg" alt="profile img"></a>
+		</div>
+		<ul class="nav navbar-nav navbar-right">
+		<!-- 
+			<li style="display:inline;float:left">
+				<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" title="通知"><i class="zmdi zmdi-notifications"></i>
+					<div class="notify"><span class="heartbit"></span><span class="point"></span></div>
+				</a>
+			</li>
+		 -->
+		 	<li>
+				<a href="login.html" class="mega-menu" data-close="true"><i class="zmdi zmdi-power" title="退出"></i></a>
+			</li>
+			
+		</ul>
+	</div>
+</nav>
+<!-- #END# header -->
+<!-- Left Sidebar -->
+<aside id="leftsidebar" class="sidebar">
+	<!-- Menu -->
+	<div class="menu">
+		<ul id="ulmenu" class="list">
+			<li>
+				<!-- User Info -->
+				<div class="user-info">
+					<div class="admin-image"> <img src="../static/images/user.jpg" alt="姓名"> </div>
+					<div class="admin-action-info"> <span>姓名(工号：20180001) </span>
+						<h3>人事部：主管</h3>
+						<ul>
+							<li>
+								<a data-placement="bottom" title="邮件" href=""><i class="zmdi zmdi-email"></i></a>
+							</li>
+							<li>
+								<a data-placement="bottom" title="我的" href=""><i class="zmdi zmdi-account"></i></a>
+							</li>
+							<li>
+								<a data-placement="bottom" title="退出" href=""><i class="zmdi zmdi-sign-in"></i></a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<!-- #User Info -->
+			</li>
+			<li class="header">指示板</li>
+			<li class="active open">
+				<a href="javascript:void(0);" class="menu-toggle"><i class="zmdi zmdi-home"></i><span>系统首页</span> </a>
+			</li>
+			<li><a href='javascript:void(0);' class='menu-toggle'><span>系统管理</span></a><ul class='ml-menu'><li><a href='callurl("http://localhost:8080/gcoa/pchtml/user/list.html");'><span>用户管理</span></a></li><li><a href='callurl("http://localhost:8080/gcoa/pchtml/role/list.html");'><span>角色管理</span></a></li><li><a href='callurl("http://localhost:8080/gcoa/pchtml/user/updatepassword.html");'><span>修改密码</span></a></li><li><a href='callurl("http://localhost:8080/gcoa/pchtml/dic/list.html");'><span>字典管理</span></a></li></ul></li>
+		</ul>
+	</div>
+	<!-- #Menu -->
+</aside>
+<!-- #END# Left Sidebar -->
+<!-- Right Sidebar --><!-- #END# Right Sidebar -->
+<!-- main content -->
+<section class="content home" style="">
+	<div class="container-fluid" style="height:auto; margin:0 auto;min-height:500px;">
+		<div></div>
+		<iframe name="mainframe" id="mainframe" src="home.html" frameborder="0" align="left" width="100%" height="100%" scrolling="no"  >
+			
+		</iframe>
+		<div class="clearfloat" style="clear:both;height:0;font-size: 1px;line-height: 0px;"></div>
+	</div>
+</section>
+
+
+<!-- Lib Scripts Plugin Js ( jquery.v3.2.1, Bootstrap4 js) -->
+<script src="assets/bundles/vendorscripts.bundle.js"></script>	
+<script src="assets/bundles/mainscripts.bundle.js"></script>	
+</body>
+		
+</html>

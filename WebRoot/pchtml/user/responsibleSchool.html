@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>用户管理</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../themes/icon.css" />
+
+		<script type="text/javascript" src="../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../js/myjstools.js"></script>
+
+		<script type="text/javascript">
+			var id = myjstools.request("id").replace("#", "");
+			
+			function loadGrid(){
+				//初始化grid
+				$('#dg').datagrid({
+					iconCls: 'icon-edit',
+					singleSelect: true,
+					toolbar: '#tt',
+					pagination: true,
+					onBeforeLoad: onBeforeLoad,
+					url: myjstools.wwwroot + '/web/service?METHOD=staff_list',
+					rownumbers: true,
+					loadMsg: '正在加载数据...',
+					onLoadError: function() {
+						myjstools.showerrinfo('数据加载出错了');
+					},
+					method: 'post',
+					pageNumber: 1,
+					pageSize: 20,
+					pageList: [10, 20, 50, 100],
+					columns: [
+						[{
+							field: 'staff_name',
+							title: '姓名'
+						},{
+							field: 'login_name',
+							title: '登录名'
+						},{
+							field: 'dept_name',
+							title: '部门名称'
+						},{
+							field: 'staff_level',
+							title: '职员等级',
+							formatter:function(value,row,index){
+								switch(value)
+								{
+									case 0:	return "普通";
+									case 1:	return "一级";
+									case 2:	return "二级";
+									case 3:	return "三级";
+									case 4:	return "四级";
+								}
+                        		return value;
+                        	}
+						}, {
+							field: 'staff_status',
+							title: '状态'
+						},{
+							field: 'staff_id',
+							title: '操作'
+							, formatter:function(value,row,index){
+                        		var s =('<a href="javascript:relation(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">关联学校</a>');
+								return s;
+                        	}
+						}
+						]
+					]
+				});
+			}
+			
+			
+			function onBeforeLoad(param){
+				param.staff_name = $("#staffName").val();
+				param.login_name = $("#login_name").val();
+				param.staff_level = $("#staff_level").combobox("getValue");
+			}
+			
+			//查询
+	        function seek() {
+	            $('#dg').datagrid('load');
+	        }
+			
+			function relation(value){
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/user/responsiableTree.html?staffId=" + value);
+			}
+			function closewin() {
+				$('#win').window('close');
+			}
+			$(document).ready(function(){loadGrid()});
+		</script>
+	</head>
+	
+<body>
+	<div id="tt" style="height:auto;">
+		<div class="main_form">
+		      姓名：<input id="staffName" name="staffName" value="" placeholder="请输姓名"/>
+		      登录名：<input id="login_name" name="login_name" value="" placeholder="请输登录名"/>
+		      等级：<select class="easyui-combobox" name="staff_level" id="staff_level" data-options="panelHeight:'auto'">
+					<option value="">请选择</option>
+					<option value="1">一级</option>
+					<option value="2">二级</option>
+					<option value="3">三级</option>
+					<option value="4">四级</option>
+				</select>
+		           
+		      <span><a href="javascript:seek();"  class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true"></a></span>
+	     </div>
+     </div>
+	<table id="dg">
+	</table>
+	
+	<div id="win" class="easyui-window" title="..." style="width:300px;height:350px;" data-options="modal:true,closed:true">
+		<iframe id="fra_s" width="99%" height="99%" border="0" frameborder="0"></iframe>
+	</div>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>上报管理</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css" />
+
+		<script type="text/javascript" src="../../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../../js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../../js/myjstools.js"></script>
+		<script type="text/javascript">
+			var reportId = myjstools.request("reportId").replace("#", "");;
+			var handleType = "";
+			var handleId = "";
+			var addFlag = true;
+			function init(){
+				var dataFormat = {};
+				dataFormat.reportId = reportId
+				//myjstools.ajax(true, "POST", "/web/service?METHOD=reportService_getReportHandleUserRepi", dataFormat, loadit_res);
+				
+			}
+			
+			function loadit_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+					
+					var entity = data.entity;
+					if(entity.hasOwnProperty("handle_description")){
+						$("#iptDescription").val(entity.handle_description);
+					}
+					
+					if(entity.hasOwnProperty("handle_type")){
+						handleType = entity.handle_type;
+						addFlag = false;
+					}
+					
+					if(entity.hasOwnProperty("handle_id")){
+						handleId = entity.handle_id;
+					}
+					
+				} catch(e) {
+					myjstools.showerrinfo("loadit_res.error:出错了！" + e.message);
+				}
+			}
+			
+			function save(){
+			
+				var handle_type=$('#handle_type').combobox('getValue');
+				var fudao_fangshi=$('#fudao_fangshi').combobox('getValue');
+				var wenti_xingzhi=$('#wenti_xingzhi').combobox('getValue');
+				var wenti_laiyuan=$('#wenti_laiyuan').combobox('getValue');
+				var fudao_celue=$('#fudao_celue').combobox('getValue');
+				var iptDescription=$("#iptDescription").val();
+				var dataFormat = {"reportId":reportId
+									,"handle_type":handle_type
+									,"fudao_fangshi":fudao_fangshi
+									,"wenti_xingzhi":wenti_xingzhi
+									,"wenti_laiyuan":wenti_laiyuan
+									,"fudao_celue":fudao_celue
+									,"description":iptDescription
+								 };
+				
+				if(addFlag){
+					myjstools.ajax(false, "POST", "/web/service?METHOD=reportService_saveReportHandle", dataFormat, save_res)	
+				}else{
+					dataFormat.id = handleId;
+					myjstools.ajax(false, "POST", "/web/service?METHOD=reportService_editReportHandle", dataFormat, save_res)
+				}
+				
+				
+				
+			}
+			
+			function save_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+					
+					parent.closewin();	
+					
+				} catch(e) {
+					myjstools.showerrinfo("loadit_res.error:出错了！" + e.message);
+				}
+			}
+			$(document).ready(function(){init()});
+		</script>
+	</head>
+	<body style="width:85%; text-align:left; margin:0 auto; margin-top:10px;padding:10px 10px 10px 20px">
+		<div style="height:5px"></div>
+		<div>
+			<span style="vertical-align: top;">处理类型：</span>
+			<input class="easyui-combobox" id="handle_type" name="handle_type" style="width:60%"
+			data-options="
+				url: myjstools.wwwroot+'/web/service?METHOD=globaldic_combox&dic_type=report_type',
+				method: 'get',
+				valueField:'dic_value',
+				textField:'dic_label',
+				groupField:'pvalue'
+			">
+		</div>
+		<div style="height:5px"></div>
+		<div>
+			<span style="vertical-align: top;">辅导方式：</span>
+			<input class="easyui-combobox" id="fudao_fangshi" name="fudao_fangshi" style="width:60%"
+			data-options="
+				url: myjstools.wwwroot+'/web/service?METHOD=globaldic_combox&dic_type=fudao_fangshi',
+				method: 'get',
+				valueField:'dic_label',
+				textField:'dic_label',
+				groupField:'pvalue'
+			">
+		</div>
+		<div style="height:5px"></div>
+		<div>
+			<span style="vertical-align: top;">问题性质：</span>
+			<input class="easyui-combobox" id="wenti_xingzhi" name="wenti_xingzhi" style="width:60%"
+			data-options="
+				url: myjstools.wwwroot+'/web/service?METHOD=globaldic_combox&dic_type=wenti_xingzhi&pvalue=notnull',
+				method: 'get',
+				valueField:'dic_label',
+				textField:'dic_label',
+				groupField:'pvalue'
+			">
+		</div>
+		<div style="height:5px"></div>
+		<div>
+			<span style="vertical-align: top;">问题来源：</span>
+			<input class="easyui-combobox" id="wenti_laiyuan" name="wenti_laiyuan" style="width:60%"
+			data-options="
+				url: myjstools.wwwroot+'/web/service?METHOD=globaldic_combox&dic_type=wenti_laiyuan',
+				method: 'get',
+				valueField:'dic_label',
+				textField:'dic_label',
+				multiple:true,
+				groupField:'pvalue'
+			">
+		</div>
+		<div style="height:5px"></div>
+		<div>
+			<span style="vertical-align: top;">辅导策略：</span>
+			<input class="easyui-combobox" id="fudao_celue" name="fudao_celue" style="width:60%"
+			data-options="
+				url: myjstools.wwwroot+'/web/service?METHOD=globaldic_combox&dic_type=fudao_celue',
+				method: 'get',
+				valueField:'dic_label',
+				textField:'dic_label',
+				groupField:'pvalue'
+			">
+		</div>
+		<div style="height:5px"></div>
+		<div>
+			<span style="vertical-align: top;">&nbsp;&nbsp;建议：</span>
+			<textarea id="iptDescription" style="width: 300px;height: 150px">给1级守门人建议：                           我的求助原因：                                我的补充：
+			</textarea>
+		</div>
+		<div style="height:5px"></div>
+		<div>
+			<div style="text-align:center;padding-right:50px">
+				<a href="javascript:save()" class="easyui-linkbutton">保存</a>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="XtRoleMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into xt_role(
+			role_name,	
+			role_auth,	
+			role_id
+		) values (
+			#{role_name},	
+			#{role_auth},	
+			#{role_id}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		update xt_role
+		set if_deleted=1
+		where 
+			role_id = #{role_id}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update xt_role
+			set 
+				<if test="role_name != null and role_name != ''">
+				role_name = #{role_name},	
+				</if>
+				<if test="role_auth != null and role_auth != ''">
+				role_auth = #{role_auth},	
+				</if>
+				
+			role_id = role_id
+			where 
+				role_id = #{role_id}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			role_name,	
+			role_auth,	
+			role_id
+		from 
+			xt_role
+		where 
+			role_id = #{role_id}
+		<if test="pd.role_id != null and pd.role_id != ''">
+			and a.role_id = #{pd.role_id}
+		</if>
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.role_name,	
+				a.role_auth,	
+				a.role_id
+		from 
+				xt_role a
+		where if_deleted=0
+		<if test="pd.role_id != null and pd.role_id != ''">
+			and a.role_id = #{pd.role_id}
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.role_name,	
+				a.role_auth,	
+				a.role_id
+		from 
+				xt_role a
+		where if_deleted=0
+		<if test="not_pk_id != null and not_pk_id != ''">
+			and a.role_id not in (#{not_pk_id})
+		</if>
+		<if test="role_name != null and role_name != ''">
+			and a.role_name = #{role_name}
+		</if>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		update xt_role
+		set if_deleted=1
+		where 
+			role_id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 列表(q) -->
+	<select id="listq" parameterType="pd" resultType="pd">
+		select a.role_id,a.role_name
+		from xt_role a
+		where a.if_deleted=0 
+		<if test="q != null and q != ''">
+			and ( a.role_name like concat(concat('%', #{q}),'%') )
+		</if>	
+		ORDER BY a.role_name
+		limit 0,20
+		
+	</select>
+</mapper>

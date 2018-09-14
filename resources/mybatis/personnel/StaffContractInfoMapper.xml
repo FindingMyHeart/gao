@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StaffContractInfoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into XT_STAFF_CONTRACT(   
+			STAFF_ID,	
+			CONTRACT_START_DATE,	
+			CONTRACT_END_DATE,	
+			CONTRACT_CODE,	
+			STATUS,	
+			CREATE_TIME,	
+			CREATE_USERID,	
+			IF_DELETED,	
+			RESOURCEIDS,	
+			CONTRACT_ID
+		) values (
+			#{STAFF_ID},	
+			#{CONTRACT_START_DATE},	
+			#{CONTRACT_END_DATE},	
+			#{CONTRACT_CODE},	
+			#{STATUS},	
+			#{CREATE_TIME},	
+			#{CREATE_USERID},	
+			#{IF_DELETED},	
+			#{RESOURCEIDS},	
+			#{CONTRACT_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+			XT_STAFF_CONTRACT
+	  	SET
+	  		IF_DELETED = '1'
+		where 
+			CONTRACT_ID = #{CONTRACT_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  XT_STAFF_CONTRACT
+			set 
+				STAFF_ID = #{STAFF_ID},
+				CONTRACT_START_DATE = #{CONTRACT_START_DATE},
+				CONTRACT_END_DATE = #{CONTRACT_END_DATE},
+				CONTRACT_CODE = #{CONTRACT_CODE},
+				RESOURCEIDS = #{RESOURCEIDS},
+			CONTRACT_ID = CONTRACT_ID
+			where 
+				CONTRACT_ID = #{CONTRACT_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			a.STAFF_ID,
+			a.CONTRACT_START_DATE,
+			a.CONTRACT_END_DATE,
+			a.CONTRACT_CODE,
+			a.STATUS,
+			a.CREATE_TIME,
+			a.CREATE_USERID,
+			a.IF_DELETED,
+			a.RESOURCEIDS,
+			a.CONTRACT_ID,
+			b.STAFF_CODE,
+			b.STAFF_NAME,
+			b.CONTACT,
+			c.DEPT_NAME,
+			d.DIC_LABEL AS POST_NAME
+		from 
+			XT_STAFF_CONTRACT a
+	  	LEFT JOIN
+	  			XT_STAFF_INFO b
+	  	ON
+	  			a.STAFF_ID = b.STAFF_ID
+	  	LEFT JOIN
+	  			XT_DEPT_INFO c
+	  	ON
+	  			b.DEPT_ID = c.DEPT_ID
+	  	LEFT JOIN
+	  			XT_DIC d
+	  	ON
+	  			b.POST = d.DIC_VALUE AND d.DIC_TYPE = 'zw'
+		where 
+			CONTRACT_ID = #{CONTRACT_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.STAFF_ID,	
+				a.CONTRACT_START_DATE,	
+				a.CONTRACT_END_DATE,	
+				a.CONTRACT_CODE,	
+				a.STATUS,	
+				a.CREATE_TIME,	
+				a.CREATE_USERID,	
+				a.IF_DELETED,	
+				a.RESOURCEIDS,	
+				a.CONTRACT_ID,
+				b.STAFF_CODE,
+				b.STAFF_NAME,
+				b.CONTACT,
+				c.DEPT_NAME,
+				d.DIC_LABEL AS POST_NAME
+		from 
+				XT_STAFF_CONTRACT a
+	  	LEFT JOIN
+	  			XT_STAFF_INFO b
+	  	ON
+	  			a.STAFF_ID = b.STAFF_ID
+	  	LEFT JOIN
+	  			XT_DEPT_INFO c
+	  	ON
+	  			b.DEPT_ID = c.DEPT_ID
+	  	LEFT JOIN
+	  			XT_DIC d
+	  	ON
+				b.POST = d.DIC_VALUE AND d.DIC_TYPE = 'zw'
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="pd.STAFF_CODE_SEARCH != null and pd.STAFF_CODE_SEARCH != ''">
+		AND
+				b.STAFF_CODE LIKE CONCAT('%',CONCAT(#{pd.STAFF_CODE_SEARCH},'%'))
+		</if>
+		<if test="pd.DEPT_ID_SEARCH != null and pd.DEPT_ID_SEARCH != ''">
+		AND
+				b.DEPT_ID = #{pd.DEPT_ID_SEARCH}
+		</if>
+		<if test="pd.POST_SEARCH != null and pd.POST_SEARCH != ''">
+		AND
+				b.POST = #{pd.POST_SEARCH}
+		</if>
+		<if test="pd.STATUS_SEARCH != null and pd.STATUS_SEARCH != ''">
+		AND
+				a.STATUS = #{pd.STATUS_SEARCH}
+		</if>
+		<if test="pd.CONTRACT_START_DATE_SEARCH != null and pd.CONTRACT_START_DATE_SEARCH != ''">
+		AND
+				a.CONTRACT_START_DATE &gt;= #{pd.CONTRACT_START_DATE_SEARCH}
+		</if>
+		<if test="pd.CONTRACT_END_DATE_SEARCH != null and pd.CONTRACT_END_DATE_SEARCH != ''">
+		AND
+				a.CONTRACT_END_DATE &lt;= #{pd.CONTRACT_END_DATE_SEARCH}
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.STAFF_ID,	
+				a.CONTRACT_START_DATE,	
+				a.CONTRACT_END_DATE,	
+				a.CONTRACT_CODE,	
+				a.STATUS,	
+				a.CREATE_TIME,	
+				a.CREATE_USERID,	
+				a.IF_DELETED,	
+				a.RESOURCEIDS,	
+				a.CONTRACT_ID
+		from 
+				XT_STAFF_CONTRACT a
+		WHERE
+				a.IF_DELETED = '0'
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			XT_STAFF_CONTRACT
+		SET
+			IF_DELETED = '1'
+		where 
+			CONTRACT_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

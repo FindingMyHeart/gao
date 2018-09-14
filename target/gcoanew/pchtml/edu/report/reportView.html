@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>上报详细</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css" />
+
+		<script type="text/javascript" src="../../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../../js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../../js/myjstools.js"></script>
+		<script type="text/javascript">
+			var reportId = myjstools.request("reportId").replace("#", "");
+			
+			function init(){
+				
+				var dataFormat = {};
+				dataFormat.id = reportId
+				myjstools.ajax(false, "POST", "/web/service?METHOD=reportService_queryReportInfoById", dataFormat, loadit_res);
+				
+			}
+			
+			function loadit_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+					
+					var entity = data.entity;
+					if(entity.hasOwnProperty("ill_date")){
+						var time1 = new Date(entity.ill_date).format("yyyy-MM-dd");
+						$("#ill_date").html(time1);
+					}
+					
+					if(entity.hasOwnProperty("effect")){	
+						$("#effect").html(entity.effect);
+					}
+					
+					if(entity.hasOwnProperty("reason")){
+						$("#reason").html(entity.reason);
+					}
+					
+					if(entity.hasOwnProperty("description")){
+						$("#description").html(entity.description);
+					}
+					
+				} catch(e) {
+					myjstools.showerrinfo("loadit_res.error:出错了！" + e.message);
+				}
+			}
+			Date.prototype.format = function (fmt) { //author: meizz
+				  var o = {
+				    "M+": this.getMonth() + 1, //月份
+				    "d+": this.getDate(), //日
+				    "h+": this.getHours(), //小时
+				    "m+": this.getMinutes(), //分
+				    "s+": this.getSeconds(), //秒
+				    "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+				    "S": this.getMilliseconds() //毫秒
+				  };
+				  if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+				  for (var k in o)
+				  if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+				  return fmt;
+			}
+			
+			$(document).ready(function(){init()});
+		</script>
+		<style> 
+			table td{border:1px solid black} 
+		</style> 
+	</head>
+	<body style="width:85%; text-align:left; margin:0 auto; margin-top:10px;padding:10px 10px 10px 20px">
+		<table >
+			<tr>
+			<td>
+				<span>症状开始时间：</span>
+			</td>
+			<td>
+				<span id="ill_date"></span>
+			</td>
+			</tr><tr>
+			<td>
+				<span>对生活及学习状态影响程度：</span>
+			</td>
+			<td>
+				<span id="effect"></span>
+			</td>
+			</tr><tr>
+			<td>
+				<span>可能的原因或事件：</span>
+			</td>
+			<td>
+				<span id="reason"></span>
+			</td>
+			</tr><tr>
+			<td>
+				<span>我的观察：</span>
+			</td>
+			<td>
+			<span id="description"></span>
+			</td>		
+			</tr>
+		</table>
+
+	</body>
+</html>

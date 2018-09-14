@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+    	<title>导出表</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css" />
+
+		<script type="text/javascript" src="../../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../../js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../../js/myjstools.js"></script>
+		<script type="text/javascript">
+			//查询
+	        function seekSurvey() {
+				var survey_id = $('#survey_id').combobox('getValue');;
+				var start_date = $("#start_date").datebox("getValue");
+				var end_date = $("#end_date").datebox("getValue");
+				//alert(survey_id);
+				if (survey_id !== null && survey_id !== undefined && survey_id !== '') {
+					var url = myjstools.wwwroot + '/web/reportQuestion?survey_id='+survey_id+'&start_date='+start_date+'&end_date='+end_date;
+					document.location.href=url;
+				}else{
+					alert("请选择问卷");
+					return;
+				}
+	        }
+		</script>
+
+  </head>
+  
+  <body style="width:100%; margin:10; height:100%">
+		<div id="tt" style="height:auto;">
+			&nbsp;<span class="icon-edit">&nbsp;</span>&nbsp;问卷表 &nbsp;
+			<!--<span id="spaninfo"><a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" >查看选中项</a></span>-->
+			<div style="height:30px"></div>
+			<div class="main_form">
+	                          问卷：<select class="easyui-combobox" id="survey_id" name="survey_id">
+	            		<option value="">请选择</option>
+	            		<option value="97c6e92e25e14e39bf80c3d685309e30">Rutter儿童行为问卷（教师版）</option>
+	            	</select>
+	            	评测时间：<input class="easyui-datebox" name="start_date" id="start_date" style="width:150px" >
+	            	到&nbsp;<input class="easyui-datebox" name="end_date" id="end_date" style="width:150px" >
+	      
+	       		<span><a href="javascript:seekSurvey();"  class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true">导出问卷表</a></span>
+	       			
+           </div>
+		</div>
+		
+	</body>
+</html>

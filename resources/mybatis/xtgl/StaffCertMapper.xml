@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StaffCertMapper">
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into xt_staff_cert(
+			staff_id,
+			cert_name,
+			get_date,
+			valid_date,
+			memo,
+			num,
+			cert_id
+		) values (
+			#{staff_id},
+			#{cert_name},
+			#{get_date},
+			#{valid_date},
+			#{memo},
+			#{num},
+			#{cert_id}
+		)
+	</insert>
+
+
+	<!-- 查询所有 -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+			a.staff_id,
+			a.cert_name,
+			DATE_FORMAT(a.get_date,'%Y-%m-%d') AS get_date,
+			DATE_FORMAT(a.valid_date,'%Y-%m-%d') AS valid_date,
+			a.memo,
+			a.num,
+			a.cert_id
+	  	from
+	  		xt_staff_cert a
+	  	where
+	  		a.staff_id = #{staff_id}
+	  	order by
+	  		a.num asc
+	</select>
+
+	<!-- 删除所有 -->
+	<delete id="deleteByStaffId" parameterType="pd">
+		delete from
+			xt_staff_cert
+		where
+			staff_id = #{staff_id}
+	</delete>
+</mapper>

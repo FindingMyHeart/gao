@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AdmCertLendMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into ADM_CERT_LEND( 
+			CERT_ID,	
+			LEND_NAME,	
+			CHECK_TIME,	
+			CHECK_USERID,	
+			CREATE_TIME,	
+			CREATE_USERID,	
+			IF_DELETED,	
+			STATUS,
+			REJECT_REASON,
+			LEND_ID
+		) values (
+			#{CERT_ID},	
+			#{LEND_NAME},	
+			#{CHECK_TIME},	
+			#{CHECK_USERID},	
+			#{CREATE_TIME},	
+			#{CREATE_USERID},	
+			#{IF_DELETED},	
+			#{STATUS},
+			#{REJECT_REASON},
+			#{LEND_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+			ADM_CERT_LEND
+		SET
+			IF_DELETED = '1'
+		where 
+			LEND_ID = #{LEND_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  ADM_CERT_LEND
+			set 
+				CERT_ID = #{CERT_ID},
+				LEND_NAME = #{LEND_NAME},
+			LEND_ID = LEND_ID
+			where 
+				LEND_ID = #{LEND_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			CERT_ID,	
+			LEND_NAME,	
+			CHECK_TIME,	
+			CHECK_USERID,	
+			CREATE_TIME,	
+			CREATE_USERID,	
+			IF_DELETED,
+			STATUS,
+			REJECT_REASON,
+			LEND_ID
+		from 
+			ADM_CERT_LEND
+		where 
+			LEND_ID = #{LEND_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.CERT_ID,	
+				a.LEND_NAME,	
+				a.CHECK_TIME,	
+				a.CHECK_USERID,	
+				a.CREATE_TIME,	
+				a.CREATE_USERID,	
+				a.IF_DELETED,
+				a.STATUS,
+				a.REJECT_REASON,
+				a.LEND_ID,
+				b.CERT_NAME,
+				b.CERT_CODE,
+				b.VALID_DATE,
+				b.USE_CASE
+		from 
+				ADM_CERT_LEND a
+		LEFT JOIN
+				ADM_CERT_INFO b
+		ON
+				a.CERT_ID = b.CERT_ID
+		WHERE
+	  			a.IF_DELETED = '0'
+		<if test="pd.CERT_NAME_SEARCH != null and pd.CERT_NAME_SEARCH != ''">
+		AND
+			b.CERT_NAME LIKE CONCAT('%',CONCAT(#{pd.CERT_NAME_SEARCH},'%'))
+		</if>
+		<if test="pd.CERT_CODE_SEARCH != null and pd.CERT_CODE_SEARCH != ''">
+		AND
+			b.CERT_CODE LIKE CONCAT('%',CONCAT(#{pd.CERT_CODE_SEARCH},'%'))
+		</if>
+		<if test="pd.USE_CASE_SEARCH != null and pd.USE_CASE_SEARCH != ''">
+		AND
+			b.USE_CASE = #{pd.USE_CASE_SEARCH}
+		</if>
+		<if test="pd.STATUS_SEARCH != null and pd.STATUS_SEARCH != ''">
+		AND
+			a.STATUS = #{pd.STATUS_SEARCH}
+		</if>
+		AND
+			b.IF_DELETED = '0'
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.CERT_ID,	
+				a.LEND_NAME,	
+				a.CHECK_TIME,	
+				a.CHECK_USERID,	
+				a.CREATE_TIME,	
+				a.CREATE_USERID,
+				a.STATUS,
+				a.REJECT_REASON,
+				a.IF_DELETED,	
+				a.LEND_ID
+		from 
+				ADM_CERT_LEND a
+		WHERE
+	  			a.IF_DELETED = '0'
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			ADM_CERT_LEND
+		SET
+			IF_DELETED = '1'
+		where 
+			LEND_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+
+	<!-- 修改状态 -->
+	<update id="updateStatus" parameterType="pd">
+		UPDATE
+			ADM_CERT_LEND
+		SET
+			STATUS = #{STATUS},
+		<if test="REJECT_REASON != null and REJECT_REASON != ''">
+			REJECT_REASON = #{REJECT_REASON},
+		</if>
+		LEND_ID = LEND_ID
+		WHERE
+			LEND_ID = #{LEND_ID}
+	</update>
+
+	<!-- 修改在借状态 -->
+	<update id="updateZjStatus" parameterType="pd">
+		UPDATE
+			ADM_CERT_LEND
+		SET
+			STATUS = '4'
+		WHERE
+			CERT_ID = #{CERT_ID} AND STATUS = '2'
+	</update>
+
+</mapper>

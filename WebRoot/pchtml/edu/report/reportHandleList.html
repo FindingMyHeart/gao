@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>上报详细信息</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css" />
+
+		<script type="text/javascript" src="../../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../../js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../../js/myjstools.js"></script>
+		<script type="text/javascript">
+		var mpath = "edu/report";
+		var reportId =  myjstools.request("reportId");
+		function loadGrid(){
+
+			//初始化grid
+			$('#dg').datagrid({
+				iconCls: 'icon-edit',
+				singleSelect: true,
+				toolbar: '#tt',
+				pagination: false,
+				url: myjstools.wwwroot + '/web/service?METHOD=reportService_queryReportHandleByReport&reportId='+reportId,
+				rownumbers: true,
+				loadMsg: '正在加载数据...',
+				onLoadError: function() {
+					myjstools.showerrinfo('数据加载出错了');
+				},
+				method: 'post',
+				columns: [
+					[{
+						field: 'handle_time',
+						title: '时间',
+						formatter:function(value,row,index){
+							var time1 = new Date(value).format("yyyy-MM-dd hh:mm:ss");  
+							var htm = "<span>"+time1+"</span>";
+							return htm;
+						}
+					},
+					{
+						field:'handle_user',
+						title:'操作人',
+						
+					},
+					{
+						field:'typeLabel',
+						title:'操作类型'
+					},
+					{
+						field:'fudao_fangshi',
+						title:'辅导方式'
+					},
+					{
+						field:'wenti_xingzhi',
+						title:'问题性质'
+					},
+					{
+						field:'wenti_laiyuan',
+						title:'问题来源'
+					},
+					{
+						field:'fudao_celue',
+						title:'辅导策略'
+					},
+					{
+						field:'handle_description',
+						title:'描述'
+					}]
+				]
+			});
+		}
+		
+		Date.prototype.format = function (fmt) { //author: meizz
+			  var o = {
+			    "M+": this.getMonth() + 1, //月份
+			    "d+": this.getDate(), //日
+			    "h+": this.getHours(), //小时
+			    "m+": this.getMinutes(), //分
+			    "s+": this.getSeconds(), //秒
+			    "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+			    "S": this.getMilliseconds() //毫秒
+			  };
+			  if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+			  for (var k in o)
+			  if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+			  return fmt;
+			}
+		
+		$(document).ready(function(){loadGrid()});
+		</script>
+	</head>
+<body>
+	<table id="dg" style="height:280px;"></table>
+</body>
+</html>

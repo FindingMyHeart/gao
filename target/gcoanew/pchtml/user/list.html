@@ -1,0 +1,416 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>用户管理</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../themes/icon.css" />
+
+		<script type="text/javascript" src="../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../js/easyui-lang-zh_CN.js"></script>
+	<link rel="stylesheet" type="text/css" href="../plugin/ztree/zTreeStyle/zTreeStyle.css"/>
+    <script type="text/javascript" src="../plugin/ztree/jquery.ztree.all.min.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../js/myjstools.js"></script>
+
+		<script type="text/javascript">
+			//双击明细
+			function onDblClickRow(rowIndex, rowData) {
+				//var row = $('#dg').datagrid('getSelected');
+				if(rowData) {
+					openinfo(rowData.staff_id);
+				}
+			}
+
+			function info() {
+				var row = $('#dg').datagrid('getSelected');
+				if(row) {
+					openinfo(row.staff_id);
+				}
+			}
+
+			function openinfo(id) {
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/user/info.html?id=" + id);
+			}
+			
+			function editinfo(id) {
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/user/edit.html?id=" + id);
+			}
+
+			function add() {
+            	var treeObj = $.fn.zTree.getZTreeObj("ultree");
+            	var getsNodes = treeObj.getSelectedNodes();
+            	if (getsNodes.length > 0) {
+	            	myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/user/add.html?dept_id=" + getsNodes[0].id);
+				} else {
+              		myjstools.showerrinfo("请选择新用户所在部门");
+           		}			
+			}
+
+			function closewin() {
+				$('#win').window('close');
+
+				loadtree();
+				$('#dg').datagrid('reload');
+			}
+
+			//查询
+			function submitForm() {
+				$('#dg').datagrid('load');
+			}
+
+			function onBeforeLoad(param) {
+				param.staff_name = $("#staff_name").val();
+				param.login_name = $("#login_name").val();
+
+				var nodes = $('#ultree').tree('getSelected');
+
+				if(nodes != null) {
+					param.dept_id = nodes.dept_id;
+				}
+
+			}
+
+			function initit() {
+				zTreeObj = $.fn.zTree.init($("#ultree"), setting, zNodes);//初始化ztree
+				zTreeObj.expandAll(true);
+				loadtree();
+
+				//初始化grid
+				$('#dg').datagrid({
+					iconCls: 'icon-edit',
+					singleSelect: true,
+					onDblClickRow: onDblClickRow,
+					onBeforeLoad: onBeforeLoad,
+					toolbar: '#tt',
+					pagination: true,
+					url: myjstools.wwwroot + '/web/service?METHOD=staff_list',
+					rownumbers: true,
+					loadMsg: '正在加载数据...',
+					onLoadError: function() {
+						myjstools.showerrinfo('数据加载出错了');
+					},
+					method: 'post',
+					pageNumber: 1,
+					pageSize: 20,
+					pageList: [10, 20, 50, 100],
+					columns: [
+						[{
+							field: 'dept_name',
+							title: '部门名称'
+						}, {
+							field: 'login_name',
+							title: '登录名'
+						}, {
+							field: 'staff_name',
+							title: '姓名'
+						}, {
+							field: 'staff_status',
+							title: '状态'
+						}, {
+							field: 'role_name',
+							title: '角色名称'
+						}, {
+							field: 'staff_level',
+							title: '职员等级',
+							formatter:function(value,row,index){
+								switch(value)
+								{
+									case 0:	return "普通";
+									case 1:	return "一级";
+									case 2:	return "二级";
+									case 3:	return "三级";
+									case 4:	return "四级";
+								}
+                        		return value;
+                        	}
+						}
+						,{
+							field: 'staff_id',
+							title: '操作'
+							, formatter:function(value,row,index){
+                        		var s =('<a href="javascript:openinfo(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">查看</a>'
+	                        		+'&nbsp;<a href="javascript:editinfo(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">修改</a>'
+									+'&nbsp;<a href="javascript:deluser(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-remove\',plain:true">删除</a>');
+								return s;
+                        	}
+						}
+						]
+					]
+				});
+			}
+
+			$(
+				function() {
+					initit();
+				}
+			);
+		</script>
+		<script language="javascript" type="text/javascript">
+			//
+			function deluser(uid) {
+				$.messager.confirm('提示', '确认删除当前信息吗？'
+				, function(r) {
+					if(r) {
+						myjstools.ajax(false, "POST", "/web/service?METHOD=staff_delete", {
+							staff_id: uid
+						}, deluser_res);
+					}
+				});
+			}
+
+			function deluser_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+
+					$('#dg').datagrid('load'); //, objt
+				} catch(e) {
+					myjstools.showerrinfo("deluser_res.error:出错了！" + e.message);
+				}
+			}
+		</script>
+
+		<script language="javascript" type="text/javascript">
+			var flag = 0;
+        	var zTreeObj;
+        	var zNodes = [];
+        	var getsNodes = [];
+        	var setting = {
+            	callback: {
+            	    onClick: zTreeOnClick
+            	},
+            	edit: {
+                	enable: false,//修改节点
+                	renameTitle: "编辑节点名称",
+                	drag: {//拖拽
+                    	isCopy: false,//拷贝
+                    	isMove: false//移动
+                	}
+            	},
+           		data: {
+                	simpleData: {
+                    	enable: true
+                	}
+            	}
+        	};
+		
+			//zTree点击事件
+			function zTreeOnClick(event, treeId, treeNode) {
+				dept_id = treeNode.id;
+				$('#dg').datagrid({
+					fit: true,
+					fitColumns: true,
+					iconCls: 'icon-edit',
+					singleSelect: true,
+					onDblClickRow: onDblClickRow,
+					onBeforeLoad: onBeforeLoadStaff,
+					toolbar: '#tt',
+					pagination: true,
+					url: myjstools.wwwroot + '/web/service?METHOD=staff_list&dept_id=' + dept_id,
+					rownumbers: true,
+					loadMsg: '正在加载数据...',
+					onLoadError: function () {
+						myjstools.showerrinfo('数据加载出错了');
+					},
+					method: 'post',
+					pageNumber: 1,
+					pageSize: 20,
+					pageList: [10, 20, 50, 100],
+					columns: [
+						[{
+							field: 'dept_name',
+							title: '部门名称'
+						}, {
+							field: 'login_name',
+							title: '登录名'
+						}, {
+							field: 'staff_name',
+							title: '姓名'
+						}, {
+							field: 'staff_status',
+							title: '状态'
+						}, {
+							field: 'role_name',
+							title: '角色名称'
+						}, {
+							field: 'staff_level',
+							title: '职员等级',
+							formatter:function(value,row,index){
+								switch(value)
+								{
+									case 0:	return "普通";
+									case 1:	return "一级";
+									case 2:	return "二级";
+									case 3:	return "三级";
+									case 4:	return "四级";
+								}
+                        		return value;
+                        	}
+						}
+						,{
+							field: 'staff_id',
+							title: '操作'
+							, formatter:function(value,row,index){
+                        		var s =('<a href="javascript:openinfo(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">查看</a>'
+	                        		+'&nbsp;<a href="javascript:editinfo(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">修改</a>'
+									+'&nbsp;<a href="javascript:deluser(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-remove\',plain:true">删除</a>');
+								return s;
+                        	}
+						}
+						]
+					]
+				});
+
+			}
+			function getAll() {
+				var treeObj = $.fn.zTree.getZTreeObj("ultree");//获取ztree实例，或者直接用上面的“zTreeObj”
+				var nodes = treeObj.getNodes();
+
+				var arr = treeObj.transformToArray(nodes);
+
+			}
+
+			function getselect() {
+				var treeObj = $.fn.zTree.getZTreeObj("ultree");
+				var getsNodes = treeObj.getSelectedNodes();
+				if (getsNodes.length > 0) {
+					var node = getsNodes[0].getIndex();
+
+				}
+			}
+			
+			//加载分类
+			function loadtree() {
+				zNodes = [];
+				myjstools.ajax(false, "POST", "/web/service?METHOD=dept_list", {
+					page: 1,
+					rows: 10000
+				}, showtree);
+			}
+
+			function showtree(data) {
+				var rows = data.rows;
+
+				for (var i = 0; i < rows.length; i++) {
+
+					zNodes.push({id: rows[i].DEPT_ID, name: rows[i].DEPT_NAME, pId: rows[i].PID});
+				}
+
+				zTreeObj = $.fn.zTree.init($("#ultree"), setting, zNodes);//初始化ztree
+				zTreeObj.expandAll(true);//设置文件夹是否打开
+			}
+
+			//添加节点
+			function addztree() {
+				var treeObj = $.fn.zTree.getZTreeObj("ultree");
+				var getsNodes = treeObj.getSelectedNodes();
+				if (getsNodes.length > 0) {
+					myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/user/bm_add.html?pid=" + getsNodes[0].id);
+				} else {
+					myjstools.showerrinfo('请先选择');
+				}
+			}
+
+			//修改节点
+			function editztree() {
+				var treeObj = $.fn.zTree.getZTreeObj("ultree");
+				var getsNodes = treeObj.getSelectedNodes();
+				if(getsNodes.length > 0 ) {
+					myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/user/bm_edit.html?id=" + getsNodes[0].id);
+				} else {
+					myjstools.showerrinfo('请先选择');
+				}
+			}
+
+			//删除节点
+			function delztree() {
+				var node = $('#ultree').tree('getSelected');
+				var treeObj = $.fn.zTree.getZTreeObj("ultree");
+				var getsNodes = treeObj.getSelectedNodes();
+				if (getsNodes.length > 0) {
+					if (getsNodes.id != 0) {
+						if (!(getsNodes[0].isParent)) {
+							$.messager.confirm('提示', '确认删除当前信息吗？', function (r) {
+								if (r) {
+									myjstools.ajax(false, "POST", "/web/service?METHOD=dept_delete", {
+										DEPT_ID: getsNodes[0].id
+									}, deltree_res);
+								}
+							});
+						} else {
+							myjstools.showerrinfo('不能删除非末级');
+						}
+					} else {
+						myjstools.showerrinfo('不能删除根');
+					}
+				} else {
+					myjstools.showerrinfo('请选择要删除信息');
+				}
+			}
+
+			function deltree_res(data) {
+				try {
+					if (data.success != 1) {
+						myjstools.showerrinfo(data.msg);
+						return;
+					}
+					loadtree();
+				} catch (e) {
+					myjstools.showerrinfo("deltree_res.error:出错了！" + e.message);
+				}
+			}
+			//staff 
+			function onBeforeLoadStaff(param) {
+				param.staff_name = $("#staff_name").val();
+				param.login_name = $("#login_name").val();
+			}
+			//查询
+	        function seek() {
+	            $('#dg').datagrid('load');
+	        }
+		</script>
+	</head>
+
+	<body style="width:100%; margin:0; height:100%">
+		<div id="tt" style="height:auto;">
+			&nbsp;<span class="icon-edit">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;用户管理 (提示：双击查看详细) &nbsp;
+			 姓名：<input id="staff_name" name="staff_name" value="" placeholder="请输姓名"/>
+			 登录名：<input id="login_name" name="login_name" value="" placeholder="请输登录名"/>
+		     <span><a href="javascript:seek();"  class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true"></a></span>
+	     
+			<span id="spanadd"><a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onClick="add()">添加</a></span> &nbsp;
+			<span id="spaninfo"><a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onClick="info()">查看选中项</a></span>
+		</div>
+		<div title="列表" data-options="iconCls:'icon-tip',closable:false" style="padding:0px;width:99%">
+			<div class="easyui-layout" style="width:99%;height:600px;">
+				<div data-options="region:'west',border:true" style="width:240px;padding:10px;">
+					<ul id="ultree" class="ztree" data-options="animate:true"></ul>
+					<div>
+					<!-- 
+						<a href="javascript:addztree()" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true">添加</a>
+						<a href="javascript:editztree()" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true">修改</a>
+						<a href="javascript:delztree()" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true">删除</a>
+					 -->
+					</div>
+				</div>
+				<div data-options="region:'center',border:true" style="padding:0px">
+					<table id="dg" title=""></table>
+				</div>
+			</div>
+		</div>
+
+
+<div id="win" class="easyui-window" title="..." style="width:800px;height:600px;" data-options="modal:true,closed:true">
+    <iframe id="fra_s" width="99%" height="99%" border="0" frameborder="0"></iframe>
+</div>
+
+	</body>
+
+</html>

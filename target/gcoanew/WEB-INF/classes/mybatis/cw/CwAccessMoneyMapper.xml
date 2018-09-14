@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CwAccessMoneyMapper">
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into CW_ACCESS_MONEY(   
+			ACCESS_SN,
+			TIAOCHU_BIZHONG,
+			TIAOCHU_HUILV,
+			TIAOCHU_MONEY,
+			TIAOCHU_PAYMENT_MODE,
+			TIAOCHU_PAYMENT_ACCOUNTID,
+			TIAORU_BIZHONG,
+			TIAORU_HUILV,
+			TIAORU_MONEY,
+			TIAORU_RECEIPT_MODE,
+			TIAORU_RECEIPT_ACCOUNTID,
+			MEMO,
+			CREATE_USERID,
+			CREATE_TIME,
+			IF_DELETED,
+			ACCESS_ID
+		) values (
+			#{ACCESS_SN},	
+			#{TIAOCHU_BIZHONG},	
+			#{TIAOCHU_HUILV},	
+			#{TIAOCHU_MONEY},	
+			#{TIAOCHU_PAYMENT_MODE},	
+			#{TIAOCHU_PAYMENT_ACCOUNTID},	
+			#{TIAORU_BIZHONG},	
+			#{TIAORU_HUILV},	
+			#{TIAORU_MONEY},	
+			#{TIAORU_RECEIPT_MODE},	
+			#{TIAORU_RECEIPT_ACCOUNTID},
+			#{MEMO},	
+			#{CREATE_USERID},	
+			#{CREATE_TIME},
+			#{IF_DELETED},	
+			#{ACCESS_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+			CW_ACCESS_MONEY
+		SET
+			IF_DELETED = '1'
+		where 
+			ACCESS_ID = #{ACCESS_ID}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  CW_ACCESS_MONEY
+			set 
+				<if test="ACCESS_SN != null and ACCESS_SN != ''">
+					ACCESS_SN = #{ACCESS_SN},
+				</if>
+				<if test="TIAOCHU_BIZHONG != null and TIAOCHU_BIZHONG != ''">
+					TIAOCHU_BIZHONG = #{TIAOCHU_BIZHONG},
+				</if>
+				<if test="TIAOCHU_HUILV != null and TIAOCHU_HUILV != ''">
+					TIAOCHU_HUILV = #{TIAOCHU_HUILV},
+				</if>
+				<if test="TIAOCHU_MONEY != null and TIAOCHU_MONEY != ''">
+					TIAOCHU_MONEY = #{TIAOCHU_MONEY},
+				</if>
+				<if test="TIAOCHU_PAYMENT_MODE != null and TIAOCHU_PAYMENT_MODE != ''">
+					TIAOCHU_PAYMENT_MODE = #{TIAOCHU_PAYMENT_MODE},
+				</if>
+				<if test="TIAOCHU_PAYMENT_ACCOUNTID != null and TIAOCHU_PAYMENT_ACCOUNTID != ''">
+					TIAOCHU_PAYMENT_ACCOUNTID = #{TIAOCHU_PAYMENT_ACCOUNTID},
+				</if>
+				<if test="TIAORU_BIZHONG != null and TIAORU_BIZHONG != ''">
+					TIAORU_BIZHONG = #{TIAORU_BIZHONG},
+				</if>
+				<if test="TIAORU_HUILV != null and TIAORU_HUILV != ''">
+					TIAORU_HUILV = #{TIAORU_HUILV},
+				</if>
+				<if test="TIAORU_MONEY != null and TIAORU_MONEY != ''">
+					TIAORU_MONEY = #{TIAORU_MONEY},
+				</if>
+				<if test="TIAORU_RECEIPT_MODE != null and TIAORU_RECEIPT_MODE != ''">
+					TIAORU_RECEIPT_MODE = #{TIAORU_RECEIPT_MODE},
+				</if>
+				<if test="TIAORU_RECEIPT_ACCOUNTID != null and TIAORU_RECEIPT_ACCOUNTID != ''">
+					TIAORU_RECEIPT_ACCOUNTID = #{TIAORU_RECEIPT_ACCOUNTID},
+				</if>
+				<if test="MEMO != null and MEMO != ''">
+					MEMO = #{MEMO},
+				</if>
+				ACCESS_ID = ACCESS_ID
+			where 
+				ACCESS_ID = #{ACCESS_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			ACCESS_SN,
+			TIAOCHU_BIZHONG,
+			TIAOCHU_HUILV,
+			TIAOCHU_MONEY,
+			TIAOCHU_PAYMENT_MODE,
+			TIAOCHU_PAYMENT_ACCOUNTID,
+			TIAORU_BIZHONG,
+			TIAORU_HUILV,
+			TIAORU_MONEY,
+			TIAORU_RECEIPT_MODE,
+			TIAORU_RECEIPT_ACCOUNTID,
+			MEMO,
+			CREATE_USERID,
+			CREATE_TIME,	
+			ACCESS_ID
+		from 
+			CW_ACCESS_MONEY
+		where 
+			ACCESS_ID = #{ACCESS_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+			a.ACCESS_SN,
+			a.TIAOCHU_BIZHONG,
+			a.TIAOCHU_HUILV,
+			a.TIAOCHU_MONEY,
+			a.TIAOCHU_PAYMENT_MODE,
+			a.TIAOCHU_PAYMENT_ACCOUNTID,
+			(select account_name from cw_account_info where account_id=a.TIAOCHU_PAYMENT_ACCOUNTID) TIAOCHU_PAYMENT_ACCOUNTNAME,
+			a.TIAORU_BIZHONG,
+			a.TIAORU_HUILV,
+			a.TIAORU_MONEY,
+			a.TIAORU_RECEIPT_MODE,
+			a.TIAORU_RECEIPT_ACCOUNTID,
+			(select account_name from cw_account_info where account_id=a.TIAORU_RECEIPT_ACCOUNTID) TIAORU_RECEIPT_ACCOUNTNAME,
+			a.MEMO,
+			a.IF_DELETED,
+			a.CREATE_USERID,
+			DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') CREATE_TIME,
+			a.ACCESS_ID
+		from 
+				CW_ACCESS_MONEY a
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="pd.ACCESS_ID != null and pd.ACCESS_ID != ''">
+			AND a.ACCESS_ID = #{pd.ACCESS_ID}
+		</if>
+		<if test="pd.TIAOCHU_PAYMENT_ACCOUNTID != null and pd.TIAOCHU_PAYMENT_ACCOUNTID != ''">
+			AND a.TIAOCHU_PAYMENT_ACCOUNTID = #{pd.TIAOCHU_PAYMENT_ACCOUNTID}
+		</if>
+		<if test="pd.TIAORU_RECEIPT_ACCOUNTID != null and pd.TIAORU_RECEIPT_ACCOUNTID != ''">
+			AND a.TIAORU_RECEIPT_ACCOUNTID = #{pd.TIAORU_RECEIPT_ACCOUNTID}
+		</if>		
+		
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+			a.ACCESS_SN,
+			a.TIAOCHU_BIZHONG,
+			a.TIAOCHU_HUILV,
+			a.TIAOCHU_MONEY,
+			a.TIAOCHU_PAYMENT_MODE,
+			a.TIAOCHU_PAYMENT_ACCOUNTID,
+			(select account_name from cw_account_info where account_id=a.TIAOCHU_PAYMENT_ACCOUNTID) TIAOCHU_PAYMENT_ACCOUNTNAME,
+			a.TIAORU_BIZHONG,
+			a.TIAORU_HUILV,
+			a.TIAORU_MONEY,
+			a.TIAORU_RECEIPT_MODE,
+			a.TIAORU_RECEIPT_ACCOUNTID,
+			(select account_name from cw_account_info where account_id=a.TIAORU_RECEIPT_ACCOUNTID) TIAORU_RECEIPT_ACCOUNTNAME,
+			a.MEMO,
+			a.IF_DELETED,
+			a.CREATE_USERID,
+			DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') CREATE_TIME,
+			a.ACCESS_ID
+		from 
+				CW_ACCESS_MONEY a
+		WHERE
+				a.IF_DELETED = '0'
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			CW_ACCESS_MONEY
+	  	SET
+			IF_DELETED = '0'
+		where 
+			ACCESS_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

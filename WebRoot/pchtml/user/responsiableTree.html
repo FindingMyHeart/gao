@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>用户管理</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../themes/icon.css" />
+
+		<script type="text/javascript" src="../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../js/easyui-lang-zh_CN.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="../plugin/ztree/zTreeStyle/zTreeStyle.css"/>
+    <script type="text/javascript" src="../plugin/ztree/jquery.ztree.all.min.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../js/myjstools.js"></script>
+
+		<script type="text/javascript">
+			var staffId = myjstools.request("staffId").replace("#", "");
+			var zTreeObj;
+        	var zNodes = [];
+        	var getsNodes = [];
+        	var setting = {
+            	callback: {
+            	},
+            	check:{
+            		enable:true,
+            		chkStyle:"checkbox"
+            	},
+            	edit: {
+                	enable: false,//修改节点
+                	renameTitle: "编辑节点名称",
+                	drag: {//拖拽
+                    	isCopy: false,//拷贝
+                    	isMove: false//移动
+                	}
+            	},
+           		data: {
+                	simpleData: {
+                    	enable: true
+                	}
+            	}
+        	};
+        	
+			function loadtree() {
+				zNodes = [];
+				myjstools.ajax(false, "POST", "/web/service?METHOD=dept_listforres&staffId="+staffId, {
+					page: 1,
+					rows: 10000
+				}, showtree);
+			}
+			function showtree(data) {
+				var rows = data.rows;
+				for (var i = 0; i < rows.length; i++) {
+					zNodes.push({id: rows[i].dept_id, name: rows[i].dept_name, pId: rows[i].pid, checked:rows[i].resCheck});
+				}
+				zTreeObj = $.fn.zTree.init($("#ultree"), setting, zNodes);//初始化ztree
+				zTreeObj.expandAll(true);//设置文件夹是否打开
+				
+			}
+			
+			
+			function save(){
+				var deptIds = getChecked();
+				//alert(deptIds);
+				
+				if(deptIds.length<=0){
+					myjstools.showerrinfo('请选择学校');
+					return;
+				}
+				
+				var objt = {};
+				objt.staffId = staffId;
+				objt.dept = deptIds;
+			
+				myjstools.ajax(false, "POST", "/web/service?METHOD=responsibleService_save", objt, saveit_res);
+			}
+			
+			function saveit_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+					myjstools.showerrinfo("操作成功。")
+
+					parent.closewin();
+				} catch(e) {
+					myjstools.showerrinfo("saveit_res.error:出错了！" + e.message);
+				}
+			}			
+			
+			function getChecked(){
+				var checkDeptId="";
+				var treeObj = $.fn.zTree.getZTreeObj("ultree");
+				var getsNodes = treeObj.getCheckedNodes(true);
+				for(var i=0;i<getsNodes.length;i++ ) {
+					if(getsNodes[i].id != "0"){
+						if(checkDeptId != ''){ 
+                        	checkDeptId += ',';
+                        }
+						checkDeptId += getsNodes[i].id;
+					}
+				}
+				return checkDeptId;
+            }
+            
+			function initit() {
+				loadtree();
+			}
+			
+			$(document).ready(function(){initit();})
+			
+		</script>
+	</head>
+<body>
+	<div style="text-align:right;padding:5px">
+		<a href="javascript:save()" class="easyui-linkbutton">保存</a>
+	</div>
+	<div>
+	<ul id="ultree" class="ztree" data-options="animate:true" style="height:250px"></ul>
+	</div>
+</body>
+</html>

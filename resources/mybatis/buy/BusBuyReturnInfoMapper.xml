@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BusBuyReturnInfoMapper">
+
+
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into BUS_BUY_RETURN_INFO(  
+			RETURN_SN,	
+			CREATE_USERID,
+			CREATE_TIME,
+			IF_DELETED,	
+			RETURN_ID
+		) values (
+			#{RETURN_SN},	
+			#{CREATE_USERID},
+			#{CREATE_TIME},	
+			#{IF_DELETED},	
+			#{RETURN_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+		 	BUS_BUY_RETURN_INFO
+		SET
+			IF_DELETED = '1'
+		where 
+			RETURN_ID = #{RETURN_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  BUS_BUY_RETURN_INFO
+			set 
+				RETURN_ID = RETURN_ID
+			where 
+				RETURN_ID = #{RETURN_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			a.RETURN_SN,
+			a.CREATE_USERID,
+			a.CREATE_TIME,
+			DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') AS RETURN_DATE,
+			a.IF_DELETED,
+			a.RETURN_ID,
+			b.STAFF_NAME AS RETURN_NAME
+		from 
+			BUS_BUY_RETURN_INFO a
+		LEFT JOIN
+			XT_STAFF_INFO b
+		ON
+			a.CREATE_USERID = b.STAFF_ID
+		where 
+			RETURN_ID = #{RETURN_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.RETURN_SN,	
+				a.CREATE_USERID,
+				a.CREATE_TIME,
+				DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') AS RETURN_DATE,
+				a.IF_DELETED,	
+				a.RETURN_ID,
+				b.STAFF_NAME AS RETURN_NAME
+		from 
+				BUS_BUY_RETURN_INFO a
+	  	LEFT JOIN
+				XT_STAFF_INFO b
+		ON
+				a.CREATE_USERID = b.STAFF_ID
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="pd.RETURN_SN_SEARCH != null and pd.RETURN_SN_SEARCH != ''">
+		AND
+				a.RETURN_SN  LIKE CONCAT('%',CONCAT(#{pd.RETURN_SN_SEARCH},'%'))
+		</if>
+		<if test="pd.STAFF_NAME_SEARCH != null and pd.STAFF_NAME_SEARCH != ''">
+		AND
+				b.STAFF_NAME  LIKE CONCAT('%',CONCAT(#{pd.STAFF_NAME_SEARCH},'%'))
+		</if>
+		<if test="pd.RETURN_DATE_SEARCH != null and pd.RETURN_DATE_SEARCH != ''">
+		AND
+				a.CREATE_TIME  LIKE CONCAT('%',CONCAT(#{pd.RETURN_DATE_SEARCH},'%'))
+		</if>
+		ORDER BY
+				a.CREATE_TIME desc
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.RETURN_SN,
+				a.CREATE_USERID,
+				a.CREATE_TIME,
+				DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') AS RETURN_DATE,
+				a.IF_DELETED,
+				a.RETURN_ID,
+				b.STAFF_NAME
+		from
+				BUS_BUY_RETURN_INFO a
+		LEFT JOIN
+				XT_STAFF_INFO b
+		ON
+				a.CREATE_USERID = b.STAFF_ID
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="DATE != null and DATE != ''">
+		AND
+				a.CREATE_TIME LIKE CONCAT(#{DATE},'%')
+		</if>
+		ORDER BY
+				a.CREATE_TIME DESC
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			BUS_BUY_RETURN_INFO
+	  	SET
+			IF_DELETED = '0'
+		where 
+			RETURN_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

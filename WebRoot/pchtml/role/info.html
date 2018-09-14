@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>详细信息</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../themes/icon.css" />
+
+		<script type="text/javascript" src="../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../js/myjstools.js"></script>
+		<script language="javascript" type="text/javascript" src="../js/hr.js"></script>
+		<script type="text/javascript">
+			var mpath = "role";
+			var mid = myjstools.request("id").replace("#", "");
+			
+			function initit() {
+				//初始化grid
+				$('#dg').datagrid({
+					iconCls: 'icon-edit'
+					,onLoadSuccess:function(){
+						if(mid == "")
+						{
+							
+						}else
+						{
+							myjstools.ajax(false, "POST", "/web/service?METHOD=role_list", {
+								ROLE_ID: mid
+								,rows: 10000
+								,page: 1
+							}, loadinfo_res);
+						}		
+					}
+					,singleSelect: false,
+					pagination: false,
+					url: myjstools.wwwroot + '/web/service?METHOD=auth_list&rows=10000',
+					rownumbers: true,
+					loadMsg: '正在加载数据...',
+					onLoadError: function() {
+						myjstools.showerrinfo('数据加载出错了');
+					},
+					method: 'post',
+					columns: [
+						[
+							{field:'AUTH_TYPE',title:'权限类型'}
+                            , {field:'AUTH_NAME',title:'权限名称'}
+							, {field:'selit',title:'',checkbox:true}
+						]
+					]
+				});
+			}
+
+			$(
+				function() {
+					initit();
+				}
+			);
+		</script>
+		<script type="text/javascript">
+			function loadinfo_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+
+					var info = data.rows[0];
+
+					myjstools.setallinput(info);
+					
+					
+					var rows = $('#dg').datagrid('getRows');
+					
+					var f_jsqx = info.ROLE_AUTH.split(",")
+	
+					for(var i=0;i<rows.length;i++)
+					{
+						for(var j=0;j<f_jsqx.length;j++)
+						{
+							if(rows[i].AUTH_CODE == f_jsqx[j])
+							{
+								$('#dg').datagrid('checkRow', i);
+							}
+						}
+					}
+				} catch(e) {
+					myjstools.showerrinfo("loadinfo_res.error:出错了！" + e.message);
+				}
+			}
+		</script>
+	</head>
+
+	<body style="width:90%; text-align:center; margin:0 auto; margin-top:10px;padding:10px 10px 10px 20px">
+		<div class="easyui-panel" title="详细信息" style="width:100%">
+			<div style="padding:10px 10px 10px 10px">
+				<form id="ff" method="post">
+					<table>
+						<tr>
+							<td align="right">名称:</td>
+							<td><input class="easyui-validatebox" type="text" name="ROLE_NAME" id="ROLE_NAME" data-options="required:false" style="width: 180px;" up="up" /></td>
+						</tr>
+					</table>
+					
+					<div id="tabmain" class="easyui-tabs">
+						<div title="权限" data-options="iconCls:'icon-search',closable:false" style="padding:10px;width:98%">
+							<table id="dg" title=""></table>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div style="text-align:center;padding:5px">
+				<a href="javascript:parent.closewin()" class="easyui-linkbutton">退出</a>
+			</div>
+		</div>
+		
+		
+		<div id="win" class="easyui-window" title="..." style="width:950px;height:650px;" data-options="modal:true,closed:true">
+			<iframe id="fra_s" width="99%" height="99%" border="0" frameborder="0"></iframe>
+		</div>
+		
+	</body>
+
+</html>

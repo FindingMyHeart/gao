@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	<title>企业内部管理系统</title>
+	<!-- Favicon-->
+	<link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+	<!-- Custom Css -->
+	<link href="assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+	<link href="assets/css/main.css" rel="stylesheet" type="text/css">
+	<link href="assets/css/authentication.css" rel="stylesheet" type="text/css">
+	<!-- adminX You can choose a theme from css/themes instead of get all themes -->
+	<link href="assets/css/themes/all-themes.css" rel="stylesheet" type="text/css" />
+	<!-- jquery.js -->
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<!-- 通用的js组件 myjstools -->
+	<script type="text/javascript" src="js/myjstools.js"></script>
+	<script type="text/javascript" src="js/modules/login.js"></script>
+	
+</head>
+
+<body class="theme-blue" id="authentication">
+<div class="authentication">
+	<div class="container-fluid">
+		<div class="row clearfix">
+			<div class="col-xl-9 col-lg-8 col-md-12 p-l-0">
+				<div class="l-detail">
+					<h5 class="position">欢迎使用</h5>
+					<h1 class="position">admin<img src="../static/images/logo.svg" alt="企业内部管理系统"></h1>
+					<h3 class="position">企业内部管理系统</h3>
+					<p class="position">Enterprise Internal Management System.</p>
+					<ul class="list-unstyled l-menu">
+						<li>
+							<a href="">EleLand</a> © 2016-2018 All Rights Reserved
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="col-xl-3 col-lg-4 col-md-12 p-r-0">
+				<div class="card position">
+					<h4 class="l-login">登录</h4>
+						<div class="form-group form-float">
+							<div class="form-line focused focused">
+								<input type="text" id="name" class="form-control"  value="admin">
+								<label class="form-label">账号</label>
+							</div>
+						</div>
+						<div class="form-group form-float">
+							<div class="form-line focused">
+								<input type="password" id="password" class="form-control"  value="123456">
+								<label class="form-label">密码</label>
+							</div>
+						</div>
+						<div>
+							<input type="checkbox" name="rememberme" id="rememberme" class="filled-in chk-col-cyan" checked="checked">
+							<label for="rememberme">记住我</label>
+						</div>
+						<input type="submit" class="btn btn-raised g-bg-blue waves-effect" value="登录" onclick="login.login()">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- 本页的js文件 -->
+</body>
+
+</html>

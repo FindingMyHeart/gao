@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StaffFamilyMapper">
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into xt_staff_family(
+			staff_id,
+			name,
+			relation,
+			address,
+			work_company,
+			post,
+			tel,
+			num,
+			family_id
+		) values (
+			#{staff_id},
+			#{name},
+			#{relation},
+			#{address},
+			#{work_company},
+			#{post},
+			#{tel},
+			#{num},
+			#{family_id}
+		)
+	</insert>
+
+
+	<!-- 查询所有 -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+			a.staff_id,
+			a.name,
+			a.relation,
+			a.address,
+			a.work_company,
+			a.post,
+			a.tel,
+			a.num,
+			a.family_id
+	  	from
+	  		xt_staff_family a
+	  	where
+	  		a.staff_id = #{staff_id}
+	  	order by
+	  		a.num asc
+	</select>
+
+	<!-- 删除所有 -->
+	<delete id="deleteByStaffId" parameterType="pd">
+		delete from
+			xt_staff_family
+		where
+			staff_id = #{staff_id}
+	</delete>
+</mapper>

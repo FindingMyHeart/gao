@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StoreLocationInfoMapper">
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into STORE_LOCATION_INFO(    
+			LOCATION_NAME,	
+			LOCATION_ADDRESS,	
+			LOCATION_MAN,	
+			LOCATION_MANTEL,	
+			MEMO,	
+			IF_DELETED,	
+			CREATE_TIME,	
+			CREATE_USERID,	
+			LOCATION_ID
+		) values (
+			#{LOCATION_NAME},	
+			#{LOCATION_ADDRESS},	
+			#{LOCATION_MAN},	
+			#{LOCATION_MANTEL},	
+			#{MEMO},	
+			#{IF_DELETED},	
+			#{CREATE_TIME},	
+			#{CREATE_USERID},	
+			#{LOCATION_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+			STORE_LOCATION_INFO
+		SET
+			IF_DELETED = '1'
+		where 
+			LOCATION_ID = #{LOCATION_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  STORE_LOCATION_INFO
+			set 
+				LOCATION_NAME = #{LOCATION_NAME},
+				LOCATION_ADDRESS = #{LOCATION_ADDRESS},
+				LOCATION_MAN = #{LOCATION_MAN},
+				LOCATION_MANTEL = #{LOCATION_MANTEL},
+				MEMO = #{MEMO},
+				LOCATION_ID = LOCATION_ID
+			where 
+				LOCATION_ID = #{LOCATION_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			LOCATION_NAME,	
+			LOCATION_ADDRESS,	
+			LOCATION_MAN,	
+			LOCATION_MANTEL,	
+			MEMO,	
+			IF_DELETED,	
+			CREATE_TIME,	
+			CREATE_USERID,	
+			LOCATION_ID
+		from 
+			STORE_LOCATION_INFO
+		where 
+			LOCATION_ID = #{LOCATION_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.LOCATION_NAME,	
+				a.LOCATION_ADDRESS,	
+				a.LOCATION_MAN,	
+				a.LOCATION_MANTEL,	
+				a.MEMO,	
+				a.IF_DELETED,	
+				a.CREATE_TIME,	
+				a.CREATE_USERID,	
+				a.LOCATION_ID
+		from 
+				STORE_LOCATION_INFO a
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="pd.location_name_search != null and pd.location_name_search != ''">
+		AND
+				a.LOCATION_NAME LIKE CONCAT('%',CONCAT(#{pd.location_name_search},'%'))
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.LOCATION_NAME,	
+				a.LOCATION_ADDRESS,	
+				a.LOCATION_MAN,	
+				a.LOCATION_MANTEL,	
+				a.MEMO,	
+				a.IF_DELETED,	
+				a.CREATE_TIME,	
+				a.CREATE_USERID,	
+				a.LOCATION_ID
+		from 
+				STORE_LOCATION_INFO a
+		WHERE
+				a.IF_DELETED = '0'
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			STORE_LOCATION_INFO
+		SET
+			IF_DELETED = '0'
+		where 
+			LOCATION_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

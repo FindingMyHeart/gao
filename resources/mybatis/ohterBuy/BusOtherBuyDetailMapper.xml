@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BusOtherBuyDetailMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into BUS_OTHER_BUY_DETAIL(  
+			OTHER_BUY_ID,	
+			SUB_NO,	
+			NAME,	
+			BRAND,	
+			SPEC,	
+			UNIT,	
+			NUM,	
+			UNIT_PRICE,
+			TOTAL_PRICE,
+			MEMO,
+			OTHER_BUY_DETAIL_ID
+		) values (
+			#{OTHER_BUY_ID},	
+			#{SUB_NO},	
+			#{NAME},	
+			#{BRAND},	
+			#{SPEC},	
+			#{UNIT},	
+			#{NUM},	
+			#{UNIT_PRICE},
+			#{TOTAL_PRICE},
+			#{MEMO},
+			#{OTHER_BUY_DETAIL_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from BUS_OTHER_BUY_DETAIL
+		where 
+			OTHER_BUY_DETAIL_ID = #{OTHER_BUY_DETAIL_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  BUS_OTHER_BUY_DETAIL
+			set 
+				OTHER_BUY_ID = #{OTHER_BUY_ID},
+				SUB_NO = #{SUB_NO},
+				NAME = #{NAME},
+				BRAND = #{BRAND},
+				SPEC = #{SPEC},
+				UNIT = #{UNIT},
+				NUM = #{NUM},
+				UNIT_PRICE = #{UNIT_PRICE},
+				TOTAL_PRICE = #{TOTAL_PRICE},
+				MEMO = #{MEMO},
+			OTHER_BUY_DETAIL_ID = OTHER_BUY_DETAIL_ID
+			where 
+				OTHER_BUY_DETAIL_ID = #{OTHER_BUY_DETAIL_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			OTHER_BUY_ID,	
+			SUB_NO,	
+			NAME,	
+			BRAND,	
+			SPEC,	
+			UNIT,	
+			NUM,
+			UNIT_PRICE,
+			TOTAL_PRICE,
+			MEMO,	
+			OTHER_BUY_DETAIL_ID
+		from 
+			BUS_OTHER_BUY_DETAIL
+		where 
+			OTHER_BUY_DETAIL_ID = #{OTHER_BUY_DETAIL_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.OTHER_BUY_ID,	
+				a.SUB_NO,	
+				a.NAME,	
+				a.BRAND,	
+				a.SPEC,	
+				a.UNIT,	
+				a.NUM,	
+				a.UNIT_PRICE,
+				a.TOTAL_PRICE,
+				a.MEMO,
+				a.OTHER_BUY_DETAIL_ID
+		from 
+				BUS_OTHER_BUY_DETAIL a
+		WHERE
+				1 = 1
+		<if test="pd.OTHER_BUY_ID != null and pd.OTHER_BUY_ID != ''">
+		AND
+				a.OTHER_BUY_ID = #{pd.OTHER_BUY_ID}
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.OTHER_BUY_ID,	
+				a.SUB_NO,	
+				a.NAME,	
+				a.BRAND,	
+				a.SPEC,	
+				a.UNIT,	
+				a.NUM,
+				a.UNIT_PRICE,
+				a.TOTAL_PRICE,
+				a.MEMO,	
+				a.OTHER_BUY_DETAIL_ID
+		from 
+				BUS_OTHER_BUY_DETAIL a
+		WHERE
+				1 = 1
+		<if test="OTHER_BUY_ID != null and OTHER_BUY_ID != ''">
+		AND
+				a.OTHER_BUY_ID = #{OTHER_BUY_ID}
+		</if>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from BUS_OTHER_BUY_DETAIL
+		where 
+			OTHER_BUY_DETAIL_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+
+	<!-- 根据主表记录删除 -->
+	<delete id="deleteByOtherBuyId" parameterType="pd">
+		  DELETE FROM BUS_OTHER_BUY_DETAIL
+		  WHERE
+		  		OTHER_BUY_ID = #{OTHER_BUY_ID}
+	</delete>
+	
+</mapper>

@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StaffTransferInfoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into XT_STAFF_TRANSFER( 	 
+			STAFF_ID,	
+			STATUS,	
+			TRANSFER_TYPE,
+			<if test="CREATE_TIME != null">
+				CREATE_TIME,
+			</if>
+			<if test="ZHUANZHENG_DATE != null">
+				ZHUANZHENG_DATE,
+			</if>
+			<if test="PERSONAL_SUMMARY != null">
+				PERSONAL_SUMMARY,
+			</if>
+			<if test="LEAVE_DATE != null">
+				LEAVE_DATE,
+			</if>
+			<if test="LEAVE_REASON != null">
+				LEAVE_REASON,
+			</if>
+			<if test="JIAOJIE_FINISH_DATE != null">
+				JIAOJIE_FINISH_DATE,
+			</if>
+			<if test="JIAOJIE_TYPE != null">
+				JIAOJIE_TYPE,
+			</if>
+			<if test="JIAOJIE_FILE != null">
+				JIAOJIE_FILE,
+			</if>
+			IF_DELETED,
+			CREATE_USERID,	
+			TRANSFER_ID
+		) values (
+			#{STAFF_ID},	
+			#{STATUS},	
+			#{TRANSFER_TYPE},
+			<if test="CREATE_TIME != null">
+				#{CREATE_TIME},
+			</if>
+			<if test="ZHUANZHENG_DATE != null">
+				#{ZHUANZHENG_DATE},
+			</if>
+			<if test="PERSONAL_SUMMARY != null">
+				#{PERSONAL_SUMMARY},
+			</if>
+			<if test="LEAVE_DATE != null">
+				#{LEAVE_DATE},
+			</if>
+			<if test="LEAVE_REASON != null">
+				#{LEAVE_REASON},
+			</if>
+			<if test="JIAOJIE_FINISH_DATE != null">
+				#{JIAOJIE_FINISH_DATE},
+			</if>
+			<if test="JIAOJIE_TYPE != null">
+				#{JIAOJIE_TYPE},
+			</if>
+			<if test="JIAOJIE_FILE != null">
+				#{JIAOJIE_FILE},
+			</if>
+			#{IF_DELETED},
+			#{CREATE_USERID},	
+			#{TRANSFER_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		update XT_STAFF_TRANSFER
+		set
+			IF_DELETED = '1'
+		where 
+			TRANSFER_ID = #{TRANSFER_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  XT_STAFF_TRANSFER
+			set
+				<if test="STAFF_ID != null">
+					STAFF_ID = #{STAFF_ID},
+				</if>
+				<if test="TRANSFER_TYPE != null">
+					TRANSFER_TYPE = #{TRANSFER_TYPE},
+				</if> 
+				<if test="ZHUANZHENG_DATE != null">
+					ZHUANZHENG_DATE = #{ZHUANZHENG_DATE},
+				</if>
+				<if test="PERSONAL_SUMMARY != null">
+					PERSONAL_SUMMARY = #{PERSONAL_SUMMARY},
+				</if>
+				<if test="LEAVE_DATE != null">
+					LEAVE_DATE = #{LEAVE_DATE},
+				</if>
+				<if test="LEAVE_REASON != null">
+					LEAVE_REASON = #{LEAVE_REASON},
+				</if>
+				<if test="JIAOJIE_FINISH_DATE != null">
+					JIAOJIE_FINISH_DATE = #{JIAOJIE_FINISH_DATE},
+				</if>
+				<if test="JIAOJIE_TYPE != null">
+					JIAOJIE_TYPE = #{JIAOJIE_TYPE},
+				</if>
+				<if test="JIAOJIE_FILE != null">
+					JIAOJIE_FILE = #{JIAOJIE_FILE},
+				</if>
+				TRANSFER_ID = TRANSFER_ID
+			where 
+				TRANSFER_ID = #{TRANSFER_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			a.STAFF_ID,
+			a.STATUS,
+			a.TRANSFER_TYPE,
+			a.CREATE_TIME,
+			DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') AS APPLY_DATE,
+			a.ZHUANZHENG_DATE,
+			a.PERSONAL_SUMMARY,
+			a.LEAVE_DATE,
+			a.LEAVE_REASON,
+			a.JIAOJIE_FINISH_DATE,
+			a.JIAOJIE_TYPE,
+			a.JIAOJIE_FILE,
+			a.IF_DELETED,
+			a.CREATE_USERID,
+			a.TRANSFER_ID,
+			b.STAFF_CODE,
+			b.STAFF_NAME,
+			b.CONTACT,
+			c.DEPT_NAME,
+			d.DIC_LABEL AS POST_NAME
+		from 
+			XT_STAFF_TRANSFER a
+	  	LEFT JOIN
+	  			XT_STAFF_INFO b
+	  	ON
+	  			a.STAFF_ID = b.STAFF_ID
+	  	LEFT JOIN
+	  			XT_DEPT_INFO c
+	  	ON
+	  			b.DEPT_ID = c.DEPT_ID
+	  	LEFT JOIN
+	  			XT_DIC d
+	  	ON
+	  			b.POST = d.DIC_VALUE AND d.DIC_TYPE = 'zw'
+		where 
+			TRANSFER_ID = #{TRANSFER_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.STAFF_ID,	
+				a.STATUS,	
+				a.TRANSFER_TYPE,	
+				a.CREATE_TIME,	
+				a.ZHUANZHENG_DATE,	
+				a.PERSONAL_SUMMARY,	
+				a.LEAVE_DATE,	
+				a.LEAVE_REASON,	
+				a.JIAOJIE_FINISH_DATE,	
+				a.JIAOJIE_TYPE,	
+				a.JIAOJIE_FILE,
+				a.IF_DELETED,
+				a.CREATE_USERID,	
+				a.TRANSFER_ID,
+				a.REJECT_REASON,
+				b.STAFF_CODE,
+				b.STAFF_NAME,
+				b.CONTACT,
+				c.DEPT_NAME,
+				d.DIC_LABEL AS POST_NAME
+
+		from 
+				XT_STAFF_TRANSFER a
+	  	LEFT JOIN
+	  			XT_STAFF_INFO b
+	  	ON
+	  			a.STAFF_ID = b.STAFF_ID
+	  	LEFT JOIN
+	  			XT_DEPT_INFO c
+	  	ON
+	  			b.DEPT_ID = c.DEPT_ID
+	  	LEFT JOIN
+	  			XT_DIC d
+	  	ON
+				b.POST = d.DIC_VALUE AND d.DIC_TYPE = 'zw'
+		where
+				a.IF_DELETED = '0'
+		<if test="pd.STAFF_CODE_SEARCH != null and pd.STAFF_CODE_SEARCH != ''">
+		AND
+				b.STAFF_CODE LIKE CONCAT('%',CONCAT(#{pd.STAFF_CODE_SEARCH},'%'))
+		</if>
+		<if test="pd.STAFF_NAME_SEARCH != null and pd.STAFF_NAME_SEARCH != ''">
+		AND
+				b.STAFF_NAME LIKE CONCAT('%',CONCAT(#{pd.STAFF_NAME_SEARCH},'%'))
+		</if>
+		<if test="pd.DEPT_ID_SEARCH != null and pd.DEPT_ID_SEARCH != ''">
+		AND
+				b.DEPT_ID = #{pd.DEPT_ID_SEARCH}
+		</if>
+		<if test="pd.POST_SEARCH != null and pd.POST_SEARCH != ''">
+		AND
+				b.POST = #{pd.POST_SEARCH}
+		</if>
+		<if test="pd.STATUS_SEARCH != null and pd.STATUS_SEARCH != ''">
+		AND
+				a.STATUS = #{pd.STATUS_SEARCH}
+		</if>
+		<if test="pd.TRANSFER_TYPE_SEARCH != null and pd.TRANSFER_TYPE_SEARCH != ''">
+		AND
+				a.TRANSFER_TYPE = #{pd.TRANSFER_TYPE_SEARCH}
+		</if>
+		ORDER BY
+			a.CREATE_TIME DESC
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.STAFF_ID,	
+				a.STATUS,	
+				a.TRANSFER_TYPE,	
+				a.CREATE_TIME,	
+				a.ZHUANZHENG_DATE,	
+				a.PERSONAL_SUMMARY,	
+				a.LEAVE_DATE,	
+				a.LEAVE_REASON,	
+				a.JIAOJIE_FINISH_DATE,	
+				a.JIAOJIE_TYPE,	
+				a.JIAOJIE_FILE,
+				a.IF_DELETED,
+				a.CREATE_USERID,	
+				a.TRANSFER_ID
+		from 
+				XT_STAFF_TRANSFER a
+		where
+				a.IF_DELETED = '0'
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		update XT_STAFF_TRANSFER
+		set
+			IF_DELETED = '1'
+		where 
+			TRANSFER_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+
+
+	<!-- 修改状态 -->
+	<update id="updateStatus" parameterType="pd">
+		UPDATE
+			XT_STAFF_TRANSFER
+		SET
+			STATUS = #{STATUS},
+		<if test="REJECT_REASON != null and REJECT_REASON != ''">
+			REJECT_REASON = #{REJECT_REASON},
+		</if>
+			TRANSFER_ID = TRANSFER_ID
+		WHERE
+			TRANSFER_ID = #{TRANSFER_ID}
+	</update>
+
+	
+</mapper>

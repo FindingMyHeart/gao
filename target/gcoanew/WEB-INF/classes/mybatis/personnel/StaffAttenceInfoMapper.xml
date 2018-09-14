@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StaffAttenceInfoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into XT_STAFF_ATTENCE(  
+			ATTENCE_TYPE,	
+			STATUS,	
+			STAFF_ID,
+			<if test="JIABAN_START_DATE != null">
+				JIABAN_START_DATE,
+			</if>
+			<if test="JIABAN_END_DATE != null">
+				JIABAN_END_DATE,
+			</if>
+			<if test="JIABAN_REASON != null">
+				JIABAN_REASON,
+			</if>
+			<if test="TIAOXIU_START_DATE != null">
+				TIAOXIU_START_DATE,
+			</if>
+			<if test="TIAOXIU_END_DATE != null">
+				TIAOXIU_END_DATE,
+			</if>
+			<if test="TIAOXIU_REASON != null">
+				TIAOXIU_REASON,
+			</if>
+			<if test="QINGJIA_TYPE != null">
+				QINGJIA_TYPE,
+			</if>
+			<if test="QINGJIA_START_DATE != null">
+				QINGJIA_START_DATE,
+			</if>
+			<if test="QINGJIA_END_DATE != null">
+				QINGJIA_END_DATE,
+			</if>
+			<if test="QINGJIA_REASON != null">
+				QINGJIA_REASON,
+			</if>
+			CREATE_TIME,
+			CREATE_USERID,	
+			IF_DELETED,	
+			ATTENCE_ID
+		) values (
+			#{ATTENCE_TYPE},	
+			#{STATUS},	
+			#{STAFF_ID},
+			<if test="JIABAN_START_DATE != null">
+				#{JIABAN_START_DATE},
+			</if>
+			<if test="JIABAN_END_DATE != null">
+				#{JIABAN_END_DATE},
+			</if>
+			<if test="JIABAN_REASON != null">
+				#{JIABAN_REASON},
+			</if>
+			<if test="TIAOXIU_START_DATE != null">
+				#{TIAOXIU_START_DATE},
+			</if>
+			<if test="TIAOXIU_END_DATE != null">
+				#{TIAOXIU_END_DATE},
+			</if>
+			<if test="TIAOXIU_REASON != null">
+				#{TIAOXIU_REASON},
+			</if>
+			<if test="QINGJIA_TYPE != null">
+				#{QINGJIA_TYPE},
+			</if>
+			<if test="QINGJIA_START_DATE != null">
+				#{QINGJIA_START_DATE},
+			</if>
+			<if test="QINGJIA_END_DATE != null">
+				#{QINGJIA_END_DATE},
+			</if>
+			<if test="QINGJIA_REASON != null">
+				#{QINGJIA_REASON},
+			</if>
+			#{CREATE_TIME},
+			#{CREATE_USERID},	
+			#{IF_DELETED},	
+			#{ATTENCE_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE XT_STAFF_ATTENCE
+		SET
+			IF_DELETED = '1'
+		where 
+			ATTENCE_ID = #{ATTENCE_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  XT_STAFF_ATTENCE
+			set 
+				ATTENCE_TYPE = #{ATTENCE_TYPE},
+				STAFF_ID = #{STAFF_ID},
+				<if test="JIABAN_START_DATE != null">
+					JIABAN_START_DATE = #{JIABAN_START_DATE},
+				</if>
+				<if test="JIABAN_END_DATE != null">
+					JIABAN_END_DATE = #{JIABAN_END_DATE},
+				</if>
+				<if test="JIABAN_REASON != null">
+					JIABAN_REASON = #{JIABAN_REASON},
+				</if>
+				<if test="TIAOXIU_START_DATE != null">
+					TIAOXIU_START_DATE = #{TIAOXIU_START_DATE},
+				</if>
+				<if test="TIAOXIU_END_DATE != null">
+					TIAOXIU_END_DATE = #{TIAOXIU_END_DATE},
+				</if>
+				<if test="TIAOXIU_REASON != null">
+					TIAOXIU_REASON = #{TIAOXIU_REASON},
+				</if>
+				<if test="QINGJIA_TYPE != null">
+					QINGJIA_TYPE = #{QINGJIA_TYPE},
+				</if>
+				<if test="QINGJIA_START_DATE != null">
+					QINGJIA_START_DATE = #{QINGJIA_START_DATE},
+				</if>
+				<if test="QINGJIA_END_DATE != null">
+					QINGJIA_END_DATE = #{QINGJIA_END_DATE},
+				</if>
+				<if test="QINGJIA_REASON != null">
+					QINGJIA_REASON = #{QINGJIA_REASON},
+				</if>
+			ATTENCE_ID = ATTENCE_ID
+			where 
+				ATTENCE_ID = #{ATTENCE_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			a.ATTENCE_TYPE,
+			a.STATUS,
+			a.STAFF_ID,
+			a.JIABAN_START_DATE,
+			a.JIABAN_END_DATE,
+			a.JIABAN_REASON,
+			a.TIAOXIU_START_DATE,
+			a.TIAOXIU_END_DATE,
+			a.TIAOXIU_REASON,
+			a.QINGJIA_TYPE,
+			a.QINGJIA_START_DATE,
+			a.QINGJIA_END_DATE,
+			a.QINGJIA_REASON,
+			a.CREATE_TIME,
+			a.CREATE_USERID,
+			a.IF_DELETED,
+			a.ATTENCE_ID,
+			b.STAFF_CODE,
+			b.STAFF_NAME,
+			b.CONTACT,
+			c.DEPT_NAME,
+			d.DIC_LABEL AS POST_NAME
+		from
+			XT_STAFF_ATTENCE a
+	  	LEFT JOIN
+	  			XT_STAFF_INFO b
+	  	ON
+	  			a.STAFF_ID = b.STAFF_ID
+	  	LEFT JOIN
+	  			XT_DEPT_INFO c
+	  	ON
+	  			b.DEPT_ID = c.DEPT_ID
+	  	LEFT JOIN
+	  			XT_DIC d
+	  	ON
+	  			b.POST = d.DIC_VALUE AND d.DIC_TYPE = 'zw'
+		where
+			ATTENCE_ID = #{ATTENCE_ID}
+	</select>
+
+
+
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.ATTENCE_TYPE,	
+				a.STATUS,	
+				a.STAFF_ID,	
+				a.JIABAN_START_DATE,	
+				a.JIABAN_END_DATE,	
+				a.JIABAN_REASON,	
+				a.TIAOXIU_START_DATE,	
+				a.TIAOXIU_END_DATE,	
+				a.TIAOXIU_REASON,	
+				a.QINGJIA_TYPE,	
+				a.QINGJIA_START_DATE,
+				a.QINGJIA_END_DATE,
+				a.QINGJIA_REASON,
+				a.CREATE_TIME,	
+				a.CREATE_USERID,	
+				a.IF_DELETED,	
+				a.ATTENCE_ID,
+				a.REJECT_REASON,
+				b.STAFF_CODE,
+				b.STAFF_NAME,
+				b.CONTACT,
+				c.DEPT_NAME,
+				d.DIC_LABEL AS POST_NAME
+		from 
+				XT_STAFF_ATTENCE a
+	  	LEFT JOIN
+	  			XT_STAFF_INFO b
+	  	ON
+	  			a.STAFF_ID = b.STAFF_ID
+	  	LEFT JOIN
+	  			XT_DEPT_INFO c
+	  	ON
+	  			b.DEPT_ID = c.DEPT_ID
+	  	LEFT JOIN
+	  			XT_DIC d
+	  	ON
+				b.POST = d.DIC_VALUE AND d.DIC_TYPE = 'zw'
+		where
+				a.IF_DELETED = '0'
+		<if test="pd.STAFF_CODE_SEARCH != null and pd.STAFF_CODE_SEARCH != ''">
+		AND
+			b.STAFF_CODE LIKE CONCAT('%',CONCAT(#{pd.STAFF_CODE_SEARCH},'%'))
+		</if>
+		<if test="pd.STAFF_NAME_SEARCH != null and pd.STAFF_NAME_SEARCH != ''">
+		AND
+			b.STAFF_NAME LIKE CONCAT('%',CONCAT(#{pd.STAFF_NAME_SEARCH},'%'))
+		</if>
+		<if test="pd.DEPT_ID_SEARCH != null and pd.DEPT_ID_SEARCH != ''">
+		AND
+			b.DEPT_ID = #{pd.DEPT_ID_SEARCH}
+		</if>
+		<if test="pd.POST_SEARCH != null and pd.POST_SEARCH != ''">
+		AND
+			b.POST = #{pd.POST_SEARCH}
+		</if>
+		<if test="pd.STATUS_SEARCH != null and pd.STATUS_SEARCH != ''">
+		AND
+			a.STATUS = #{pd.STATUS_SEARCH}
+		</if>
+		<if test="pd.ATTENCE_TYPE_SEARCH != null and pd.ATTENCE_TYPE_SEARCH != ''">
+		AND
+			a.ATTENCE_TYPE = #{pd.ATTENCE_TYPE_SEARCH}
+		</if>
+		<if test="pd.QINGJIA_TYPE_SEARCH != null and pd.QINGJIA_TYPE_SEARCH != ''">
+		AND
+			a.QINGJIA_TYPE = #{pd.QINGJIA_TYPE_SEARCH}
+		</if>
+		ORDER BY
+			a.CREATE_TIME DESC
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.ATTENCE_TYPE,	
+				a.STATUS,	
+				a.STAFF_ID,	
+				a.JIABAN_START_DATE,	
+				a.JIABAN_END_DATE,	
+				a.JIABAN_REASON,	
+				a.TIAOXIU_START_DATE,	
+				a.TIAOXIU_END_DATE,	
+				a.TIAOXIU_REASON,	
+				a.QINGJIA_TYPE,	
+				a.QINGJIA_START_DATE,	
+				a.QINGJIA_END_DATE,
+				a.QINGJIA_REASON,
+				a.CREATE_TIME,	
+				a.CREATE_USERID,	
+				a.IF_DELETED,	
+				a.ATTENCE_ID
+		from 
+				XT_STAFF_ATTENCE a
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE XT_STAFF_ATTENCE
+		SET
+			IF_DELETED = '1'
+		where 
+			ATTENCE_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+
+	<!-- 修改状态 -->
+	<update id="updateStatus" parameterType="pd">
+		UPDATE
+			XT_STAFF_ATTENCE
+		SET
+			STATUS = #{STATUS},
+		<if test="REJECT_REASON != null and REJECT_REASON != ''">
+			REJECT_REASON = #{REJECT_REASON},
+		</if>
+			ATTENCE_ID = ATTENCE_ID
+		WHERE
+			ATTENCE_ID = #{ATTENCE_ID}
+	</update>
+	
+</mapper>

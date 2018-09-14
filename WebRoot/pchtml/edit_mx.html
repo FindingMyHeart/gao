@@ -1,0 +1,250 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>编辑</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../themes/gray/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../themes/icon.css" />
+
+		<script type="text/javascript" src="../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../js/myjstools.js"></script>
+		<script language="javascript" type="text/javascript" src="../js/hr.js"></script>
+		<script type="text/javascript">
+			var mid = myjstools.request("id").replace("#", "");
+			var APPLY_MASTER_ID = myjstools.request("APPLY_MASTER_ID").replace("#", "");
+			var EQUIP_KIND = myjstools.request("EQUIP_KIND").replace("#", "");
+			
+			var EQUIP_ID = "";
+			
+			function initit() {
+				$("#EQUIP_START_DATE").val(myjstools.myformatter(new Date()));
+				//$("#EQUIP_START_DATE").validatebox("setValue", myjstools.myformatter(new Date()));
+					
+				if(mid != "")
+				{
+					myjstools.ajax(false, "POST", "/web/service?METHOD=applydetail_list", {
+						APPLY_DETAIL_ID: mid,
+						rows: 10,
+						page: 1
+					}, loadinfo_res);
+				}
+			}
+
+			$(
+				function() {
+					initit();
+				}
+			);
+		</script>
+		
+		<script type="text/javascript">
+			function loadinfo_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+
+					var info = data.rows[0];
+
+					myjstools.setallinput(info);
+					
+					$("#EQUIP_CODE").val(info.EQUIP_CODE);
+					$("#EQUIP_NAME").val(info.EQUIP_NAME);
+					$("#EQUIP_SPEC").val(info.EQUIP_SPEC);
+					$("#EQUIP_UNIT").val(info.EQUIP_UNIT);
+					$("#USE_YEARS").val(info.USE_YEARS);
+
+					$("#FACTORY_ID").combobox("setValue", info.FACTORY_ID);
+
+				} catch(e) {
+					myjstools.showerrinfo("loadinfo_res.error:出错了！" + e.message);
+				}
+			}
+		</script>
+		
+		<script type="text/javascript">
+			function saveit() {
+				if(EQUIP_ID == "") {
+					myjstools.showerrinfo('您还没有选择资产');
+					return;
+				}
+				if($("#REQUEST_MEMO").val() == "") {
+					myjstools.showerrinfo('请输入描述');
+					return;
+				}
+				
+				if($("#REQUEST_TITLE").val() == "") {
+					myjstools.showerrinfo('请输入标题');
+					return;
+				}
+				if($("#REQUEST_MEMO").val() == "") {
+					myjstools.showerrinfo('请输入描述');
+					return;
+				}
+				
+				var objt = myjstools.getallinput();
+				var url = "/web/service?METHOD=applydetail_edit";
+				if(mid!="")
+				{
+					objt.APPLY_DETAIL_ID = mid;
+				}else
+				{
+					objt.APPLY_MASTER_ID = APPLY_MASTER_ID;
+					
+					url = "/web/service?METHOD=applydetail_add";
+				}
+				
+
+				objt.EQUIP_ID = EQUIP_ID;
+				
+				objt.FACTORY_ID = $("#FACTORY_ID").combobox("getValue");
+				
+				myjstools.ajax(false, "POST", url, objt, saveit_res);
+			}
+
+			function saveit_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+
+					myjstools.showerrinfo("操作成功。")
+
+					parent.closewin();
+				} catch(e) {
+					myjstools.showerrinfo("saveit_res.error:出错了！" + e.message);
+				}
+			}
+		</script>
+		<script type="text/javascript">
+			function closewin() {
+				$('#win').window('close');
+
+				$('#dg').datagrid('reload');
+			}
+			
+			function selectvalue(info)
+			{
+				EQUIP_ID = info.EQUIP_ID;
+				$("#EQUIP_CODE").val(info.EQUIP_CODE);
+				$("#EQUIP_NAME").val(info.EQUIP_NAME);
+				$("#EQUIP_SPEC").val(info.EQUIP_SPEC);
+				$("#EQUIP_UNIT").val(info.EQUIP_UNIT);
+				$("#USE_YEARS").val(info.USE_YEARS);
+				
+				$("#EQUIP_PRICE").val(info.EQUIP_PRICE);
+			}
+			
+			function gotosel()
+			{
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/select_zc.html?EQUIP_KIND=" + EQUIP_KIND);
+			}
+			
+			function changepriceandmoney()
+			{
+				
+				$("#EQUIP_MONEY").val((parseFloat($("#QUANTITY").val())*parseFloat($("#EQUIP_PRICE").val())).toFixed(2));
+			}
+		</script>
+		
+	</head>
+
+	<body style="width:90%; text-align:center; margin:0 auto; margin-top:10px;padding:10px 10px 10px 20px">
+		<div class="easyui-panel" title="资产明细" style="width:100%">
+			<div style="padding:10px 10px 10px 60px">
+				<form id="ff" method="post">
+					<table>
+						<tr>
+							<td align="right">选择资产</td>
+							<td colspan="5"><a href="javascript:gotosel()" class="easyui-linkbutton">...</a></td>
+						</tr>
+						<tr>
+							<td align="right">资产编号:</td>
+							<td><input class="easyui-validatebox" type="text" name="EQUIP_CODE" id="EQUIP_CODE" data-options="required:false" readonly="readonly" style="width: 180px;" /></td>
+							<td align="right">资产名称:</td>
+							<td>
+								<input class="easyui-validatebox" type="text" name="EQUIP_NAME" id="EQUIP_NAME" data-options="required:false" readonly="readonly" style="width: 180px;" />
+							</td>
+						</tr>
+						<tr>
+							<td align="right">规格:</td>
+							<td>
+								<input class="easyui-validatebox" type="text" name="EQUIP_SPEC" id="EQUIP_SPEC" data-options="required:false" readonly="readonly" style="width: 180px;" />
+							</td>
+							<td align="right">单位:</td>
+							<td><input class="easyui-validatebox" type="text" name="EQUIP_UNIT" id="EQUIP_UNIT" data-options="required:false" readonly="readonly" style="width: 180px;" /></td>
+						</tr>
+						<tr>
+							<td align="right">使用年限:</td>
+							<td colspan="3">
+								<input class="easyui-validatebox" type="text" name="USE_YEARS" id="USE_YEARS" data-options="required:false" readonly="readonly" style="width: 180px;" />
+							</td>
+						</tr>
+						<tr>
+							<td align="right">信息录入</td>
+							<td colspan="3"></td>
+						</tr>
+						<tr>
+							<td align="right">顺序号:</td>
+							<td colspan="3"><input class="easyui-validatebox" type="text" name="APPLY_SUB_NO" id="APPLY_SUB_NO" data-options="required:true" style="width: 180px;" value="1" up="up" /></td>
+						</tr>
+						<tr>
+							<td align="right">数量:</td>
+							<td><input class="easyui-validatebox" type="text" name="QUANTITY" id="QUANTITY" data-options="required:true" style="width: 180px;" value="1" up="up" onchange="changepriceandmoney()" /></td>
+							<td align="right">单价:</td>
+							<td>
+								<input class="easyui-validatebox" type="text" name="EQUIP_PRICE" id="EQUIP_PRICE" data-options="required:true" style="width: 180px;" value="0" up="up" onchange="changepriceandmoney()" />
+							</td>
+						</tr>
+						<tr>
+							<td align="right">合计金额:</td>
+							<td><input class="easyui-validatebox" type="text" name="EQUIP_MONEY" id="EQUIP_MONEY" data-options="required:false" style="width: 180px;" value="0" readonly="readonly" up="up" /></td>
+							<td align="right">启用日期:</td>
+							<td>
+								<input class="easyui-validatebox" type="text" name="EQUIP_START_DATE" id="EQUIP_START_DATE" data-options="required:false" style="width: 180px;" value="" up="up" />
+							</td>
+						</tr>
+						
+						<tr>
+							<td align="right">期初已折旧月份(月):</td>
+							<td><input class="easyui-validatebox" type="text" name="INIT_DEPRE_MONTH" id="INIT_DEPRE_MONTH" data-options="required:false" style="width: 180px;" value="0" up="up" /></td>
+							<td align="right">生产厂商:</td>
+							<td>
+								<select name="FACTORY_ID" id="FACTORY_ID" class="easyui-combobox" style="width: 180px;"  data-options="valueField: 'FACTORY_ID' 
+                                                            ,textField: 'FACTORY_SHORTNAME' 
+                                                            ,required:false
+                                                            ,mode:'remote'
+                                                            ,url: myjstools.wwwroot+'/web/service?METHOD=factory_combox'
+                                                            ,panelHeight:'150'
+                                                            ">
+   								</select>
+							</td>
+						</tr>
+						
+						<tr>
+							<td align="right">期初已折旧金额(元):</td>
+							<td colspan="3"><input class="easyui-validatebox" type="text" name="INIT_DEPRE_MONEY" id="INIT_DEPRE_MONEY" data-options="required:false" style="width: 180px;" value="0" up="up" /></td>
+						</tr>
+					</table>
+				</form>
+			</div>
+			<div style="text-align:center;padding:5px">
+				<a href="javascript:saveit()" class="easyui-linkbutton">保存</a>
+				<a href="javascript:parent.closewin()" class="easyui-linkbutton">退出</a>
+			</div>
+		</div>
+		
+		<div id="win" class="easyui-window" title="..." style="width:900px;height:600px;" data-options="modal:true,closed:true">
+			<iframe id="fra_s" width="99%" height="99%" border="0" frameborder="0"></iframe>
+		</div>
+	</body>
+
+</html>

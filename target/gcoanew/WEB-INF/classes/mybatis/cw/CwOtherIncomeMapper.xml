@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CwOtherIncomeMapper">
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into CW_OTHER_INCOME(   
+			INCOME_SN,
+			JIAOKUAN_DEPTID,
+			JIAOKUAN_PERSON,
+			ACCOUNT_MONEY,
+			SHOUKUAN_MODE,
+			SHOUKUAN_ACCOUNTID,
+			MEMO,
+			CREATE_USERID,
+			CREATE_TIME,	
+			INCOME_ID
+		) values (
+			#{INCOME_SN},	
+			#{JIAOKUAN_DEPTID},	
+			#{JIAOKUAN_PERSON},	
+			#{ACCOUNT_MONEY},	
+			#{SHOUKUAN_MODE},	
+			#{SHOUKUAN_ACCOUNTID},	
+			#{MEMO},	
+			#{CREATE_USERID},	
+			#{CREATE_TIME},	
+			#{INCOME_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+			CW_OTHER_INCOME
+		SET
+			IF_DELETED = '1'
+		where 
+			INCOME_ID = #{INCOME_ID}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  CW_OTHER_INCOME
+			set 
+				<if test="INCOME_SN != null and INCOME_SN != ''">
+					INCOME_SN = #{INCOME_SN},
+				</if>
+				<if test="JIAOKUAN_DEPTID != null and JIAOKUAN_DEPTID != ''">
+					JIAOKUAN_DEPTID = #{JIAOKUAN_DEPTID},
+				</if>
+				<if test="JIAOKUAN_PERSON != null and JIAOKUAN_PERSON != ''">
+					JIAOKUAN_PERSON = #{JIAOKUAN_PERSON},
+				</if>
+				<if test="ACCOUNT_MONEY != null and ACCOUNT_MONEY != ''">
+					ACCOUNT_MONEY = #{ACCOUNT_MONEY},
+				</if>
+				<if test="SHOUKUAN_MODE != null and SHOUKUAN_MODE != ''">
+					SHOUKUAN_MODE = #{SHOUKUAN_MODE},
+				</if>
+				<if test="SHOUKUAN_ACCOUNTID != null and SHOUKUAN_ACCOUNTID != ''">
+					SHOUKUAN_ACCOUNTID = #{SHOUKUAN_ACCOUNTID},
+				</if>
+				<if test="MEMO != null and MEMO != ''">
+					MEMO = #{MEMO},
+				</if>
+				INCOME_ID = INCOME_ID
+			where 
+				INCOME_ID = #{INCOME_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			INCOME_SN,
+			JIAOKUAN_DEPTID,
+			(select dept_name from xt_dept_info di where di.dept_id=JIAOKUAN_DEPTID) JIAOKUAN_DEPTNAME,
+			JIAOKUAN_PERSON,
+			ACCOUNT_MONEY,
+			SHOUKUAN_MODE,
+			SHOUKUAN_ACCOUNTID,
+			(select account_name from cw_account_info where account_id=SHOUKUAN_ACCOUNTID) SHOUKUAN_ACCOUNTNAME,
+			MEMO,
+			CREATE_USERID,
+			DATE_FORMAT(CREATE_TIME,'%Y-%m-%d') CREATE_TIME,	
+			INCOME_ID
+		from 
+			CW_OTHER_INCOME
+		where 
+			INCOME_ID = #{INCOME_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+			a.INCOME_SN,
+			a.JIAOKUAN_DEPTID,
+			(select dept_name from xt_dept_info di where di.dept_id=a.JIAOKUAN_DEPTID) JIAOKUAN_DEPTNAME,
+			a.JIAOKUAN_PERSON,
+			a.ACCOUNT_MONEY,
+			a.SHOUKUAN_MODE,
+			a.SHOUKUAN_ACCOUNTID,
+			(select account_name from cw_account_info where account_id=a.SHOUKUAN_ACCOUNTID) SHOUKUAN_ACCOUNTNAME,
+			a.MEMO,
+			a.CREATE_USERID,
+			DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') CREATE_TIME,
+			a.INCOME_ID
+		from 
+				CW_OTHER_INCOME a
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="pd.INCOME_ID != null and pd.INCOME_ID != ''">
+			AND a.INCOME_ID = #{pd.INCOME_ID}
+		</if>
+		<if test="pd.JIAOKUAN_PERSON != null and pd.JIAOKUAN_PERSON != ''">
+			AND a.JIAOKUAN_PERSON = #{pd.JIAOKUAN_PERSON}
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+			a.INCOME_SN,
+			a.JIAOKUAN_DEPTID,
+			(select dept_name from xt_dept_info di where di.dept_id=a.JIAOKUAN_DEPTID) JIAOKUAN_DEPTNAME,
+			a.JIAOKUAN_PERSON,
+			a.ACCOUNT_MONEY,
+			a.SHOUKUAN_MODE,
+			a.SHOUKUAN_ACCOUNTID,
+			(select account_name from cw_account_info where account_id=a.SHOUKUAN_ACCOUNTID) SHOUKUAN_ACCOUNTNAME,
+			a.MEMO,
+			a.CREATE_USERID,
+			DATE_FORMAT(a.CREATE_TIME,'%Y-%m-%d') CREATE_TIME,
+			a.INCOME_ID
+		from 
+				CW_OTHER_INCOME a
+		WHERE
+				a.IF_DELETED = '0'
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			CW_OTHER_INCOME
+	  	SET
+			IF_DELETED = '0'
+		where 
+			INCOME_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

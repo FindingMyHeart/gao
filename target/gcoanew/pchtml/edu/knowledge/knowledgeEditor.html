@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<link id="linkm" rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css" />
+		
+		<script src="../../js/nicEdit.js" type="text/javascript"></script>
+		
+		<script type="text/javascript" src="../../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+		<script language="javascript" type="text/javascript" src="../../js/myjstools.js"></script>
+		
+		<script type="text/javascript">
+			var knowledgeId = myjstools.request("knowledgeId").replace("#", "");
+			var knowledgeType = "";
+			var addFlag = true;
+			
+			
+			function init(){
+				bkLib.onDomLoaded(function() { toggleArea1(); });
+				
+				if(knowledgeId!=null&&knowledgeId!=""&&knowledgeId!=undefined){
+					var objt={};
+					objt.knowledgeId = knowledgeId;
+					addFlag = false;
+					myjstools.ajax(false, "GET", "/web/service?METHOD=knowledgeService_getKnowledge", objt, loadInfo_res);
+				}else{
+					myjstools.ajax(false, "POST", "/web/service?METHOD=diccService_queryDicByType", {
+						dic_type: "knowledge_type"
+					}, loadinfo_type);
+				}
+			}
+			
+			function loadInfo_res(data){
+
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+					
+					var entity = data.entity;
+					knowledgeType = entity.knowledge_type;
+					$("#myEditor").html(entity.rem);
+					$("#iptTitle").val(entity.title);
+					$("#media_url").val(entity.media_url);
+					myjstools.ajax(false, "POST", "/web/service?METHOD=diccService_queryDicByType", {
+						dic_type: "knowledge_type"
+					}, loadinfo_type);
+					
+				} catch(e) {
+					myjstools.showerrinfo("delinfo_res.error:出错了！" + e.message);
+				}
+				
+			}
+			
+			
+			function loadinfo_type(data){
+				if(data.success == 1){
+					var row = data.rows;
+					
+					if(row.length>=0){
+						for (var i=0;i<row.length;i++){
+							if(knowledgeType == row[i].dic_value){
+								$("#selType").append("<option selected='selected' value='"+row[i].dic_value+"'>"+row[i].dic_label+"</option>");
+							}else{
+								$("#selType").append("<option value='"+row[i].dic_value+"'>"+row[i].dic_label+"</option>");
+							}
+							
+						}
+					}
+				}
+			}
+			
+			function toggleArea1() {
+				//var area1 = new nicEditor({fullPanel : true}).panelInstance('myArea1',{hasPanel : true});
+				
+				
+            	var area1 = new nicEditor({fullPanel : true}).panelInstance('myEditor');
+            
+				//var area1 = new nicEditor().panelInstance('area1');
+			}
+			
+			
+			
+			function save(){
+				
+				var dataFormat = {"type":$("#selType").val()
+									,"title":$("#iptTitle").val()
+									,"media_url":$("#media_url").val()
+									,"rem":$(".nicEdit-main").html()}
+				
+				if(addFlag){
+					myjstools.ajax(false, "POST", "/web/service?METHOD=knowledgeService_addKnowledge", dataFormat, save_res)	
+				}else{
+					dataFormat.id = knowledgeId;
+					myjstools.ajax(false, "POST", "/web/service?METHOD=knowledgeService_editKnowledge", dataFormat, save_res)
+				}
+			}
+			
+			function save_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+					
+					parent.closewin();	
+					
+				} catch(e) {
+					myjstools.showerrinfo("loadit_res.error:出错了！" + e.message);
+				}
+			}
+			
+			$(document).ready(function(){init();});
+			
+		</script>
+	</head>
+	<body>
+			<ul>
+				<li style='list-style:none;margin-bottom:5px'>
+					<div>
+						<span>标题</span>
+						<input id="iptTitle" size="50"/>
+					</div>
+				</li>
+				<li style='list-style:none;margin-bottom:5px'>
+					<span>类型</span>
+					<select id="selType"></select>
+				</li>
+				<li style='list-style:none;margin-bottom:5px'>
+					<div>
+						<span>链接</span>
+						<input id="media_url" size="50"/>
+					</div>
+				</li>
+				<li style='list-style:none;margin-bottom:5px'>
+					<div style="border:1px solid #000">
+						<div id="myEditor" class=" nicEdit-main " contenteditable="true" style="width: 471px; margin: 4px; height: 300px; overflow: hidden;"/>
+					</div>
+				</li>
+				<li style='list-style:none;margin-bottom:5px'>
+					<div style="width:460px">
+						<div style="text-align:right;padding:5px">	
+							<a href="javascript:save()" class="easyui-linkbutton">保存</a>
+						</div>
+						
+					</div>
+					
+				</li>
+			</ul>
+
+	</body>
+</html>

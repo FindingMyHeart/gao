@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BusProjectMoneyDetailMapper">
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into BUS_PROJECT_MONEY_DETAIL(       
+			PROJECT_ID,
+			MONEY_TYPE,
+			MONEY_DATE,
+			FEE_AMOUNT,
+			MEMO,
+			SUB_NO,
+			DETAIL_ID
+		) values (
+			#{PROJECT_ID},
+			#{MONEY_TYPE},
+			#{MONEY_DATE},
+			#{FEE_AMOUNT},
+			#{MEMO},
+			#{SUB_NO},
+			#{DETAIL_ID}
+		)
+	</insert>
+
+
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from BUS_PROJECT_MONEY_DETAIL
+		where
+			DETAIL_ID = #{DETAIL_ID}
+	</delete>
+
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  BUS_PROJECT_MONEY_DETAIL
+			set
+				PROJECT_ID = #{PROJECT_ID},
+				MONEY_TYPE = #{MONEY_TYPE},
+				MONEY_DATE = #{MONEY_DATE},
+				FEE_AMOUNT = #{FEE_AMOUNT},
+				MEMO = #{MEMO},
+				SUB_NO = #{SUB_NO},
+				DETAIL_ID = DETAIL_ID
+			where
+				DETAIL_ID = #{DETAIL_ID}
+	</update>
+
+
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select
+			PROJECT_ID,
+			MONEY_TYPE,
+			MONEY_DATE,
+			FEE_AMOUNT,
+			MEMO,
+			SUB_NO,
+			DETAIL_ID
+		from
+			BUS_PROJECT_MONEY_DETAIL
+		where
+			DETAIL_ID = #{DETAIL_ID}
+	</select>
+
+
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.PROJECT_ID,
+				a.MONEY_TYPE,
+				a.MONEY_DATE,
+				a.FEE_AMOUNT,
+				a.MEMO,
+				a.SUB_NO,
+				a.DETAIL_ID
+		from
+				BUS_PROJECT_MONEY_DETAIL a
+		WHERE
+				1 = 1
+		<if test="pd.PROJECT_ID != null and pd.PROJECT_ID != ''">
+		AND
+			PROJECT_ID = #{pd.PROJECT_ID}
+		</if>
+	</select>
+
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.PROJECT_ID,
+				a.MONEY_TYPE,
+				a.MONEY_DATE,
+				a.FEE_AMOUNT,
+				a.MEMO,
+				a.SUB_NO,
+				a.DETAIL_ID
+		from
+				BUS_PROJECT_MONEY_DETAIL a
+		WHERE
+				1 = 1
+		<if test="PROJECT_ID != null and PROJECT_ID != ''">
+		AND
+				PROJECT_ID = #{PROJECT_ID}
+		</if>
+		<if test="MONEY_TYPE != null and MONEY_TYPE != ''">
+		AND
+				MONEY_TYPE = #{MONEY_TYPE}
+		</if>
+	</select>
+
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from BUS_PROJECT_MONEY_DETAIL
+		where 
+			DETAIL_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+
+
+	<!-- 根据项目ID删除-->
+	<delete id="deleteByProjectId" parameterType="pd">
+		DELETE FROM
+			BUS_PROJECT_MONEY_DETAIL
+		WHERE
+			PROJECT_ID = #{PROJECT_ID}
+		<if test="MONEY_TYPE != null and MONEY_TYPE != ''">
+		AND
+			MONEY_TYPE = #{MONEY_TYPE}
+		</if>
+	</delete>
+	
+</mapper>

@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>上报管理</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css" />
+
+		<script type="text/javascript" src="../../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../../js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../../js/myjstools.js"></script>
+		<script type="text/javascript">
+			function loadGrid(){
+				var url = myjstools.wwwroot + '/web/service?METHOD=knowledgeService_queryKnowledgeList';
+					
+				//初始化grid
+				$('#dg').datagrid({
+					iconCls: 'icon-edit',
+					singleSelect: true,
+					toolbar: '#tt',
+					pagination: true,
+					url: url,
+					onBeforeLoad: onBeforeLoad,
+					rownumbers: true,
+					loadMsg: '正在加载数据...',
+					onLoadError: function() {
+						myjstools.showerrinfo('数据加载出错了');
+					},
+					method: 'post',
+					pageNumber: 1,
+					pageSize: 20,
+					pageList: [10, 20, 50, 100],
+					columns: [
+						[{
+							field: 'title',
+							title: '标题'
+						},
+						{
+							field:'create_time',
+							title:'创建时间',
+							formatter:function(value,row,index){
+								var time1 = new Date(value).format("yyyy-MM-dd hh:mm:ss");  
+								var htm = "<span>"+time1+"</span>";
+								return htm;
+							}
+						},
+						{
+							field:'typeLabel',
+							title:'类型'
+						},
+						{
+							field: 'knowledge_id',
+							title: '操作',
+							formatter:function(value,row,index){
+								var s = ('<a href="javascript:del(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">删除</a>'+
+								'&nbsp;<a href="javascript:edit(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">编辑</a>');
+									
+								return s;
+	                    	}
+						}]
+					]
+				});
+			}
+			
+			function add(){
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/edu/knowledge/knowledgeEditor.html");
+			}
+			
+			function del(id){
+				
+				$.messager.confirm('提示', '确认删除当前信息吗？'
+					, function(row) {
+						if(row) {
+							var objt={"id":id};
+							
+							myjstools.ajax(false, "GET", "/web/service?METHOD=knowledgeService_deleteKnowledge", objt, delinfo_res);
+						}
+					});
+			}
+			
+			function edit(id){
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/edu/knowledge/knowledgeEditor.html?knowledgeId="+id);
+			}
+			
+			function delinfo_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+
+					$('#dg').datagrid('load'); //, objt
+				} catch(e) {
+					myjstools.showerrinfo("delinfo_res.error:出错了！" + e.message);
+				}
+			}
+			
+			function closewin() {
+				$('#win').window('close');
+
+				$('#dg').datagrid('reload');
+			}
+			
+			Date.prototype.format = function (fmt) { //author: meizz
+				  var o = {
+				    "M+": this.getMonth() + 1, //月份
+				    "d+": this.getDate(), //日
+				    "h+": this.getHours(), //小时
+				    "m+": this.getMinutes(), //分
+				    "s+": this.getSeconds(), //秒
+				    "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+				    "S": this.getMilliseconds() //毫秒
+				  };
+				  if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+				  for (var k in o)
+				  if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+				  return fmt;
+			}
+			
+			function onBeforeLoad(param){
+				param.knowledge_title = $("#title").val();
+				param.start_date = $("#startDate").datebox("getValue");
+				param.end_date= $("#endDate").datebox("getValue");
+			}
+			
+			//查询
+	        function seek() {
+	            $('#dg').datagrid('load');
+	        }
+			
+			$(document).ready(function(){loadGrid()});
+		</script>
+	</head>
+<body>
+	<div id="tt" style="height:auto;">
+			&nbsp;<span class="icon-edit">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;知识库管理 &nbsp;
+			<!--<span id="spaninfo"><a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" >查看选中项</a></span>-->
+			
+			<span id="spanadd"><a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="add()">添加</a></span> &nbsp;
+			
+			<div class="main_form">
+	            关键字：<input id="title" name="title" value="" placeholder="请输标题"/>
+	            创建时间：<input class="easyui-datetimebox" name="startDate" id="startDate" data-options="showSeconds:false" style="width:150px" >
+	            到&nbsp;<input class="easyui-datetimebox" name="endDate" id="endDate" data-options="showSeconds:false" style="width:150px" >
+	           
+	            <span><a href="javascript:seek();"  class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true"></a></span>
+           </div>
+		</div>
+			
+		<table id="dg" title="" ></table>
+
+		<div id="win" class="easyui-window" title="..." style="width:550px;height:530px;" data-options="modal:true,closed:true">
+			<iframe id="fra_s" width="99%" height="99%" border="0" frameborder="0"></iframe>
+		</div>
+</body>
+</html>

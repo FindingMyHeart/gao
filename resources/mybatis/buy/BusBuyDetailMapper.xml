@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BusBuyDetailMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into BUS_BUY_DETAIL(  
+			BUY_ID,	
+			SUB_NO,
+            SUPPLIER_ID,
+			MATERIAL_ID,
+			SYSTEM_NAME,
+			MATERIAL_NUM,
+            BUY_NUM,
+            STORE_NUM,
+            UNIT_PRICE,
+            TOTAL_PRICE,
+			MEMO,
+			APPLYBUY_DETAIL_ID,	
+			BUY_DETAIL_ID
+		) values (
+			#{BUY_ID},	
+			#{SUB_NO},
+			#{SUPPLIER_ID},
+			#{MATERIAL_ID},
+			#{SYSTEM_NAME},
+			#{MATERIAL_NUM},
+			#{BUY_NUM},
+			#{STORE_NUM},
+			#{UNIT_PRICE},
+			#{TOTAL_PRICE},
+			#{MEMO},
+			#{APPLYBUY_DETAIL_ID},	
+			#{BUY_DETAIL_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from BUS_BUY_DETAIL
+		where 
+			BUY_DETAIL_ID = #{BUY_DETAIL_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  BUS_BUY_DETAIL
+			set 
+				BUY_ID = #{BUY_ID},
+				MATERIAL_ID = #{MATERIAL_ID},
+				SYSTEM_NAME = #{SYSTEM_NAME},
+				SUB_NO = #{SUB_NO},
+				MATERIAL_NUM = #{MATERIAL_NUM},
+				MEMO = #{MEMO},
+				APPLYBUY_DETAIL_ID = #{APPLYBUY_DETAIL_ID},
+			BUY_DETAIL_ID = BUY_DETAIL_ID
+			where 
+				BUY_DETAIL_ID = #{BUY_DETAIL_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			BUY_ID,	
+			MATERIAL_ID,	
+			SYSTEM_NAME,	
+			SUB_NO,	
+			MATERIAL_NUM,	
+			MEMO,	
+			APPLYBUY_DETAIL_ID,	
+			BUY_DETAIL_ID
+		from 
+			BUS_BUY_DETAIL
+		where 
+			BUY_DETAIL_ID = #{BUY_DETAIL_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.BUY_ID,	
+				a.MATERIAL_ID,	
+				a.SYSTEM_NAME,	
+				a.SUB_NO,	
+				a.MATERIAL_NUM,	
+				a.MEMO,	
+				a.APPLYBUY_DETAIL_ID,	
+				a.BUY_DETAIL_ID
+		from 
+				BUS_BUY_DETAIL a
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.BUY_ID,	
+				a.MATERIAL_ID,	
+				a.SYSTEM_NAME,	
+				a.SUB_NO,	
+				a.SUPPLIER_ID,
+				a.MATERIAL_ID,
+				a.MATERIAL_NUM,
+				a.BUY_NUM,
+				a.STORE_NUM,
+				a.UNIT_PRICE,
+				a.TOTAL_PRICE,
+				a.MEMO,
+				a.APPLYBUY_DETAIL_ID,	
+				a.BUY_DETAIL_ID,
+                b.MATERIAL_BRAND as BUY_MATERIAL_BRAND,
+                b.MATERIAL_SPEC as BUY_MATERIAL_SPEC,
+                b.MATERIAL_UNIT as BUY_MATERIAL_UNIT,
+				d.DIC_LABEL AS APPLY_SYSTEM_NAME,
+				e.MATERIAL_NAME as APPLY_MATERIAL_NAME,
+				e.MATERIAL_BRAND as APPLY_MATERIAL_BRAND,
+				e.MATERIAL_SPEC as APPLY_MATERIAL_SPEC,
+				e.MATERIAL_UNIT as APPLY_MATERIAL_UNIT,
+				c.MATERIAL_NUM as APPLY_MATERIAL_NUM,
+				c.MEMO as APPLY_MEMO
+		from 
+				BUS_BUY_DETAIL a
+	  	left join
+				BASE_MATERIAL_INFO b
+	  	on
+				a.MATERIAL_ID = b.MATERIAL_ID
+	  	left join
+				BUS_APPLYBUY_DETAIL c
+	  	on
+				a.APPLYBUY_DETAIL_ID = c.APPLYBUY_DETAIL_ID
+		left join
+				XT_DIC d
+		on
+				c.SYSTEM_NAME = d.DIC_VALUE and DIC_TYPE = 'xtmc'
+		left join
+				BASE_MATERIAL_INFO e
+		on
+				c.MATERIAL_ID = e.MATERIAL_ID
+		where
+				1 = 1
+		<if test="BUY_ID != null and BUY_ID != ''">
+		and
+				a.BUY_ID = #{BUY_ID}
+		</if>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from BUS_BUY_DETAIL
+		where 
+			BUY_DETAIL_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 根据采购主表删除 -->
+	<delete id="deleteByBuyId" parameterType="pd">
+		DELETE FROM
+			BUS_BUY_DETAIL
+		WHERE
+			BUY_ID = #{BUY_ID}
+	</delete>
+
+	<!-- 物料采购列表 -->
+	<select id="materiallistPage" parameterType="page" resultType="pd">
+		select
+			a.BUY_SN,
+			c.PROJECT_NAME,
+			d.DIC_LABEL as SYSTEM_NAME,
+			e.SUPPLIER_NAME,
+			f.MATERIAL_NAME,
+			f.MATERIAL_BRAND,
+			f.MATERIAL_SPEC,
+			f.MATERIAL_UNIT,
+			b.MATERIAL_NUM,
+			b.BUY_NUM,
+			b.UNIT_PRICE,
+			b.TOTAL_PRICE,
+			b.MEMO
+		from
+			bus_buy_info a
+		left join
+		  	bus_buy_detail b
+		on
+			a.buy_id = b.buy_id
+	  	left join
+			bus_project_info c
+		on
+		  	a.project_id = c.project_id
+		left join
+			xt_dic d
+		on
+		  	b.system_name = d.dic_value and d.dic_type = 'xtmc'
+		left join
+			base_supplier_info e
+		on
+			b.supplier_id = e.supplier_id
+		left join
+			base_material_info f
+		on
+			b.material_id = f.material_id
+	  	where
+			a.if_deleted = '0'
+		<if test="pd.BUY_SN_SEARCH != null and pd.BUY_SN_SEARCH != ''">
+		AND
+			a.BUY_SN  LIKE CONCAT('%',CONCAT(#{pd.BUY_SN_SEARCH},'%'))
+		</if>
+		<if test="pd.BUY_DATE_SEARCH != null and pd.BUY_DATE_SEARCH != ''">
+		AND
+			a.CREATE_TIME  LIKE CONCAT('%',CONCAT(#{pd.BUY_DATE_SEARCH},'%'))
+		</if>
+		<if test="pd.PROJECT_ID_SEARCH != null and pd.PROJECT_ID_SEARCH != ''">
+		AND
+			a.PROJECT_ID = #{pd.PROJECT_ID_SEARCH}
+		</if>
+		<if test="pd.SUPPLIER_ID_SEARCH != null and pd.SUPPLIER_ID_SEARCH != ''">
+		AND
+			b.SUPPLIER_ID = #{pd.SUPPLIER_ID_SEARCH}
+		</if>
+		<if test="pd.MATERIAL_NAME_SEARCH != null and pd.MATERIAL_NAME_SEARCH != ''">
+		AND
+			f.MATERIAL_NAME  LIKE CONCAT('%',CONCAT(#{pd.MATERIAL_NAME_SEARCH},'%'))
+		</if>
+		<if test="pd.MATERIAL_BRAND_SEARCH != null and pd.MATERIAL_BRAND_SEARCH != ''">
+		AND
+			f.MATERIAL_BRAND  LIKE CONCAT('%',CONCAT(#{pd.MATERIAL_BRAND_SEARCH},'%'))
+		</if>
+		<if test="pd.MATERIAL_SPEC_SEARCH != null and pd.MATERIAL_SPEC_SEARCH != ''">
+		AND
+			f.MATERIAL_SPEC  LIKE CONCAT('%',CONCAT(#{pd.MATERIAL_SPEC_SEARCH},'%'))
+		</if>
+		order by
+			a.create_time desc,b.sub_no asc
+	</select>
+</mapper>

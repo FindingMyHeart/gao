@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ShRepairInfoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into SH_REPAIR_INFO(
+			REPAIR_NO,	
+			PROJECT_ID,	
+			BAOXIU_PERSON,	
+			BAOXIU_PERSONTEL,	
+			BAOXIU_CONTENT,	
+			BAOXIU_TIME,	
+			CREATE_TIME,	
+			CREATE_USERID,	
+			REPAIR_STATUS,	
+			REPAIR_USERID,	
+			REPAIR_TIME,	
+			IF_DELETED,
+			REPAIR_ID
+		) values (
+			#{REPAIR_NO},	
+			#{PROJECT_ID},	
+			#{BAOXIU_PERSON},	
+			#{BAOXIU_PERSONTEL},	
+			#{BAOXIU_CONTENT},	
+			#{BAOXIU_TIME},	
+			#{CREATE_TIME},	
+			#{CREATE_USERID},	
+			#{REPAIR_STATUS},	
+			#{REPAIR_USERID},	
+			#{REPAIR_TIME},	
+			#{IF_DELETED},
+			#{REPAIR_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+			SH_REPAIR_INFO
+		SET
+			IF_DELETED = '1'
+		where 
+			REPAIR_ID = #{REPAIR_ID}
+	</delete>
+
+	<!-- 修改状态-->
+	<delete id="updateStatus" parameterType="pd">
+		UPDATE
+			SH_REPAIR_INFO
+		SET
+			REPAIR_STATUS = #{REPAIR_STATUS}
+		where
+			REPAIR_ID = #{REPAIR_ID}
+	</delete>
+
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  SH_REPAIR_INFO
+			set 
+				<if test="PROJECT_ID != null">
+					PROJECT_ID = #{PROJECT_ID},
+				</if>
+				<if test="REPAIR_NO != null">
+					REPAIR_NO = #{REPAIR_NO},
+				</if>
+				<if test="BAOXIU_PERSON != null">
+					BAOXIU_PERSON = #{BAOXIU_PERSON},
+				</if>
+				<if test="BAOXIU_PERSONTEL != null">
+					BAOXIU_PERSONTEL = #{BAOXIU_PERSONTEL},
+				</if>
+				<if test="BAOXIU_CONTENT != null">
+					BAOXIU_CONTENT = #{BAOXIU_CONTENT},
+				</if>
+				<if test="BAOXIU_TIME != null">
+					BAOXIU_TIME = #{BAOXIU_TIME},
+				</if>
+				<if test="REPAIR_STATUS != null">
+					REPAIR_STATUS = #{REPAIR_STATUS},
+				</if>
+				<if test="REPAIR_USERID != null">
+					REPAIR_USERID = #{REPAIR_USERID},
+				</if>
+				<if test="REPAIR_TIME != null">
+					REPAIR_TIME = #{REPAIR_TIME},
+				</if>
+			REPAIR_ID = REPAIR_ID
+			where 
+				REPAIR_ID = #{REPAIR_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			REPAIR_NO,	
+			PROJECT_ID,	
+			BAOXIU_PERSON,
+			DATE_FORMAT(BAOXIU_TIME,'%Y-%m-%d') AS BAOXIU_DATE,
+			BAOXIU_PERSONTEL,	
+			BAOXIU_CONTENT,	
+			BAOXIU_TIME,	
+			CREATE_TIME,	
+			CREATE_USERID,	
+			REPAIR_STATUS,	
+			REPAIR_USERID,	
+			REPAIR_TIME,	
+			REPAIR_ID
+		from 
+			SH_REPAIR_INFO
+		where 
+			REPAIR_ID = #{REPAIR_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.REPAIR_NO,	
+				a.PROJECT_ID,	
+				a.BAOXIU_PERSON,	
+				a.BAOXIU_PERSONTEL,	
+				a.BAOXIU_CONTENT,	
+				a.BAOXIU_TIME,
+				DATE_FORMAT(a.BAOXIU_TIME,'%Y-%m-%d') AS BAOXIU_DATE,
+				a.CREATE_TIME,	
+				a.CREATE_USERID,	
+				a.REPAIR_STATUS,	
+				a.REPAIR_USERID,	
+				a.REPAIR_TIME,	
+				a.REPAIR_ID,
+				b.DIC_LABEL AS REPAIR_STATUS_NAME
+		from 
+				SH_REPAIR_INFO a
+		LEFT JOIN
+				XT_DIC b
+		ON
+				a.REPAIR_STATUS = b.DIC_ID
+		LEFT JOIN
+			SH_REPAIR_PERSONNEL c
+		ON
+			a.REPAIR_ID = c.REPAIR_ID
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="pd.PROJECT_ID_SEARCH != null and pd.PROJECT_ID_SEARCH != ''">
+		AND
+				a.PROJECT_ID = #{pd.PROJECT_ID_SEARCH}
+		</if>
+		<if test="pd.REPAIR_STATUS_SEARCH != null and pd.REPAIR_STATUS_SEARCH != ''">
+		AND
+				a.REPAIR_STATUS = #{pd.REPAIR_STATUS_SEARCH}
+		</if>
+		<if test="pd.BAOXIU_TIME_SEARCH != null and pd.BAOXIU_TIME_SEARCH != ''">
+		AND
+				a.BAOXIU_TIME like CONCAT('%',CONCAT(#{pd.BAOXIU_TIME_SEARCH},'%'))
+		</if>
+		<if test="pd.PERSONNEL_NAME_SEARCH != null and pd.PERSONNEL_NAME_SEARCH != ''">
+		AND
+				c.PERSONNEL_NAME = #{pd.PERSONNEL_NAME_SEARCH}
+		</if>
+		GROUP BY
+				a.REPAIR_ID
+		ORDER BY
+				a.CREATE_TIME
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.REPAIR_NO,	
+				a.PROJECT_ID,	
+				a.BAOXIU_PERSON,	
+				a.BAOXIU_PERSONTEL,	
+				a.BAOXIU_CONTENT,	
+				a.BAOXIU_TIME,	
+				a.CREATE_TIME,	
+				a.CREATE_USERID,	
+				a.REPAIR_STATUS,	
+				a.REPAIR_USERID,	
+				a.REPAIR_TIME,	
+				a.REPAIR_ID
+		from 
+				SH_REPAIR_INFO a
+		WHERE
+				a.IF_DELETED = '0'
+		<if test="DATE != null and DATE != ''">
+			AND
+			a.CREATE_TIME LIKE CONCAT(#{DATE},'%')
+		</if>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			SH_REPAIR_INFO
+	  	SET
+			IF_DELETED = '1'
+		where 
+			REPAIR_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

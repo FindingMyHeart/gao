@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<link id="linkm" rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../../themes/icon.css" />
+		
+		<script src="../../js/nicEdit.js" type="text/javascript"></script>
+		
+		<script type="text/javascript" src="../../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../../js/easyui-lang-zh_CN.js"></script>
+		<script language="javascript" type="text/javascript" src="../../js/myjstools.js"></script>
+		
+		<script type="text/javascript">
+			var fudao_id = myjstools.request("fudao_id").replace("#", "");
+			var addFlag = true;
+			
+			
+			function init(){
+				
+				if(fudao_id!=null&&fudao_id!=""&&fudao_id!=undefined){
+					var objt={};
+					objt.fudao_id = fudao_id;
+					addFlag = false;
+					myjstools.ajax(false, "GET", "/web/service?METHOD=fudao_findbyid", objt, loadInfo_res);
+				}else{
+					
+				}
+			}
+			
+			function loadInfo_res(data){
+
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+					
+					var entity = data.entity;
+					$("#fudao_date").datebox('setValue', entity.fudao_date);
+					$("#fudao_location").val(entity.fudao_location);
+					$("#fudao_teacher").val(entity.fudao_teacher);
+					$("#teacher_tel").val(entity.teacher_tel);
+					$("#fudao_object").val(entity.fudao_object);
+					$("#object_tel").val(entity.object_tel);
+					$("#object_case").val(entity.object_case);
+					$("#zixun_case").val(entity.zixun_case);
+					$("#fudao_plan").val(entity.fudao_plan);
+					$("#fudao_process").val(entity.fudao_process);
+					$("#fudao_result").val(entity.fudao_result);
+					$("#fudao_summary").val(entity.fudao_summary);
+					
+				} catch(e) {
+					myjstools.showerrinfo("delinfo_res.error:出错了！" + e.message);
+				}
+				
+			}
+			
+			
+			
+			function save(){
+				
+				var dataFormat = {"fudao_date":$("#fudao_date").datebox("getValue")
+									,"fudao_location":$("#fudao_location").val()
+									,"fudao_teacher":$("#fudao_teacher").val()
+									,"teacher_tel":$("#teacher_tel").val()
+									,"fudao_object":$("#fudao_object").val()
+									,"object_tel":$("#object_tel").val()
+									,"object_case":$("#object_case").val()
+									,"zixun_case":$("#zixun_case").val()
+									,"fudao_plan":$("#fudao_plan").val()
+									,"fudao_process":$("#fudao_process").val()
+									,"fudao_result":$("#fudao_result").val()
+									,"fudao_summary":$("#fudao_summary").val()
+									}
+				
+				if(addFlag){
+					myjstools.ajax(false, "POST", "/web/service?METHOD=fudao_add", dataFormat, save_res)	
+				}else{
+					dataFormat.fudao_id = fudao_id;
+					myjstools.ajax(false, "POST", "/web/service?METHOD=fudao_edit", dataFormat, save_res)
+				}
+			}
+			
+			function save_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+					
+					parent.closewin();	
+					
+				} catch(e) {
+					myjstools.showerrinfo("loadit_res.error:出错了！" + e.message);
+				}
+			}
+			
+			$(document).ready(function(){init();});
+			
+		</script>
+		<script type="text/javascript">
+        function myformatter(date){
+            var y = date.getFullYear();
+            var m = date.getMonth()+1;
+            var d = date.getDate();
+            return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);
+        }
+        function myparser(s){
+            if (!s) return new Date();
+            var ss = (s.split('-'));
+            var y = parseInt(ss[0],10);
+            var m = parseInt(ss[1],10);
+            var d = parseInt(ss[2],10);
+            if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+                return new Date(y,m-1,d);
+            } else {
+                return new Date();
+            }
+        }
+    </script>
+	</head>
+	<body>
+			<ul>
+				<li style='list-style:none;margin-bottom:5px'>
+					<div>
+						<span>时&nbsp;&nbsp;间</span>
+						<input class="easyui-datetimebox" name="fudao_date" id="fudao_date" data-options="formatter:myformatter,parser:myparser" style="width:150px" >
+					</div>
+				</li>
+				<li style='list-style:none;margin-bottom:5px'>
+					<div>
+						<span>地&nbsp;&nbsp;点</span>
+						<input id="fudao_location" size="50"/>
+					</div>
+				</li>
+				<li style='list-style:none;margin-bottom:5px'>
+					<div>
+						<span>辅导老师</span>
+						<input id="fudao_teacher" size="50"/>
+					</div>
+				</li>
+				<li style='list-style:none;margin-bottom:5px'>
+					<div>
+						<span>联系电话</span>
+						<input id="teacher_tel" size="50"/>
+					</div>
+				</li>
+				<li style='list-style:none;margin-bottom:5px'>
+					<div>
+						<span>辅导对象</span>
+						<input id="fudao_object" size="50"/>
+					</div>
+				</li>
+				<li style='list-style:none;margin-bottom:5px'>
+					<div>
+						<span>联系电话</span>
+						<input id="object_tel" size="50"/>
+					</div>
+				</li>
+				<li style='list-style:none;margin-bottom:5px'>
+					<div>
+						<span>辅导对象基本情况说明</span>
+						<textarea id="object_case" style="width: 440px;height: 80px"></textarea>
+					</div>
+				</li>
+				<li style='list-style:none;margin-bottom:5px'>
+					<div>
+						<span>主要咨询情况说明</span>
+						<textarea id="zixun_case" style="width: 440px;height: 80px"></textarea>
+					</div>
+				</li>
+				<li style='list-style:none;margin-bottom:5px'>
+					<div>
+						<span>制定辅导计划</span>
+						<textarea id="fudao_plan" style="width: 440px;height: 80px"></textarea>
+					</div>
+				</li>
+				<li style='list-style:none;margin-bottom:5px'>
+					<div>
+						<span>辅导过程记录</span>
+						<textarea id="fudao_process" style="width: 440px;height: 80px"></textarea>
+					</div>
+				</li>
+				<li style='list-style:none;margin-bottom:5px'>
+					<div>
+						<span>辅导后的效果</span>
+						<textarea id="fudao_result" style="width: 440px;height: 80px"></textarea>
+					</div>
+				</li>
+				<li style='list-style:none;margin-bottom:5px'>
+					<div>
+						<span>辅导情况总结</span>
+						<textarea id="fudao_summary" style="width: 440px;height: 80px"></textarea>
+					</div>
+				</li>
+				<li style='list-style:none;margin-bottom:5px'>
+					<div style="width:460px">
+						<div style="text-align:right;padding:5px">	
+							<a href="javascript:save()" class="easyui-linkbutton">保存</a>
+						</div>
+						
+					</div>
+					
+				</li>
+			</ul>
+
+	</body>
+</html>

@@ -1,0 +1,120 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>添加用户</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../themes/icon.css" />
+
+		<script type="text/javascript" src="../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../js/myjstools.js"></script>
+		<script language="javascript" type="text/javascript" src="../js/hr.js"></script>
+		<script type="text/javascript">
+			var dept_id = myjstools.request("dept_id").replace("#", "");
+
+			function initit() {
+
+			}
+
+			$(
+				function() {
+					initit();
+				}
+			);
+		</script>
+		<script type="text/javascript">
+			function saveit() {
+				if($("#login_name").val() == "") {
+					myjstools.showerrinfo('请输入登录名');
+					return;
+				}
+				if($("#login_password").val() == "") {
+					myjstools.showerrinfo('请输入密码');
+					return;
+				}
+				if($("#staff_name").val() == "") {
+					myjstools.showerrinfo('请输入姓名');
+					return;
+				}
+
+				var objt = myjstools.getallinput();
+
+				objt.dept_id = dept_id;
+				
+				objt.role_id = $("#role_id").combobox("getValue");
+				objt.staff_level = $("#staff_level").combobox("getValue");
+				
+				myjstools.ajax(false, "POST", "/web/service?METHOD=staff_add", objt, saveit_res);
+			}
+
+			function saveit_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+
+					myjstools.showerrinfo("操作成功。")
+
+					parent.closewin();
+				} catch(e) {
+					myjstools.showerrinfo("saveit_res.error:出错了！" + e.message);
+				}
+			}
+		</script>
+	</head>
+
+	<body style="width:90%; text-align:center; margin:0 auto; margin-top:10px;padding:10px 10px 10px 20px">
+		<div class="easyui-panel" title="添加" style="width:100%">
+			<div style="padding:10px 10px 10px 60px">
+				<form id="ff" method="post">
+					<table>
+						<tr>
+							<td align="right">登录名:</td>
+							<td><input class="easyui-validatebox" type="text" name="login_name" id="login_name" data-options="required:true" up="up" /></td>
+						</tr>
+						<tr>
+							<td align="right">密码:</td>
+							<td><input class="easyui-validatebox" type="text" name="login_password" id="login_password" data-options="required:true" up="up" /></td>
+						</tr>
+						<tr>
+							<td align="right">姓名:</td>
+							<td><input class="easyui-validatebox" type="text" name="staff_name" id="staff_name" data-options="required:false" up="up" /></td>
+						</tr>
+						<tr>
+							<td align="right">角色:</td>
+							<td>
+								<select name="role_id" id="role_id" class="easyui-combobox" style="width: 180px;"  data-options="valueField: 'role_id' 
+                                                            ,textField: 'role_name' 
+                                                            ,required:true
+                                                            ,mode:'remote'
+                                                            ,url: myjstools.wwwroot+'/web/service?METHOD=role_combox'
+                                                            ,panelHeight:'150'
+                                                            ">
+   								</select>
+							</td>
+						</tr>
+						<tr>
+							<td align="right">职员等级:</td>
+							<td>
+								<select class="easyui-combobox" name="staff_level" id="staff_level" data-options="panelHeight:'auto'">
+									<option value="0">普通</option>
+								</select>
+							</td>
+						</tr>
+					</table>
+				</form>
+			</div>
+			<div style="text-align:center;padding:5px">
+				<a href="javascript:saveit()" class="easyui-linkbutton">保存</a>
+			</div>
+		</div>
+	</body>
+
+</html>

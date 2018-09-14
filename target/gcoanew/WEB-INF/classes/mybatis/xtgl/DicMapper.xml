@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DicMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into xt_dic(
+			dic_id,	
+			dic_key,	
+			dic_value,	
+			pvalue,	
+			order_num,	
+			if_deleted,	
+			memo,	
+			dic_type,
+			dic_group,
+			dic_label
+		) values (
+			#{dic_id},	
+			#{dic_key},	
+			#{dic_value},	
+			#{pvalue},	
+			#{order_num},	
+			0,
+			#{memo},	
+			#{dic_type},
+			#{dic_group},
+			#{dic_label}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		update xt_dic
+		set if_deleted =1
+		where 
+			dic_id = #{dic_id}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  xt_dic
+			set 
+				<if test="dic_key != null and dic_key != ''">
+				dic_key = #{dic_key},
+				</if>
+				<if test="dic_value != null and dic_value != ''">
+				dic_value = #{dic_value},
+				</if>
+				<if test="pvalue != null and pvalue != ''">
+				pvalue = #{pvalue},
+				</if>
+				<if test="order_num != null and order_num != ''">
+				order_num = #{order_num},
+				</if>
+				<if test="if_deleted != null and if_deleted != ''">
+				if_deleted = #{if_deleted},
+				</if>
+				<if test="memo != null and memo != ''">
+				memo = #{memo},
+				</if>
+				<if test="dic_type != null and dic_type != ''">
+				dic_type = #{dic_type},
+				</if>
+				<if test="dic_label != null and dic_label != ''">
+					dic_label = #{dic_label},
+				</if>
+			dic_id = dic_id
+			where 
+				dic_id = #{dic_id}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			dic_key,
+			dic_label,
+			dic_value,	
+			pvalue,	
+			order_num,	
+			if_deleted,	
+			memo,	
+			dic_type,	
+			dic_id
+		from 
+			xt_dic
+		where 
+			dic_id = #{dic_id}
+	</select>
+
+	<select id="getRootDic" resultType="pd">
+		select
+		    distinct dic_type
+		from
+		   xt_dic
+		where
+		  if_deleted = 0
+		<if test="dic_group != null and dic_group != ''">
+			dic_group = #{dic_group}
+		</if>
+	</select>
+	
+
+    <!-- 列表   -->
+    <select id="datalistPage" parameterType="page" resultType="pd">
+        select
+        a.dic_label,
+        a.dic_key,
+        a.dic_value,
+        a.pvalue,
+        a.order_num,
+        a.if_deleted,
+        a.memo,
+        a.dic_type,
+        a.dic_id
+        from
+        xt_dic a
+		where a.if_deleted=0
+			<if test="pd.dic_group != null and pd.dic_group != ''">
+				and dic_group = #{pd.dic_group}
+			</if>
+			<if test="pd.dic_id != null and pd.dic_id != ''">
+				and dic_id = #{pd.dic_id}
+			</if>
+			<if test="pd.dic_key != null and pd.dic_key != ''">
+				and dic_key = #{pd.dic_key}
+			</if>
+			<if test="pd.dic_value != null and pd.dic_value != ''">
+				and dic_value = #{pd.dic_value}
+			</if>
+			<if test="pd.pvalue != null and pd.pvalue != ''">
+				and pvalue = #{pd.pvalue}
+			</if>
+			<if test="pd.order_num != null and pd.order_num != ''">
+				and order_num = #{pd.order_num}
+			</if>
+			<if test="pd.memo != null and pd.memo != ''">
+				and memo  LIKE CONCAT(CONCAT('%', #{pd.memo}),'%')
+			</if>
+			<if test="pd.dic_type != null and pd.dic_type != ''">
+				and dic_type = #{pd.dic_type}
+			</if>
+			<if test="pd.dic_label != null and pd.dic_label != ''">
+				and dic_label = #{pd.dic_label}
+			</if>
+			<if test="pd.keyword != null and pd.keyword != ''">
+				and ( dic_key like CONCAT(CONCAT('%', #{pd.keyword}),'%')
+				or dic_value like CONCAT(CONCAT('%', #{pd.keyword}),'%')
+				or dic_type like CONCAT(CONCAT('%', #{pd.keyword}),'%') )
+			</if>
+		ORDER BY a.dic_type,a.pvalue, a.order_num
+	</select>
+	<!--05/14黄咪咪修改，增加返回DIC_ID字段-->
+	<select id="listByType" parameterType="pd" resultType="pd">
+		select
+			a.DIC_ID,
+			a.DIC_LABEL,
+			a.DIC_KEY,
+			a.DIC_VALUE
+		from
+			xt_dic a
+		where
+			a.if_deleted=0
+		AND
+			a.DIC_TYPE = #{DIC_TYPE}
+		ORDER BY
+			a.order_num  ASC
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		update xt_dic
+		set if_deleted=1
+		where 
+			"dic_id" in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+
+	<!-- 列表(q) -->
+	<select id="listq" parameterType="pd" resultType="pd">
+		select
+		a.dic_label,
+		a.dic_key,
+		a.dic_value,
+		a.pvalue,
+		a.order_num,
+		a.if_deleted,
+		a.memo,
+		a.dic_type,
+		a.dic_id
+		from
+		xt_dic a
+		where a.if_deleted=0
+		and a.dic_type = #{dic_type}
+		<if test="pvalue != null and pvalue == 'null'">
+			and (pvalue is null or pvalue=='')
+		</if>
+		<if test="pvalue != null and pvalue == 'notnull'">
+			and (pvalue is not null and pvalue <![CDATA[ <> ]]> '')
+		</if>
+		<if test="q != null and q != ''">
+			AND ( A.dic_key LIKE CONCAT(CONCAT('%', #{q}),'%') OR  A.dic_value LIKE CONCAT(CONCAT('%', #{q}),'%')
+			OR  A.pvalue LIKE CONCAT(CONCAT('%', #{q}),'%') OR  A.dic_type LIKE CONCAT(CONCAT('%', #{q}),'%')
+			OR  A.memo LIKE CONCAT(CONCAT('%', #{q}),'%') )
+		</if>
+		order by a.pvalue,a.order_num
+	</select>
+
+
+	<!-- 检查是否存在  -->
+	<select id="checkDicType" parameterType="pd" resultType="pd">
+		select
+			a.dic_id
+		from
+			xt_dic a
+		where a.if_deleted = 0
+		and a.dic_group = #{dic_group}
+		and a.dic_type = #{dic_type}
+	</select>
+</mapper>

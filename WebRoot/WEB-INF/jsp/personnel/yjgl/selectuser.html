@@ -1,0 +1,153 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <title>传阅</title>
+
+	<link rel="stylesheet" type="text/css" href="../css/common.css" />
+	
+	
+	<link id="linkm" rel="stylesheet" type="text/css" href="../themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="../themes/icon.css" />
+    
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../js/easyui-lang-zh_CN.js"></script>
+    
+    <script type="text/javascript" src="../js/myjstools.js"></script>
+    
+    <script type="text/javascript">
+    	var id = myjstools.request("id").replace("#" ,"");
+    	
+    	function initit()
+		{
+			top.hangge();
+			
+			myjstools.ajax(true, "POST", "/app/web?method=yhlb", {page:1, rows:10000}, getinfo_res);
+		}
+    
+    	$(
+            function(){
+            	initit();
+            }
+        );
+    </script>
+    
+    <script type="text/javascript">
+    	function getinfo_res(data)
+    	{
+    		try {
+				if (data.success != 1) {
+					alert("server.error:" + data.msg);
+					return;
+				}
+				
+				var rows = data.rows;
+				
+				$('#ultree').tree({ data: [{ "id": -1
+		                 , "text": "全部"
+		                 , checked: false
+		                }
+	                ]
+           			, lines: true
+           			, checkbox: true
+           			, onlyLeafCheck:true
+                });
+                
+                var arybm = [];
+                
+                //取得所有部门
+                var hasbm = false;
+                for (var i = 0; i < rows.length; i++) {
+                	hasbm = false;
+                	for(var j=0; j<arybm.length; j++)
+                	{
+                		if(rows[i].f_bmmc == arybm[j])
+                		{
+                			hasbm = true;
+                		}
+                	}
+                	
+                	if(!hasbm)
+                	{
+                		arybm[arybm.length] = rows[i].f_bmmc; 
+                	}
+                }
+                
+                //添加部门结点
+                var root = $('#ultree').tree('find', -1).target;
+                for (var i = 0; i < arybm.length; i++) {
+                    $('#ultree').tree('append', {
+                        parent: root,
+                        data: [{
+                            id: i
+                            , text: arybm[i]
+                        }]
+                    });
+                }
+                
+                //添加用户结点
+                for (var i = 0; i < rows.length; i++) {
+                	for(var j=0; j<arybm.length; j++)
+                	{
+                		if(rows[i].f_bmmc == arybm[j])
+                		{
+                			$('#ultree').tree('append', {
+		                        parent: $('#ultree').tree('find', j).target,
+		                        data: [{
+		                            id: (10000+i)
+		                            , text: rows[i].f_xm
+		                            , pk_id: rows[i].pk_id
+		                            , checked: false
+		                        }]
+		                    });
+                		}
+                	}
+                }
+            
+            
+			} catch (e) {
+				alert("getinfo_res.error:出错了！" + e.message);
+			}
+    	}
+    </script>
+    <script type="text/javascript">
+    
+    </script>
+    <script type="text/javascript">
+    	function saveit()
+    	{
+    		var rows = [];
+    		
+    		var nodes = $('#ultree').tree('getChecked');
+    		
+    		for(var i=0; i<nodes.length; i++){
+				rows[rows.length] = {id:nodes[i].pk_id, text:nodes[i].text};
+			}
+    		
+    		parent.gotoselectuser_res(myjstools.O2String(rows));
+    	}
+    	
+    </script>
+</head>
+<body style="width:100%; margin:0; height:100%">
+	
+	<table class="fs20">
+        <tr>
+        	<td width="100%">
+        		<ul id="ultree" class="easyui-tree" data-options="animate:true"></ul>
+        	</td>
+        </tr>
+    </table>
+    <table style="width:100%">
+        <tr>
+            <td>
+                <div style="text-align:center;padding:5px">
+                    <a href="javascript:saveit()" class="easyui-linkbutton fw-btn">确定</a>
+                </div>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

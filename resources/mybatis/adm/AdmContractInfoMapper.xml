@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AdmContractInfoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into ADM_CONTRACT_INFO( 
+			CONTRACT_NAME,	 
+			CONTRACT_CODE,	
+			CONTRACT_TYPE,	
+			USE_CASE,
+			RESOURCEIDS,
+			CREATE_TIME,
+			CREATE_USERID,	
+			IF_DELETED,	
+			CONTRACT_ID
+		) values (
+			#{CONTRACT_NAME},	
+			#{CONTRACT_CODE},	
+			#{CONTRACT_TYPE},	
+			#{USE_CASE},	
+			#{RESOURCEIDS},
+			#{CREATE_TIME},
+			#{CREATE_USERID},	
+			#{IF_DELETED},	
+			#{CONTRACT_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		UPDATE
+			ADM_CONTRACT_INFO
+		SET
+			IF_DELETED = '1'
+		where 
+			CONTRACT_ID = #{CONTRACT_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  ADM_CONTRACT_INFO
+			set 
+				CONTRACT_NAME = #{CONTRACT_NAME},
+				CONTRACT_CODE = #{CONTRACT_CODE},
+				CONTRACT_TYPE = #{CONTRACT_TYPE},
+				RESOURCEIDS = #{RESOURCEIDS},
+				USE_CASE = #{USE_CASE},
+			CONTRACT_ID = CONTRACT_ID
+			where 
+				CONTRACT_ID = #{CONTRACT_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			CONTRACT_NAME,	
+			CONTRACT_CODE,	
+			CONTRACT_TYPE,	
+			USE_CASE,
+			RESOURCEIDS,
+			CREATE_TIME,
+			CREATE_USERID,	
+			IF_DELETED,	
+			CONTRACT_ID
+		from 
+			ADM_CONTRACT_INFO
+		where 
+			CONTRACT_ID = #{CONTRACT_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.CONTRACT_NAME,	
+				a.CONTRACT_CODE,	
+				a.CONTRACT_TYPE,	
+				a.USE_CASE,	
+				a.RESOURCEIDS,
+				a.CREATE_TIME,
+				a.CREATE_USERID,	
+				a.IF_DELETED,	
+				a.CONTRACT_ID,
+				b.DIC_LABEL AS CONTRACT_TYPE_NAME
+		from 
+				ADM_CONTRACT_INFO a
+		LEFT JOIN
+				XT_DIC b
+	  	ON
+				a.CONTRACT_TYPE = b.DIC_VALUE AND b.DIC_TYPE = 'htlx'
+		WHERE
+	  			a.IF_DELETED = '0'
+	  	<if test="pd.CONTRACT_CODE_SEARCH != null and pd.CONTRACT_CODE_SEARCH != ''">
+		AND
+				a.CONTRACT_CODE LIKE CONCAT('%',CONCAT(#{pd.CONTRACT_CODE_SEARCH},'%'))
+		</if>
+		<if test="pd.CONTRACT_NAME_SEARCH != null and pd.CONTRACT_NAME_SEARCH != ''">
+		AND
+				a.CONTRACT_NAME LIKE CONCAT('%',CONCAT(#{pd.CONTRACT_NAME_SEARCH},'%'))
+		</if>
+		<if test="pd.CONTRACT_TYPE_SEARCH != null and pd.CONTRACT_TYPE_SEARCH != ''">
+		AND
+				a.CONTRACT_TYPE = #{pd.CONTRACT_TYPE_SEARCH}
+		</if>
+		<if test="pd.USE_CASE_SEARCH != null and pd.USE_CASE_SEARCH != ''">
+		AND
+				a.USE_CASE = #{pd.USE_CASE_SEARCH}
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.CONTRACT_NAME,	
+				a.CONTRACT_CODE,	
+				a.CONTRACT_TYPE,	
+				a.USE_CASE,	
+				a.RESOURCEIDS,
+				a.CREATE_TIME,
+				a.CREATE_USERID,	
+				a.IF_DELETED,	
+				a.CONTRACT_ID
+		from 
+				ADM_CONTRACT_INFO a
+		WHERE
+	  			a.IF_DELETED = '0'
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		UPDATE
+			ADM_CONTRACT_INFO
+		SET
+			IF_DELETED = '1'
+		where 
+			CONTRACT_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+
+	<!-- 修改状态 -->
+	<update id="updateUseCase" parameterType="pd">
+		UPDATE
+			ADM_CONTRACT_INFO
+		SET
+			USE_CASE = #{USE_CASE}
+		WHERE
+			CONTRACT_ID = #{CONTRACT_ID}
+	</update>
+	
+</mapper>

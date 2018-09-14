@@ -1,0 +1,162 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<title>角色管理</title>
+
+		<link id="linkm" rel="stylesheet" type="text/css" href="../themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../themes/icon.css" />
+
+		<script type="text/javascript" src="../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../js/easyui-lang-zh_CN.js"></script>
+
+		<script language="javascript" type="text/javascript" src="../js/myjstools.js"></script>
+
+		<script type="text/javascript">
+			var mpath = "role";
+			var idfield = "role_id";
+		
+			//双击明细
+			function onDblClickRow(rowIndex, rowData) {
+				//var row = $('#dg').datagrid('getSelected');
+				if(rowData) {
+					openinfo(rowData[idfield]);
+				}
+			}
+
+			function info() {
+				var row = $('#dg').datagrid('getSelected');
+				if(row) {
+					openinfo(row[idfield]);
+				}
+			}
+
+			function openinfo(id) {
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/" + mpath + "/info.html?id=" + id);
+			}
+			
+			function editinfo(id) {
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/" + mpath + "/add.html?id=" + id);
+			}
+
+			function add() {
+				myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/" + mpath + "/add.html");
+			}
+
+			function closewin() {
+				$('#win').window('close');
+
+				$('#dg').datagrid('reload');
+			}
+
+			//查询
+			function submitForm() {
+				$('#dg').datagrid('load');
+			}
+
+			
+
+			function initit() {
+
+				//初始化grid
+				$('#dg').datagrid({
+					iconCls: 'icon-edit',
+					singleSelect: true,
+					onDblClickRow: onDblClickRow,
+					onBeforeLoad: onBeforeLoad,
+					toolbar: '#tt',
+					pagination: true,
+					url: myjstools.wwwroot + '/web/service?METHOD=role_list',
+					rownumbers: true,
+					loadMsg: '正在加载数据...',
+					onLoadError: function() {
+						myjstools.showerrinfo('数据加载出错了');
+					},
+					method: 'post',
+					pageNumber: 1,
+					pageSize: 20,
+					pageList: [10, 20, 50, 100],
+					columns: [
+						[{
+							field: 'role_name',
+							title: '名称'
+						}
+						,{
+							field: idfield,
+							title: '操作'
+							, formatter:function(value,row,index){
+								var s =
+	                        		('&nbsp;<a href="javascript:editinfo(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">修改</a>'
+									+'&nbsp;<a href="javascript:delinfo(\''+ value +'\')" class="easyui-linkbutton" data-options="iconCls:\'icon-remove\',plain:true">删除</a>'
+									);
+									
+								return s;
+                        	}
+						}
+						]
+					]
+				});
+			}
+
+			$(
+				function() {
+					initit();
+				}
+			);
+		</script>
+		<script language="javascript" type="text/javascript">
+			//
+			function delinfo(uid) {
+				$.messager.confirm('提示', '确认删除当前信息吗？'
+				, function(r) {
+					if(r) {
+						var objt = {};
+						objt[idfield]=uid;
+						
+						myjstools.ajax(false, "POST", "/web/service?METHOD=role_delete", objt, delinfo_res);
+					}
+				});
+			}
+
+			function delinfo_res(data) {
+				try {
+					if(data.success != 1) {
+						myjstools.showerrinfo("server.error:" + data.msg);
+						return;
+					}
+
+					$('#dg').datagrid('load'); //, objt
+				} catch(e) {
+					myjstools.showerrinfo("delinfo_res.error:出错了！" + e.message);
+				}
+			}
+		</script>
+		<script language="javascript" type="text/javascript">
+			function onBeforeLoad(param) {
+
+			}
+		</script>
+	</head>
+
+	<body style="width:100%; margin:0; height:100%">
+		<div id="tt" style="height:auto;">
+			&nbsp;<span class="icon-edit">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;角色管理 (提示：双击查看详细) &nbsp;
+			<span id="spanadd"><a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onClick="add()">添加</a></span> &nbsp;
+			<span id="spaninfo"><a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onClick="info()">查看选中项</a></span>
+		</div>
+		<div id="tabmain" class="easyui-tabs">
+			<div title="列表" data-options="iconCls:'icon-tip',closable:false" style="padding:0px;width:99%">
+				<table id="dg" title=""></table>
+			</div>
+		</div>
+
+		<div id="win" class="easyui-window" title="..." style="width:1000px;height:700px;" data-options="modal:true,closed:true">
+			<iframe id="fra_s" width="99%" height="99%" border="0" frameborder="0"></iframe>
+		</div>
+
+	</body>
+
+</html>

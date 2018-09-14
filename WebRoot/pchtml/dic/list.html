@@ -1,0 +1,214 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="pragma" content="no-cache"/>
+    <title>字典管理</title>
+
+    <link id="linkm" rel="stylesheet" type="text/css" href="../themes/default/easyui.css"/>
+    <link rel="stylesheet" type="text/css" href="../themes/icon.css"/>
+
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../js/easyui-lang-zh_CN.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../js/myjstools.js"></script>
+
+    <script type="text/javascript">
+        //双击明细
+        function onDblClickRow(rowIndex, rowData) {
+            if (rowData) {
+                openinfo(rowData.DIC_ID);
+            }
+        }
+
+        function openinfo(id) {
+        	myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/dic/info.html?id=" + id);
+        	/*
+            window.box = new window.top.Box({ //实例化顶层窗体的弹窗
+                title: '详细信息', //弹窗标题
+                type: 'frame', //弹窗类型 content|frame , 默认 content
+                src: myjstools.wwwroot + "/pchtml/dic/info.html?id=" + id, //content 的内容
+                width: 450, //弹窗宽度
+                height: 400 //弹窗高度
+            });
+            box.open();//显示弹窗
+            */
+        }
+
+        function editinfo(id) {
+        	myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/dic/edit.html?group=0&id=" + id);
+        	/*
+            window.box = new window.top.Box({ //实例化顶层窗体的弹窗
+                title: '修改字典', //弹窗标题
+                type: 'frame', //弹窗类型 content|frame , 默认 content
+                src: myjstools.wwwroot + "/pchtml/dic/edit.html?group=0&id=" + id, //content 的内容
+                width: 450, //弹窗宽度
+                height: 400 //弹窗高度
+            });
+            box.open();//显示弹窗
+            */
+        }
+
+        function add() {
+        	myjstools.opennewweb(" ", myjstools.wwwroot + "/pchtml/dic/add.html?group=0");
+        	/*
+            window.box = new window.top.Box({ //实例化顶层窗体的弹窗
+                title: '新增字典', //弹窗标题
+                type: 'frame', //弹窗类型 content|frame , 默认 content
+                src: myjstools.wwwroot + "/pchtml/dic/add.html?group=0", //content 的内容
+                width: 450, //弹窗宽度
+                height: 400 //弹窗高度
+            });
+            box.open();//显示弹窗
+            */
+        }
+
+        function closewin() {
+            $('#dg').datagrid('reload');
+        }
+
+        //查询
+        function seek() {
+            $('#dg').datagrid('load');
+        }
+
+        function onBeforeLoad(param) {
+            param.dic_group = 0;
+            param.dic_name = $("#dic_name").val();
+            param.dic_type = $("#dic_type").val();
+            //param.keyword = $("#keyword").val();
+        }
+
+        function initit() {
+
+            //初始化grid
+            $('#dg').datagrid({
+                fitColumns: true,
+                iconCls: 'icon-edit',
+                singleSelect: true,
+                onDblClickRow: onDblClickRow,
+                onBeforeLoad: onBeforeLoad,
+                toolbar: '#tt',
+                pagination: true,
+                url: myjstools.wwwroot + '/web/service?METHOD=dic_list',
+                rownumbers: true,
+                loadMsg: '正在加载数据...',
+                onLoadError: function () {
+                    myjstools.showerrinfo('数据加载出错了');
+                },
+                method: 'post',
+                pageNumber: 1,
+                pageSize: 20,
+                pageList: [10, 20, 50, 100],
+                columns: [
+                    [{
+                        field: 'dic_label',
+                        title: '标签名称',
+                        width: 10
+                    }, {
+                        field: 'dic_value',
+                        title: '值',
+                        width: 10
+                    }, {
+                        field: 'dic_type',
+                        title: '类型',
+                        width: 10
+                    }, {
+                        field: 'pvalue',
+                        title: '父级值',
+                        width: 10
+                    }, {
+                        field: 'order_num',
+                        title: '排序号',
+                        width: 10
+                    }, {
+                        field: 'memo',
+                        title: '备注',
+                        width: 10
+                    }
+                        , {
+                        field: 'dic_id',
+                        title: '操作',
+                        align: 'center',
+                        width: 10
+                        , formatter: function (value, row, index) {
+                            var s = ('<a href="javascript:openinfo(\'' + value + '\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">查看</a>'
+                            + '&nbsp;<a href="javascript:editinfo(\'' + value + '\')" class="easyui-linkbutton" data-options="iconCls:\'icon-edit\',plain:true">修改</a>'
+                            + '&nbsp;<a href="javascript:deldic(\'' + value + '\')" class="easyui-linkbutton" data-options="iconCls:\'icon-remove\',plain:true">删除</a>');
+                            return s;
+                        }
+                    }
+                    ]
+                ]
+            });
+        }
+        
+    	function closewin() {
+			$('#win').window('close');
+
+			$('#dg').datagrid('reload');
+		}
+
+        $(document).ready(
+                function () {
+                    initit();
+                }
+        );
+    </script>
+    <script language="javascript" type="text/javascript">
+        //
+        function deldic(uid) {
+            $.messager.confirm('提示', '确认删除当前信息吗？'
+                    , function (r) {
+                        if (r) {
+                            myjstools.ajax(false, "POST", "/web/service?METHOD=dic_delete", {
+                                dic_id: uid
+                            }, deldic_res);
+                        }
+                    });
+        }
+
+        function deldic_res(data) {
+            try {
+                if (data.success != 1) {
+                    myjstools.showerrinfo(data.msg);
+                    return;
+                }
+
+                $('#dg').datagrid('load'); //, objt
+            } catch (e) {
+                myjstools.showerrinfo("deldic_res.error:出错了！" + e.message);
+            }
+        }
+    </script>
+
+</head>
+
+<body style="width:100%; margin:0; overflow-y: hidden;">
+
+    <div class="center_main_right">
+    	<div id="tt" style="height:auto;">
+	        <div class="main_form">
+	        	<span id="spanadd"><a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="add()">添加</a></span>
+	            <!--  <a href="javascript:void(0);" class="btn btn--add" onclick="add();">新增</a>-->
+	        </div>
+	        <div class="main_form">
+	            名称：<input id="dic_name" name="dic_name" value="" placeholder="请输入名称"/>
+	            类型：<input id="dic_type" name="dic_type" value="" placeholder="请输入类型"/>
+	           <span><a href="javascript:seek();"  class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true"></a></span>
+	        </div>
+	    </div>
+        <table id="dg"></table>
+    </div>
+	<div id="win" class="easyui-window" title="..." style="width:320px;height:300px;" data-options="modal:true,closed:true">
+			<iframe id="fra_s" width="99%" height="99%" border="0" frameborder="0"></iframe>
+		</div>
+</body>
+<script>
+    var list_main_height = window.innerHeight;//右侧列表页的可见高度
+    $("#dg").css("height", (list_main_height - 100) + "px");
+</script>
+</html>
